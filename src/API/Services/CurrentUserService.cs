@@ -1,0 +1,78 @@
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Cpa.Application.Common.Interfaces;
+
+namespace Cpa.Presentation.API.Services;
+
+public class CurrentUserService : ICurrentUserService
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public string? Id { get; set; }
+
+    public string? Name { get; set; }
+
+    public string? EmployeeId { get; set; }
+
+    public string? DoctorCode { get; set; }
+
+    public string? Position { get; set; }
+
+    public string? LoginName { get; set; }
+
+    public string? IdentityToken { get; set; }
+
+    public string? AccessToken { get; set; }
+
+    public List<Claim>? Claims { get; set; }
+
+    public bool? HasAdminRole { get; set; }
+
+    public bool? HasDoctorRole { get; set; }
+
+    public CurrentUserService(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+    {
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+
+        var checkupDoctorRole = new string[]
+        {
+            "User : แพทย์ (Doctor)",
+            "User : แพทย์แผนไทย",
+            "User : เวชศาสตร์ฟื้นฟู",
+            "User : จิตเวช",
+            "แพทย์ Intern (Doctor) 1",
+            "แพทย์ Intern (Doctor) 2-3",
+            "User : แพทย์ Intern (Doctor) 3",
+            "User : ทันตกรรม (Dental)",
+        };
+
+        Id = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        Name = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+        EmployeeId = _httpContextAccessor.HttpContext?.User.FindFirstValue("EmployeeId");
+        LoginName = _httpContextAccessor.HttpContext?.User.FindFirstValue("LoginName");
+        DoctorCode = _httpContextAccessor.HttpContext?.User.FindFirstValue("DoctorCode");
+        Position = _httpContextAccessor.HttpContext?.User.FindFirstValue("Position");
+        HasAdminRole = _httpContextAccessor.HttpContext?.User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin") ?? false;
+        HasDoctorRole = _httpContextAccessor.HttpContext?.User.Claims.Any(c => c.Type == ClaimTypes.Role && checkupDoctorRole.Contains(c.Value)) ?? false;
+        Claims = _httpContextAccessor.HttpContext?.User.Claims.ToList();
+    }
+
+    public bool IsInRole(string role)
+    {
+        return _httpContextAccessor.HttpContext?.User.IsInRole(role) ?? false;
+    }
+
+    public async Task<bool> IsInPolicyAsync(string policyName)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if(user == null)
+        {
+            return false;
+        }
+
+        var result = await _authorizationService.AuthorizeAsync(user, policyName);
+        return result.Succeeded;
+    }
+}

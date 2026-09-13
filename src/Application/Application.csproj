@@ -1,0 +1,110 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Cpa.Application</RootNamespace>
+    <AssemblyName>Cpa.Application</AssemblyName>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\Audiograms\**" />
+    <Compile Remove="Features\BodyCompositions\**" />
+    <Compile Remove="Features\Careproviders\**" />
+    <Compile Remove="Features\CheckupClasses\**" />
+    <Compile Remove="Features\CheckupGroups\**" />
+    <Compile Remove="Features\CheckupItems\**" />
+    <Compile Remove="Features\Checkups\**" />
+    <Compile Remove="Features\CheckupTypes\**" />
+    <Compile Remove="Features\Dentals\**" />
+    <Compile Remove="Features\HearingHertzs\**" />
+    <Compile Remove="Features\Hearings\**" />
+    <Compile Remove="Features\Labs\**" />
+    <Compile Remove="Features\Lungs\**" />
+    <Compile Remove="Features\PhysicalExaminations\**" />
+    <Compile Remove="Features\Recommendations\**" />
+    <Compile Remove="Features\RecommendationTemplates\**" />
+    <Compile Remove="Features\Reports\**" />
+    <Compile Remove="Features\ReportTemplates\**" />
+    <Compile Remove="Features\RolesReportTemplate\**" />
+    <Compile Remove="Features\SpecialTests\**" />
+    <Compile Remove="Features\Visions\**" />
+    <EmbeddedResource Remove="Features\Audiograms\**" />
+    <EmbeddedResource Remove="Features\BodyCompositions\**" />
+    <EmbeddedResource Remove="Features\Careproviders\**" />
+    <EmbeddedResource Remove="Features\CheckupClasses\**" />
+    <EmbeddedResource Remove="Features\CheckupGroups\**" />
+    <EmbeddedResource Remove="Features\CheckupItems\**" />
+    <EmbeddedResource Remove="Features\Checkups\**" />
+    <EmbeddedResource Remove="Features\CheckupTypes\**" />
+    <EmbeddedResource Remove="Features\Dentals\**" />
+    <EmbeddedResource Remove="Features\HearingHertzs\**" />
+    <EmbeddedResource Remove="Features\Hearings\**" />
+    <EmbeddedResource Remove="Features\Labs\**" />
+    <EmbeddedResource Remove="Features\Lungs\**" />
+    <EmbeddedResource Remove="Features\PhysicalExaminations\**" />
+    <EmbeddedResource Remove="Features\Recommendations\**" />
+    <EmbeddedResource Remove="Features\RecommendationTemplates\**" />
+    <EmbeddedResource Remove="Features\Reports\**" />
+    <EmbeddedResource Remove="Features\ReportTemplates\**" />
+    <EmbeddedResource Remove="Features\RolesReportTemplate\**" />
+    <EmbeddedResource Remove="Features\SpecialTests\**" />
+    <EmbeddedResource Remove="Features\Visions\**" />
+    <None Remove="Features\Audiograms\**" />
+    <None Remove="Features\BodyCompositions\**" />
+    <None Remove="Features\Careproviders\**" />
+    <None Remove="Features\CheckupClasses\**" />
+    <None Remove="Features\CheckupGroups\**" />
+    <None Remove="Features\CheckupItems\**" />
+    <None Remove="Features\Checkups\**" />
+    <None Remove="Features\CheckupTypes\**" />
+    <None Remove="Features\Dentals\**" />
+    <None Remove="Features\HearingHertzs\**" />
+    <None Remove="Features\Hearings\**" />
+    <None Remove="Features\Labs\**" />
+    <None Remove="Features\Lungs\**" />
+    <None Remove="Features\PhysicalExaminations\**" />
+    <None Remove="Features\Recommendations\**" />
+    <None Remove="Features\RecommendationTemplates\**" />
+    <None Remove="Features\Reports\**" />
+    <None Remove="Features\ReportTemplates\**" />
+    <None Remove="Features\RolesReportTemplate\**" />
+    <None Remove="Features\SpecialTests\**" />
+    <None Remove="Features\Visions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extensions\EfHelper\AnnotationHelper.cs" />
+    <Compile Remove="Features\Addresses\Queries\Get\GetDistrictListQuery.cs" />
+    <Compile Remove="Features\Addresses\Queries\Get\GetSubDistrictListQuery.cs" />
+    <Compile Remove="Features\Systems\Commands\ThaiAddressDataInitializerCommand.cs" />
+    <Compile Remove="Features\Users\Queries\Get\SearchUserQuery.cs" />
+    <Compile Remove="Services\CheckupItemCacheService.cs" />
+    <Compile Remove="Services\CheckupStatusService.cs" />
+    <Compile Remove="Services\ICheckupItemCacheService.cs" />
+    <Compile Remove="Services\ICheckupStatusService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="AutoMapper" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\ReferenceGroups\Commands\Create\" />
+    <Folder Include="Features\ReferenceGroups\Commands\Delete\" />
+    <Folder Include="Features\ReferenceGroups\Commands\Update\" />
+    <Folder Include="Features\ReferenceGroups\Queries\GetPaginatedList\" />
+    <Folder Include="Features\ReferenceGroups\Queries\Get\" />
+    <Folder Include="Features\ReferenceGroups\ViewModels\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+</Project>

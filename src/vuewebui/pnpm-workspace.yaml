@@ -1,0 +1,14 @@
+allowBuilds:
+  '@scarf/scarf': true
+  core-js: true
+  esbuild: true
+  msw: true
+  unrs-resolver: true
+  vue-demi: true
+ignoredBuiltDependencies:
+  - '@scarf/scarf'
+  - core-js
+  - esbuild
+  - msw
+  - unrs-resolver
+  - vue-demi

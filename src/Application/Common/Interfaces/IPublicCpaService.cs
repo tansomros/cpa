@@ -1,0 +1,11 @@
+﻿namespace Cpa.Application.Common.Interfaces
+{
+
+    /// <summary>
+    /// บริการสำหรับ
+    /// </summary>
+    public interface IPublicBigLionService
+    {
+        Task GetCheckupResult(string hospitalNumber);
+    }
+}

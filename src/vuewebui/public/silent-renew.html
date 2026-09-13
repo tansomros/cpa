@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Silent renew token</title>
+</head>
+
+<body>
+    <script>
+        window.addEventListener("load", function () {
+            window.opener.postMessage("oidc-solent-renew-complete", window.origin);
+        });
+    </script>
+</body>
+
+</html>

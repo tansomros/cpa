@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'Bai Jamjuree';
+  font-style: normal;
+  font-weight: 400;
+  src: url('bai-jamjuree-v4-thai-regular.eot');
+  src: local(''),
+       url('bai-jamjuree-v4-thai-regular.eot?#iefix') format('embedded-opentype'),
+       url('bai-jamjuree-v4-thai-regular.woff2') format('woff2'),
+       url('bai-jamjuree-v4-thai-regular.woff') format('woff'),
+       url('bai-jamjuree-v4-thai-regular.ttf') format('truetype'),
+       url('bai-jamjuree-v4-thai-regular.svg#BaiJamjuree') format('svg');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url('roboto-mono-v13-latin-regular.eot');
+  src: local(''),
+       url('roboto-mono-v13-latin-regular.eot?#iefix') format('embedded-opentype'),
+       url('roboto-mono-v13-latin-regular.woff2') format('woff2'),
+       url('roboto-mono-v13-latin-regular.woff') format('woff'),
+       url('roboto-mono-v13-latin-regular.ttf') format('truetype'),
+       url('roboto-mono-v13-latin-regular.svg#RobotoMono') format('svg');
+}
+
+:root {
+  --md-text-font-family: "Bai Jamjuree";
+}
+
+:root {
+  --md-code-font-family: "Roboto Mono";
+}

@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7114;http://localhost:6046",
+      "environmentVariables": {
+        "ASPNETCORE_BASE_PATH": "/api",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1"
+      }
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}
