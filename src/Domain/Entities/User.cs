@@ -9,26 +9,27 @@ public class User : BaseEntity
     public string PasswordHash { get; private set; } = default!;
     public string DisplayName { get; private set; } = default!;
     public string? PositionName { get; private set; }
+    public string? Email { get; set; }
+    public int PharmacyId { get; set; }
     public DateTime? LastLog { get; private set; }
     public int RoleId { get; private set; }
     public virtual Role? Role { get; private set; }
 
-    private User()
-    {
-        // EF Core
-    }
-
-    public User(
+      public User(
         string username,
         string passwordHash,
         string displayName,
         string? positionName,
+        string? email,
+        int pharmacyId,
         int roleId)
     {
         Username = username;
         PasswordHash = passwordHash;
         DisplayName = displayName;
         PositionName = positionName;
+        Email = email;
+        PharmacyId = pharmacyId;
         RoleId = roleId;
 
         IsActive = true;

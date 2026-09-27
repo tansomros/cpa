@@ -54,7 +54,7 @@ public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
         {
             throw new NotFoundException(nameof(Patients), request.Id);
         }
-        patient.HospitalNumber = request.HospitalNumber;
+     
         patient.Prefix = request.Prefix;
         patient.FirstName = request.FirstName;
         patient.MiddleName = request.MiddleName;
@@ -63,24 +63,14 @@ public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
         patient.BirthDate = request.BirthDate;
         patient.BloodGroup = request.BloodGroup;
         patient.NationId = request.NationId;
-        patient.Nationality = request.Nationality;
-        patient.NationalityEnglish = request.NationalityEnglish;
-        patient.Address = request.Address;
-        patient.AddressEnglish = request.AddressEnglish;
-        //patient.CompanyId = request.OrganizationId;
-        patient.EmployeeId = request.EmployeeId;
+      
         patient.DistrictId = request.DistrictId;
         patient.SubDistrictId = request.SubDistrictId;
         patient.ProvinceId = request.ProvinceId;
         patient.DrugAllergy = request.DrugAllergy;
-        patient.FirstNameEnglish = request.FirstNameEnglish;
-        patient.LastNameEnglish = request.LastNameEnglish;
-        patient.TelephoneNumber = request.TelephoneNumber;
-        patient.Religious = request.Religious;
-        patient.ReligiousEnglish = request.ReligiousEnglish;
-        patient.PrefixEnglish = request.PrefixEnglish;
+       
+        patient.TelephoneNumber = request.TelephoneNumber;     
         patient.ZipCode = request.ZipCode;
-        patient.MiddleNameEnglish = request.MiddleNameEnglish;
         patient.ChronicDisease = request.ChronicDisease;
 
         _context.Patients.Update(patient);

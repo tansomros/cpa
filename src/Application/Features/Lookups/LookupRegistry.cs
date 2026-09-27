@@ -10,13 +10,13 @@ public static class LookupRegistry
         {
             ["exam-results"] = lang => Map(ExamResult.All, lang),
             ["lab-results"] = lang => Map(LabResult.All, lang),
-            ["xray-results"] = lang => Map(XrayResult.All, lang),
-            ["bmd-results"] = lang => Map(BmdResult.All, lang),
-            ["abi-results"] = lang => Map(AbiResult.All, lang),
-            ["checkup-statuses"] = lang => Map(CheckupStatus.All, lang),
-            ["eye-results"] = lang => Map(EyeResult.All, lang),
-            ["hearing-loss-levels"] = lang => Map(HearingLossLevel.All, lang),
-            ["vision-acuity-results"] = lang => Map(VisionAcuityResult.All, lang),
+            //["xray-results"] = lang => Map(XrayResult.All, lang),
+            //["bmd-results"] = lang => Map(BmdResult.All, lang),
+            //["abi-results"] = lang => Map(AbiResult.All, lang),
+            //["checkup-statuses"] = lang => Map(CheckupStatus.All, lang),
+            //["eye-results"] = lang => Map(EyeResult.All, lang),
+            //["hearing-loss-levels"] = lang => Map(HearingLossLevel.All, lang),
+            //["vision-acuity-results"] = lang => Map(VisionAcuityResult.All, lang),
         };
 
     public static List<string> Categories => _lookups.Keys.ToList();

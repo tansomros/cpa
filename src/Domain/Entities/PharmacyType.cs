@@ -1,15 +1,20 @@
 ﻿namespace Cpa.Domain.Entities;
 
-public class PharmacyType
-{
-    public int UID { get; set; }
+public class PharmacyType : BaseEntity
+{ 
 
-    public string? Code { get; set; }
+    public string Code { get; set; }
 
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
-    public string? Descriptions { get; set; }
+    public string? Description { get; set; }
 
-    public string? StatusFlag { get; set; }
+    public int Sort { get; set; }
+    public PharmacyType(string code,string name,int sort)
+    {
+        Code = code;
+        Name = name;
+        Sort = sort;
+    }
 }
 

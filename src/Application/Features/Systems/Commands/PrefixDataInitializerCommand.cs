@@ -31,7 +31,9 @@ public class PrefixDataInitializerCommandHandler : IRequestHandler<PrefixDataIni
         {
             new Prefix(1,"นาย"),
             new Prefix(2,"นาง"),          
-            new Prefix(3,"นางสาว"), 
+            new Prefix(3,"นางสาว"),
+            new Prefix(4,"ภก."),
+            new Prefix(5,"ภญ."),
         };
 
         await _context.Prefixs.AddRangeAsync(Prefix, cancellationToken);

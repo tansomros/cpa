@@ -27,8 +27,8 @@ public class UserDataInitializerCommandHandler : IRequestHandler<UserDataInitial
 
         var User = new[]
         {           
-            new User("admin","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","Administrator","Admin",1),//4321
-            new User("teerapong","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","นาย ธีรพงศ์ ลานอก","ผู้จัดการ",1), 
+            new User("host","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","Host","ผู้ดูแลระบบ","",0,9),//4321
+            new User("admin","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","Administrator","Admin","",0,8), 
         };
 
         await _context.Users.AddRangeAsync(User, cancellationToken);

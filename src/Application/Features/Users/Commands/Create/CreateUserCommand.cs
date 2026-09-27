@@ -9,28 +9,12 @@ public record CreateUserCommand : IRequest<int>
     public required string Password { get; set; }
     public required string DisplayName { get; set; }
     public required string PositionName { get; set; }
-    public int RoleId { get; set; }
+    public string? Email { get; set; }
+    public required int PharmacyId { get; set; }
+    public required int RoleId { get; set; }
     public bool IsActive { get; set; }
 }
 
-public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
-{ 
-    private readonly ICpaDatabaseContext _context;
-
-    public CreateUserCommandValidator(ICpaDatabaseContext context)
-    {
-        _context = context;     
-
-        RuleFor(p => p.Username).NotEmpty().WithMessage("Username เป็นค่าว่างไม่ได้");
-        RuleFor(p => p.Password).NotEmpty().WithMessage("Password เป็นค่าว่างไม่ได้");
-
-        RuleFor(p => p.RoleId)
-            .NotEmpty().WithMessage("RoleId ต้องไม่เป็นค่าว่าง")
-            .NotNull().WithMessage("RoleId ต้องไม่เป็นค่า NULL");
-
-        //RuleFor(p => p.ReportText).NotEmpty().WithMessage("ReportText เป็นค่าว่างไม่ได้");
-    }      
-}
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
 {
@@ -47,6 +31,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
             request.Password,
             request.DisplayName,
             request.PositionName,
+            request.Email,
+            request.PharmacyId,
             request.RoleId
             )
         {

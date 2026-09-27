@@ -7,13 +7,13 @@ namespace Cpa.Domain.Entities;
 public class Running
 {   
     public string Code { get; set; }
-    public int YearCode { get; set; }
+    public int RefCode { get; set; }
     public int LastRunning { get; set; }
 
-    public Running(string code, int yearCode,int lastRunning)
+    public Running(string code, int refCode,int lastRunning)
     {
         Code = code;
-        YearCode = yearCode;
+        RefCode = refCode;
         LastRunning = lastRunning;
     }
 }

@@ -9,16 +9,16 @@ public class RunningConfig
     public string Code { get; set; }
     public string Description { get; set; }
     public bool IsCode { get; set; }
-    public bool IsYear { get; set; }
+    public bool IsRef { get; set; }
     public int DigitCount { get; set; }
     public string? TemplateCode { get; set; }
 
-    public RunningConfig(string code,string description,bool isCode,bool isYear,int digitCount)
+    public RunningConfig(string code,string description,bool isCode,bool isRef,int digitCount)
     {
         Code = code;
         Description = description;
         IsCode = isCode;
-        IsYear = isYear;
+        IsRef = isRef;
         DigitCount = digitCount;
     }
 }

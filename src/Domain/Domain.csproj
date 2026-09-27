@@ -3,11 +3,50 @@
   <PropertyGroup>
     <RootNamespace>Cpa.Domain</RootNamespace>
     <AssemblyName>Cpa.Domain</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\Bank.cs" />
+    <Compile Remove="Entities\BehaviorProblem.cs" />
+    <Compile Remove="Entities\BehaviorProblemItem.cs" />
+    <Compile Remove="Entities\Desease.cs" />
+    <Compile Remove="Entities\Dispense.cs" />
+    <Compile Remove="Entities\DrugMaster.cs" />
+    <Compile Remove="Entities\DrugProblemGroup.cs" />
+    <Compile Remove="Entities\DrugProblemItem.cs" />
+    <Compile Remove="Entities\Hospital.cs" />
+    <Compile Remove="Entities\LabItem.cs" />
+    <Compile Remove="Entities\LabResult.cs" />
+    <Compile Remove="Entities\LabUOM.cs" />
+    <Compile Remove="Entities\MTM.cs" />
+    <Compile Remove="Entities\MTMBehavior.cs" />
+    <Compile Remove="Entities\MTMDesease.cs" />
+    <Compile Remove="Entities\MTMDrugProblem.cs" />
+    <Compile Remove="Entities\MTMDrugRemain.cs" />
+    <Compile Remove="Entities\MTMRefer.cs" />
+    <Compile Remove="Entities\News.cs" />
     <Compile Remove="Entities\PatientCompany.cs" />
+    <Compile Remove="Entities\PaymentConfig.cs" />
+    <Compile Remove="Entities\PaymentMethod.cs" />
+    <Compile Remove="Entities\ReferenceGroup.cs" />
+    <Compile Remove="Entities\ReferenceValue.cs" />
+    <Compile Remove="Entities\Register.cs" />
+    <Compile Remove="Entities\Services.cs" />
+    <Compile Remove="Entities\ServiceType.cs" />
+    <Compile Remove="Entities\UserLogFile.cs" />
+    <Compile Remove="Entities\UserRoles.cs" />
+    <Compile Remove="Enums\AbiResult.cs" />
+    <Compile Remove="Enums\BmdResult.cs" />
+    <Compile Remove="Enums\BodyResult.cs" />
+    <Compile Remove="Enums\CheckupStatus.cs" />
+    <Compile Remove="Enums\EyeResult.cs" />
+    <Compile Remove="Enums\HandGripResult.cs" />
+    <Compile Remove="Enums\HearingLossLevel.cs" />
+    <Compile Remove="Enums\QualitativeResult.cs" />
     <Compile Remove="Enums\Role.cs" />
+    <Compile Remove="Enums\VisionAcuityResult.cs" />
+    <Compile Remove="Enums\XrayResult.cs" />
   </ItemGroup>
 
   <ItemGroup>

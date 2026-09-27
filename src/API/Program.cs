@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Cpa.Presentation.API.Services;
 using Cpa.Presentation.API.Middlewares;
 using Cpa.Infrastructure.Identity;
@@ -220,7 +220,7 @@ public class Program
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             };
 
-            forwardedHeaderOptions.KnownNetworks.Clear();
+            forwardedHeaderOptions.KnownIPNetworks.Clear();
             forwardedHeaderOptions.KnownProxies.Clear();
             app.UseForwardedHeaders(forwardedHeaderOptions);
         }

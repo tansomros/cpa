@@ -13,7 +13,7 @@ public class RunningConfigConfiguration : IEntityTypeConfiguration<RunningConfig
         builder.Property(x => x.Code).HasMaxLength(20);
         builder.Property(x => x.Description).HasMaxLength(200);
         builder.Property(x => x.IsCode).HasMaxLength(1);
-        builder.Property(x => x.IsYear).HasMaxLength(1);
+        builder.Property(x => x.IsRef).HasMaxLength(1);
         builder.Property(x => x.TemplateCode).HasMaxLength(100);
     }
 }

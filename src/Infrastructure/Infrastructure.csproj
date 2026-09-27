@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Cpa.Infrastructure</RootNamespace>
     <AssemblyName>Cpa.Infrastructure</AssemblyName>
     <Nullable>enable</Nullable>
@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Compile Remove="Persistence\Configurations\AudiogramConfiguration.cs" />
+    <Compile Remove="Persistence\Configurations\BankConfiguration.cs" />
     <Compile Remove="Persistence\Configurations\CareproviderConfiguration.cs" />
     <Compile Remove="Persistence\Configurations\PatientConfiguration.cs" />
     <Compile Remove="Persistence\Configurations\RecommendationTemplateConfiguration.cs" />

@@ -13,7 +13,7 @@ namespace Cpa.Infrastructure.Persistence
 
         public override DatabaseFacade Database { get; }  
      
-        public DbSet<Bank> Banks => Set<Bank>();
+        //public DbSet<Bank> Banks => Set<Bank>();
        public DbSet<District> Districts => Set<District>();
         public DbSet<SubDistrict> SubDistricts => Set<SubDistrict>();
         public DbSet<Province> Provinces => Set<Province>();
@@ -26,8 +26,13 @@ namespace Cpa.Infrastructure.Persistence
         public DbSet<Role> Roles => Set<Role>();
 
         public DbSet<Patient> Patients => Set<Patient>();
-        public DbSet<ReferenceGroup> ReferenceGroups => Set<ReferenceGroup>();
-        public DbSet<ReferenceValue> ReferenceValues => Set<ReferenceValue>();
+        public DbSet<PharmacyType> PharmacyTypes => Set<PharmacyType>();
+        public DbSet<PharmacyGroup> PharmacyGroups => Set<PharmacyGroup>();
+        public DbSet<Pharmacy> Pharmacys => Set<Pharmacy>();
+        public DbSet<Pharmacist> Pharmacists => Set<Pharmacist>();
+
+        //public DbSet<ReferenceGroup> ReferenceGroups => Set<ReferenceGroup>();
+        //public DbSet<ReferenceValue> ReferenceValues => Set<ReferenceValue>();
 
 
         public CpaDatabaseContext(

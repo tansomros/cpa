@@ -6,9 +6,10 @@ public abstract class Roles
 {
     //public const string Administrator = nameof(Administrator);
 
-    public const string Administrator = "ADMINISTRATOR";
-    public const string Officer = "OFFICER";
-     public const string Manager = "MANAGER";
-     public const string User = "USER";
+    public const string Pharmacy = "PHARMACY";
+    public const string Reporter = "REPORTER";
+    public const string Manager = "MANAGER";
+    public const string Administrator = "ADMIN";
+    public const string Host = "HOST";
 
 }

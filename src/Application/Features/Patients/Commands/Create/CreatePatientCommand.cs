@@ -49,7 +49,6 @@ namespace Cpa.Application.Features.Patients.Commands.Create
         public async Task<int> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
             var patient = new Patient(
-                request.HospitalNumber,
                 request.Prefix,
                 request.FirstName,
                 request.MiddleName,
@@ -58,25 +57,14 @@ namespace Cpa.Application.Features.Patients.Commands.Create
                 request.BirthDate)
             {
                 BloodGroup = request.BloodGroup,
-                NationId = request.NationId,
-                Nationality = request.Nationality,
-                NationalityEnglish = request.NationalityEnglish,
-                Address = request.Address,
-                AddressEnglish = request.AddressEnglish,
-                //CompanyId = request.CompanyId,
-                EmployeeId = request.EmployeeId,
+                NationId = request.NationId, 
+                AddressNo = request.Address,     
                 DistrictId = request.DistrictId,
                 SubDistrictId = request.SubDistrictId,
                 ProvinceId = request.ProvinceId,
-                DrugAllergy = request.DrugAllergy,
-                FirstNameEnglish = request.FirstNameEnglish,
-                LastNameEnglish = request.LastNameEnglish,
-                TelephoneNumber = request.TelephoneNumber,
-                Religious = request.Religious,
-                ReligiousEnglish = request.ReligiousEnglish,
-                PrefixEnglish = request.PrefixEnglish,
-                ZipCode = request.ZipCode,
-                MiddleNameEnglish = request.MiddleNameEnglish,
+                DrugAllergy = request.DrugAllergy,             
+                TelephoneNumber = request.TelephoneNumber,             
+                ZipCode = request.ZipCode,            
                 ChronicDisease = request.ChronicDisease
             };
 

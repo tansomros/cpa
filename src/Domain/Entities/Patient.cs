@@ -5,10 +5,6 @@
 /// </summary>
 public class Patient : BaseEntity
 {
-    /// <summary>
-    /// HN : Hospital Number เลขที่ประจำตัวผู้ป่วย
-    /// </summary>
-    public string HospitalNumber { get; set; }
 
     /// <summary>
     /// คำนำหน้าชื่อไทย
@@ -45,36 +41,17 @@ public class Patient : BaseEntity
     /// </summary>
     public string? NationId { get; set; }
 
-    /// <summary>
-    /// สัญชาติ
-    /// </summary>
-    public string? Nationality { get; set; }
-
-    /// <summary>
-    /// ศาสนา
-    /// </summary>
-    public string? Religious { get; set; }
 
     /// <summary>
     /// หมู่เลือด ABO
     /// </summary>
     public string? BloodGroup { get; set; }
 
-    /// <summary>
-    /// รหัสพนักงาน
-    /// </summary>
-    public string? EmployeeId { get; set; }
-
-    /// <summary>
-    /// สังกัดบริษัท/หน่วยงาน <= ไม่ใช้แบบนี้แล้ว ไปเชื่อมกับ PatientCompany
-    /// </summary>
-    //public int? CompanyId { get; set; }
-    //public virtual Company? Company { get; set; }
 
     /// <summary>
     /// ที่อยู่ : บ้านเลขที่ หมู่ ถนน ซอย อาคาร ให้รวมอยู่ในฟิลด์นี้
     /// </summary>
-    public string? Address { get; set; }
+    public string? AddressNo { get; set; }
 
     /// <summary>
     /// แขวง/ตำบล
@@ -112,59 +89,40 @@ public class Patient : BaseEntity
     public string? ChronicDisease { get; set; }
 
     /// <summary>
-    /// คำนำหน้าชื่อภาษาอังกฤษ
+    /// สิทธิการรักษาหลัก
     /// </summary>
-    public string? PrefixEnglish { get; set; }
+    public string? MainClaim { get; set; }
 
     /// <summary>
-    /// ชื่ออังกฤษ
+    /// การศึกษา
     /// </summary>
-    public string? FirstNameEnglish { get; set; }
+    public string? Education { get; set; }
 
     /// <summary>
-    /// นามสกุลอังกฤษ
+    /// อาชีพ
     /// </summary>
-    public string? LastNameEnglish { get; set; }
+    public string? Occupation { get; set; }
 
     /// <summary>
-    /// ชื่อกลาง
+    /// สูบบุหรี่
     /// </summary>
-    public string? MiddleNameEnglish { get; set; }
+    public bool IsSmoke { get; set; }
 
     /// <summary>
-    /// สัญชาติ
+    /// รายละเอียดอื่นๆเกี่ยวกับการสูบบุหรี่
     /// </summary>
-    public string? NationalityEnglish { get; set; }
+    public string? SmokeRemark { get; set; }
 
-    /// <summary>
-    /// ศาสนา
-    /// </summary>
-    public string? ReligiousEnglish { get; set; }
-
-    /// <summary>
-    /// ที่อยู่ : บ้านเลขที่ หมู่ ถนน ซอย อาคาร ให้รวมอยู่ในฟิลด์นี้
-    /// </summary>
-    public string? AddressEnglish { get; set; }
-
-    //public ICollection<Checkup>? Checkups { get; set; }
+    public bool IsDrink { get; set; }
+    public string? DrinkRemark {  get; set; }
 
     // Navigation properties
     public virtual Province? Province { get; set; }
     public virtual District? District { get; set; }
     public virtual SubDistrict? SubDistrict { get; set; }
 
-    /// <summary>
-    /// กำหนดค่าตั้งต้นที่จำเป็นของข้อมูล ผู้รับบริการ
-    /// </summary>
-    /// <param name="hospitalNumber">เลขที่ผู้รับบริการ 8 หลัก</param>
-    /// <param name="prefix">คำนำหน้าชื่อ</param>
-    /// <param name="firstName">ชื่อ</param>
-    /// <param name="middleName">ชื่อกลาง</param>
-    /// <param name="lastName">นามสกุล</param>
-    /// <param name="gender">เพศ</param>
-    /// <param name="birthDate">วันเดือนปีเกิด (ค.ส.)</param>
+   
     public Patient(
-        string hospitalNumber,
         string prefix,
         string firstName,
         string middleName,
@@ -172,7 +130,6 @@ public class Patient : BaseEntity
         string gender,
         DateOnly birthDate)
     {
-        HospitalNumber = hospitalNumber;
         Prefix = prefix;
         FirstName = firstName;
         MiddleName = middleName;

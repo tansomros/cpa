@@ -7,7 +7,7 @@
     <AssemblyName>Cpa.Presentation.API</AssemblyName>
     <RootNamespace>Cpa.Presentation.API</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

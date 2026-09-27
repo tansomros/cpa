@@ -4,6 +4,7 @@
     <RootNamespace>Cpa.Application</RootNamespace>
     <AssemblyName>Cpa.Application</AssemblyName>
     <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,8 @@
     <Compile Remove="Features\PhysicalExaminations\**" />
     <Compile Remove="Features\Recommendations\**" />
     <Compile Remove="Features\RecommendationTemplates\**" />
+    <Compile Remove="Features\ReferenceGroups\**" />
+    <Compile Remove="Features\ReferenceValues\**" />
     <Compile Remove="Features\Reports\**" />
     <Compile Remove="Features\ReportTemplates\**" />
     <Compile Remove="Features\RolesReportTemplate\**" />
@@ -44,6 +47,8 @@
     <EmbeddedResource Remove="Features\PhysicalExaminations\**" />
     <EmbeddedResource Remove="Features\Recommendations\**" />
     <EmbeddedResource Remove="Features\RecommendationTemplates\**" />
+    <EmbeddedResource Remove="Features\ReferenceGroups\**" />
+    <EmbeddedResource Remove="Features\ReferenceValues\**" />
     <EmbeddedResource Remove="Features\Reports\**" />
     <EmbeddedResource Remove="Features\ReportTemplates\**" />
     <EmbeddedResource Remove="Features\RolesReportTemplate\**" />
@@ -65,6 +70,8 @@
     <None Remove="Features\PhysicalExaminations\**" />
     <None Remove="Features\Recommendations\**" />
     <None Remove="Features\RecommendationTemplates\**" />
+    <None Remove="Features\ReferenceGroups\**" />
+    <None Remove="Features\ReferenceValues\**" />
     <None Remove="Features\Reports\**" />
     <None Remove="Features\ReportTemplates\**" />
     <None Remove="Features\RolesReportTemplate\**" />
@@ -76,6 +83,9 @@
     <Compile Remove="Extensions\EfHelper\AnnotationHelper.cs" />
     <Compile Remove="Features\Addresses\Queries\Get\GetDistrictListQuery.cs" />
     <Compile Remove="Features\Addresses\Queries\Get\GetSubDistrictListQuery.cs" />
+    <Compile Remove="Features\Systems\Commands\BankDataInitializerCommand.cs" />
+    <Compile Remove="Features\Systems\Commands\ReferenceGroupDataInitializerCommand.cs" />
+    <Compile Remove="Features\Systems\Commands\ReferenceValueDataInitializerCommand.cs" />
     <Compile Remove="Features\Systems\Commands\ThaiAddressDataInitializerCommand.cs" />
     <Compile Remove="Features\Users\Queries\Get\SearchUserQuery.cs" />
     <Compile Remove="Services\CheckupItemCacheService.cs" />
@@ -98,12 +108,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\ReferenceGroups\Commands\Create\" />
-    <Folder Include="Features\ReferenceGroups\Commands\Delete\" />
-    <Folder Include="Features\ReferenceGroups\Commands\Update\" />
-    <Folder Include="Features\ReferenceGroups\Queries\GetPaginatedList\" />
-    <Folder Include="Features\ReferenceGroups\Queries\Get\" />
-    <Folder Include="Features\ReferenceGroups\ViewModels\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

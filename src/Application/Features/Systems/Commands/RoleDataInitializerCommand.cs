@@ -29,10 +29,11 @@ public class RoleDataInitializerCommandHandler : IRequestHandler<RoleDataInitial
 
         var Role = new[]
         {
-            new Role(1,"ADMINISTRATOR"),
-            new Role(2,"OFFICER"),          
-            new Role(3,"MANAGER"),
-            new Role(4,"USER"),
+            new Role(1,"ร้านยา",true,1),
+            new Role(2,"สิทธิ์ดูรายงาน",true,2),          
+            new Role(3,"ผู้จัดการโครงการ",true,3),
+            new Role(4,"Admin",true,4),
+            new Role(9,"ผู้ดูแลระบบ (Host)",true,9)
         };
 
         await _context.Roles.AddRangeAsync(Role, cancellationToken);

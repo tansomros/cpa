@@ -39,13 +39,14 @@ namespace Cpa.Infrastructure.Persistence
             {
                 var services = scope.ServiceProvider;
                 var mediator = services.GetRequiredService<IMediator>();
-                //await mediator.Send(new ThaiAddressDataInitializerCommand());
-                await mediator.Send(new BankDataInitializerCommand());    
+                await mediator.Send(new ThaiProvinceDataInitializerCommand());
                 await mediator.Send(new PrefixDataInitializerCommand());
                 await mediator.Send(new RoleDataInitializerCommand());
                 await mediator.Send(new RunningConfigDataInitializerCommand());
                 await mediator.Send(new RunningDataInitializerCommand());
                 await mediator.Send(new UserDataInitializerCommand());
+                await mediator.Send(new PharmacyGroupDataInitializerCommand());
+                await mediator.Send(new PharmacyTypeDataInitializerCommand());
             }
             catch (Exception ex)
             {

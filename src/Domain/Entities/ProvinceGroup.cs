@@ -2,8 +2,15 @@
 
 public class ProvinceGroup
 {
-    public string ProvinceGroupID { get; set; } = string.Empty;
+    public string Id { get; set; } 
 
-    public string? ProvinceGroupName { get; set; }
+    public string Name { get; set; }
+
+    public ProvinceGroup(string id, string name)
+    {
+        Id = id;
+        Name = name; 
+    }
+
 }
 
