@@ -1,157 +1,83 @@
-# System Architecture
+# Architecture
 
-## Overview
-SUTH Checkup follows **Clean Architecture** with **CQRS** (Command Query Responsibility Segregation) pattern. The system comprises multiple deployment units communicating through REST APIs and shared database access.
+## What this system is
 
-## Architecture Diagram
+CPA Thai Project is the foundation of a small web application for Community pharmacy Association (Thailand) (สมาคมเภสัชกรรมชุมชน (ประเทศไทย)). Current scope: master data (ระบบตั้งค่าข้อมูลพื้นฐาน) and pharmacy management (ระบบบริหารข้อมูลร้านยา). Planned scope: the full — see [domain.md](domain.md) and [roadmap.md](roadmap.md).
 
-```mermaid
-graph TB
-    subgraph Clients
-        VUE[Vue.js Web UI<br/>Vuetify + Pinia]
-        WIN[WinForms Desktop<br/>DevExpress + WebView2]
-    end
+This is infrastructure a pharmacy depends on operationally. Data accuracy, consistency, and traceability are the top design priority — see the "Non-negotiable" section of [roadmap.md](roadmap.md) before making any change that touches money, quantity, or approval state.
 
-    subgraph Backend
-        API[ASP.NET Core API<br/>REST Controllers]
-        WORKER[HosxpWorkerService<br/>Background Sync]
-    end
+## Stack
 
-    subgraph External
-        IDS[Identity Server<br/>OAuth2/JWT]
-        HOSXP[HOSxP API<br/>Hospital System]
-    end
+- **Backend**: C# / .NET 10, ASP.NET Core Web API, EF Core 10 + Npgsql (PostgreSQL), MediatR 14 (CQRS), FluentValidation, AutoMapper, Swashbuckle/NSwag (OpenAPI).
+- **Frontend**: Vue 3 (Composition API, `<script setup>`, JavaScript not TypeScript), Vuetify 3 (Vuexy admin template), Pinia, vue-router 4 via file-based routing (`unplugin-vue-router`), CASL for permission-based UI.
+- **Auth**: Internal provider.
+- **Solution layout**: `CPA.sln` / `.slnx`, central package management (`Directory.Packages.props`), `src/Domain`, `src/Application`, `src/Infrastructure`, `src/API`, `src/vuewebui` (frontend), `tests/*`.
 
-    subgraph Data
-        PG[(PostgreSQL<br/>Checkup Database)]
-    end
+## Clean Architecture layering
 
-    VUE -->|REST + JWT| API
-    WIN -->|REST + JWT| API
-    VUE -->|OIDC| IDS
-    WIN -->|OIDC| IDS
-    API -->|Validate JWT| IDS
-    API -->|EF Core| PG
-    WORKER -->|REST| API
-    WORKER -->|REST| HOSXP
-    WORKER -->|OAuth2 Client Credentials| IDS
+Dependency direction (enforced by `.csproj` references — do not violate):
+
+```
+Domain          → no project dependencies
+Application     → Domain
+Infrastructure  → Application, Domain
+API             → Application, Infrastructure
 ```
 
-## Clean Architecture Layers
+- **Domain** (`src/Domain`): entities, enums, value objects, domain exceptions. No EF, no MediatR request types (only `BaseEvent : INotification` for domain events). Entities should enforce their own invariants (guard clauses via `Ardalis.GuardClauses`), not just be property bags — see [coding-rules.md](coding-rules.md).
+- **Application** (`src/Application`): CQRS use cases under `Features/{Context}/{Feature}/{Commands|Queries}/{UseCase}/`, each folder containing a Command/Query record + FluentValidation validator + MediatR handler together. Talks to persistence only through `ICpaDbContext` (defined here, implemented in Infrastructure). Pipeline behaviours (`Common/Behaviours/`): `UnhandledExceptionBehaviour` → `AuthorizationBehaviour` → `ValidationBehaviour` → `PerformanceBehaviour` → `LoggingBehaviour`, wired in `Application/DependencyInjection.cs`.
+- **Infrastructure** (`src/Infrastructure`): `CpaDbContext` (EF Core, PostgreSQL, snake_case naming via `EFCore.NamingConventions`), `IEntityTypeConfiguration<T>` classes under `Data/Configurations/`, migrations under `Data/Migrations/`, save-changes interceptors under `Data/Interceptors/`.
+- **API** (`src/API`): thin controllers under `Controllers/` — inject `Mediator`, call `Send`, return the result. No business logic here. Global exception handling via `Filters/ApiExceptionFilterAttribute`.
 
-```mermaid
-graph LR
-    subgraph Presentation
-        A[API Controllers]
-        W[WinForms UI]
-        V[Vue.js Web UI]
-    end
+## Bounded-context folder map
 
-    subgraph Application
-        B[Commands & Queries<br/>Handlers, Validators<br/>Interfaces, DTOs]
-    end
+`Domain/Entities` and `Infrastructure/Data/Configurations` are organized by bounded context (landed in Phase 2). `Application/Features` was moved to match the same physical layout, but namespaces there were deliberately left as `BigLion.Cpa.Application.Features.{Feature}...` rather than rewritten to `...Features.{Context}.{Feature}...` — the physical move gets the folder legibility benefit without a several-hundred-file `using` ripple. A new feature's Domain entity and EF configuration should land under the same `{Context}/{Feature}` path; where the Application slice's namespace ends up is a separate, lower-stakes decision.
 
-    subgraph Domain
-        C[Entities<br/>Value Objects<br/>Smart Enums, Constants]
-    end
+- `MasterData/` — Province/District/SubDistrict, Prefix 
+- `Pharmacy/` — `Group` (single entity + `PharmacyGroup` discriminator + JSONB `Attributes` — see [domain.md](domain.md))
+- `Patient/` — Contract, ContractItem, ContractType, ContractCollateral, ContractCommittee(Type), ContractVendor
+- `Security/` — `Permission` (module.action catalog), `RolePermission` (role-name → permission grant; role name matches the external IdP's role claim, no local Role/User table)
+- `Domain/Common/` — cross-cutting types with no single bounded context: `EntityBase`, `AuditLog`, `AuditAction`
 
-    subgraph Infrastructure
-        D[EF Core DbContext<br/>Configurations<br/>External Services]
-    end
+## CQRS / MediatR conventions
 
-    A --> B
-    W --> B
-    W -.->|Smart Enums| C
-    B --> C
-    D --> B
-    D --> C
-```
+- One folder per use case: `Features/{Context}/{Feature}/Commands/{VerbNoun}/` or `.../Queries/{GetNoun}/`.
+- Command/Query, Validator, and Handler live together in that folder (this project's convention — co-located, not split across separate projects).
+- Controllers call `Mediator.Send(...)` and nothing else.
+- Use the scaffolding template (see [ai-agent-guide.md](ai-agent-guide.md)) to generate a new use case rather than hand-copying an existing one — it keeps the integrity mechanisms (concurrency token, audit log, guard clauses) consistent by default.
 
-**Dependency Rule:** Dependencies point inward. Domain has zero external dependencies. Application depends only on Domain. Infrastructure implements Application interfaces.
+## Data model conventions
 
-## Major Modules
+- **Dual key**: every entity has an internal `int Id` (joins/FKs, never exposed) and a `Guid ExternalId` (UUIDv7, the only identifier exposed via API routes/DTOs).
+- **Audit fields**: `CreatedBy`, `LastModifiedBy`, `CreatedOn`, `LastModified`, `IsActive`, `IsDelete` on every entity via `EntityBase`, set automatically by `AuditableEntitySaveChangesInterceptors` — handlers should never set these manually.
+- **Optimistic concurrency**: every entity carries the Postgres `xmin` system column as a shadow-property concurrency token (via `ConfigureEntityBase<T>()`, no extra column needed) — a stale write throws `DbUpdateConcurrencyException` rather than silently overwriting.
+- **Permissions**: `module.action` codes (`Permission`) granted to a role name (`RolePermission`) — role name matches the claim issued by the external IdP, so there's no local Role/User table. Checked via `[RequirePermission("module.action")]` on a Command/Query, enforced by `AuthorizationBehaviour`; `HasAdminRole` bypasses the check. Currently rolled out to the Vendors feature only — see roadmap Phase 2.
+- **Audit trail**: every insert/update/delete on an `EntityBase`-derived entity is recorded to the append-only `AuditLog` table (entity name, `ExternalId`, action, property-level `{old,new}` diff, actor, timestamp) by `AuditableEntitySaveChangesInterceptors` — this is in addition to, not instead of, the `CreatedBy`/`LastModifiedBy` fields, which only ever show the *latest* change.
+- **Money/quantity fields are never mutated in place** — see the ledger pattern in [coding-rules.md](coding-rules.md) and the "Non-negotiable" section of [roadmap.md](roadmap.md).
+- **Item/Catalog**: a single `Item` entity with an `ItemCategory` discriminator and a JSONB `Attributes` column for category-specific fields (e.g. drug registration number), instead of one class per category — new item categories are a data change, not a schema migration.
 
-### 1. Domain (`src/Domain/`)
-Pure business logic layer. Contains entities, value objects, enums, and domain events. No framework dependencies except MediatR for domain events.
+## Frontend architecture (target — see roadmap Phase 3)
 
-### 2. Application (`src/Application/`)
-Use cases organized as **Features**. Each feature contains Commands (writes), Queries (reads), ViewModels (DTOs), and Validators. Uses MediatR pipeline with behaviors for cross-cutting concerns (validation, logging, performance, authorization).
+- Dedicated `create/`, `edit/[id]`, `view/[id]`, `list/` routes per feature (not modal dialogs) — file-based routing under `src/pages/{feature}/`.
+- A schema-driven CRUD scaffold (field schema → generic `EntityListPage`/`EntityFormPage`/`EntityViewPage`) instead of hand-written per-feature pages.
+- One HTTP client, generated from the backend's OpenAPI spec — no hand-typed endpoint strings.
+- Shared composables (`useCrud`, `useConfirmDelete`) instead of copy-pasted per-page state/logic.
+- CASL permission rules driven by the backend's real permission system (`module.action`), not hardcoded.
 
-### 3. Infrastructure (`src/Infrastructure/`)
-Data access via EF Core with PostgreSQL. Contains DbContext, entity configurations, migrations, interceptors (audit trail), and external service implementations.
+## Where things live — quick index
 
-### 4. API (`src/API/`)
-ASP.NET Core REST API. Controllers dispatch requests via MediatR. Includes JWT authentication, Swagger documentation, exception middleware, and CORS configuration.
+| Concern | Path |
+|---|---|
+| Domain entities | `src/Domain/Entities/{Context}/` |
+| Domain base types | `src/Domain/Common/` (`EntityBase`, `AuditLog`, `AuditAction`) |
+| CQRS use cases | `src/Application/Features/{Context}/{Feature}/{Commands\|Queries}/{UseCase}/` |
+| Pipeline behaviours | `src/Application/Common/Behaviours/` |
+| DbContext + interface | `src/Infrastructure/Data/CpaDbContext.cs`, `src/Application/Common/Interfaces/ICpaDbContext.cs` |
+| EF configurations | `src/Infrastructure/Data/Configurations/{Context}/` |
+| Migrations | `src/Infrastructure/Data/Migrations/` |
+| API controllers | `src/API/Controllers/` |
+| Frontend pages | `src/vuewebui/src/pages/{feature}/{create,edit,view,list}/` |
+| Frontend composables | `src/vuewebui/src/composables/` |
+| Frontend API client | `src/vuewebui/src/utils/api.js` (target: generated client, see roadmap Phase 3) |
 
-### 5. HosxpWorkerService (`src/HosxpWorkerService/`)
-Background service that polls HOSxP API for changes and syncs data into the Checkup database via the Checkup API. Handles: patients, checkup visits, lab results, x-ray results, and doctor/careprovider records.
-
-### 6. WinFormsUI (`src/WinFormsUI/`)
-Desktop client for power users (doctors/nurses). Provides detailed checkup forms, cumulative comparison views, and DevExpress-based report printing. Directly references the Domain project for compile-time access to Smart Enums and localized display names.
-
-### 7. Vue Web UI (`src/vuewebui/`)
-Modern SPA built with Vue 3 + Vuetify 3. Provides dashboard views with OIDC authentication, i18n (EN/TH), and dark/light theming.
-
-## Data Flow
-
-### Checkup Creation Flow
-```mermaid
-sequenceDiagram
-    participant C as Client (Vue/WinForms)
-    participant API as Checkup API
-    participant MED as MediatR Pipeline
-    participant DB as PostgreSQL
-
-    C->>API: POST /api/checkups
-    API->>MED: Send CreateCheckupCommand
-    MED->>MED: ValidationBehaviour
-    MED->>MED: LoggingBehaviour
-    MED->>DB: Save Checkup Entity
-    DB-->>MED: Entity Created
-    MED-->>API: Return ID
-    API-->>C: 201 Created
-```
-
-### HOSxP Sync Flow
-```mermaid
-sequenceDiagram
-    participant WC as WorkerCoordinator
-    participant SYNC as SyncService
-    participant HOSXP as HOSxP API
-    participant API as Checkup API
-    participant STATE as State File (JSON)
-
-    WC->>SYNC: Trigger sync cycle
-    SYNC->>STATE: Read last sync timestamp
-    SYNC->>HOSXP: GET changes since timestamp
-    HOSXP-->>SYNC: Changed records
-    loop Each changed record
-        SYNC->>API: GET existing record
-        alt New Record
-            SYNC->>API: POST create
-        else Updated Record
-            SYNC->>API: PUT update
-        end
-    end
-    SYNC->>STATE: Update timestamp
-```
-
-## Authentication & Authorization
-
-- **Protocol:** OAuth2 / OpenID Connect
-- **Provider:** Identity Server (Duende)
-- **API Auth:** JWT Bearer tokens validated against Identity Server authority
-- **Client Auth:** OIDC redirect flow (web), OIDC with WebView2 (desktop)
-- **Worker Auth:** OAuth2 Client Credentials flow
-- **Roles:** Doctor, Nurse, Admin, Employee
-- **Policies:** RequireAuthenticatedUser, RequireDoctor, RequireNurse, RequireAdmin, RequireEmployee
-
-> **Note:** Authorization enforcement in the MediatR pipeline (`AuthorizationBehaviour`) is currently disabled (commented out). See [known-issues.md](known-issues.md).
-
-## External Services
-
-| Service | Purpose | Integration |
-|---------|---------|-------------|
-| **Identity Server** | Authentication & authorization | JWT validation, OIDC flows |
-| **HOSxP API** | Hospital Information System | REST API polling via Worker Service |
-| **PostgreSQL** | Primary database | EF Core with Npgsql |
+See also: [coding-rules.md](coding-rules.md), [ai-agent-guide.md](ai-agent-guide.md), [domain.md](domain.md), [known-issues.md](known-issues.md), [roadmap.md](roadmap.md).

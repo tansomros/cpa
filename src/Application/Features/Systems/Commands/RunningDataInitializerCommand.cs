@@ -29,9 +29,7 @@ public class RunningDataInitializerCommandHandler : IRequestHandler<RunningDataI
 
         var Running = new[]
         {
-            new Running("C",0,0),
-            new Running("F",0,0),
-            new Running("K",69,0),
+            new Running("A",10,0),
         };
 
         await _context.Runnings.AddRangeAsync(Running, cancellationToken);

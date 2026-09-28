@@ -1,179 +1,55 @@
-# Domain Model
+# Domain Glossary & Workflow
 
-## Core Domain: Health Checkup Management
+Shared vocabulary for this project — use these terms consistently in code (entity/property names), UI copy, and commit messages, so a Thai procurement term always maps to the same English identifier. Where a detail is marked "not final," it needs stakeholder confirmation before being relied on for implementation — see the Open Questions section of [roadmap.md](roadmap.md).
 
-The system manages the lifecycle of patient health checkups at a hospital, from patient registration through examination, testing, and final report generation.
+## Core entities today
 
-## Domain Terminology
+- **Contract (สัญญา)** — a formal agreement with a Vendor, either project-based or a period contract that Purchase Orders can be called off against. Tracks TOR/procurement/inspection committee appointments, collateral, budget, bid winner. See `Contract` entity.
+- **Vendor (บริษัทคู่ค้า/ผู้ค้า)** — a supplier/company the hospital contracts or purchases with.
+- **Item / Catalog (สินค้า/บริการ)** — the thing being contracted, requisitioned, ordered, or stocked: physical goods (medical supplies, drugs, equipment) or services. Modeled as a single `Item` entity with an `ItemCategory` discriminator and a JSONB `Attributes` column for category-specific fields, not one class per category (see [architecture.md](architecture.md)).
+- **UnitOfMeasure (หน่วยนับ)** — how an Item's quantity is expressed (piece, box, ml, etc.).
+- **Reference data** — the organizational and physical hierarchy: Building/Floor/Location, Department/Division/ServiceGroup, and the Thai address hierarchy Province/District/SubDistrict. `Location` is a physical place in this hierarchy (a building/floor/department) — it has no relationship to any specific Contract; don't reintroduce one (see roadmap.md Phase 5 for why this needed fixing). `ServiceGroup` (กลุ่มงาน, e.g. "กลุ่มงานพยาบาล"/"กลุ่มงานการแพทย์") is the top level above `Division` (ฝ่าย) above `Department` (แผนก) — was named `Sector` until 2026-08-18; renamed since "Sector" didn't read naturally in English for a Thai hospital service-group grouping.
+- **Warehouse (คลัง/สถานที่จัดเก็บ)** — a physical stock storage point (e.g. "เภสัชกรรม 1", "คลังกลาง"), distinct from `Location`. A single Item's stock can be split across multiple Warehouses at once (e.g. one contracted pack of 10 boxes received as 5+5 into two different warehouses) — this is exactly why Warehouse isn't just a field on `ContractItem` or `Location`.
 
-| Term | Meaning |
-|------|---------|
-| **Checkup** | A health checkup visit — the central aggregate containing all exam results |
-| **HN (Hospital Number)** | Unique 8-digit patient identifier in the hospital system |
-| **Visit Number** | Unique identifier for a specific checkup visit |
-| **HOSxP** | External hospital information system (source of truth for patient/lab data) |
-| **Careprovider** | A healthcare professional (doctor, nurse) involved in the checkup |
-| **CheckupType** | Category of checkup program (e.g., annual, pre-employment) |
-| **CheckupClass** | Classification grouping for checkup items |
-| **CheckupGroup** | Display grouping for checkup items in reports |
-| **CheckupItem** | An individual test/exam item within a checkup |
-| **FinalReport** | Consolidated checkup results approved by a doctor |
-| **Reference Value** | Normal range for a lab test based on age/gender |
-| **Smart Enum** | Strongly-typed static lookup value defined in Domain (replaces magic strings and legacy ReferenceValue for dropdowns) |
-| **Cumulative** | Comparison of results across multiple checkup visits over time |
+## Planned procurement workflow (PPR → PR → PO)
 
-## Core Entities & Relationships
+Confirmed with the project owner. Sequence:
 
-```mermaid
-erDiagram
-    Patient ||--o{ Checkup : "has many"
-    Checkup ||--o{ Lab : "contains"
-    Checkup ||--o{ Xray : "contains"
-    Checkup ||--o{ Vision : "contains"
-    Checkup ||--o{ Audiogram : "contains"
-    Checkup ||--o{ Lung : "contains"
-    Checkup ||--o{ PhysicalExamination : "contains"
-    Checkup ||--o{ SpecialTest : "contains"
-    Checkup ||--o{ Recommendation : "has"
-    Checkup }o--|| CheckupType : "categorized by"
-    Checkup }o--o| Careprovider : "examined by"
-    Audiogram ||--o{ Hearing : "contains"
-    Hearing ||--o{ HearingHertz : "measured at"
-    Patient }o--o| Company : "employed by"
-    CheckupItem }o--|| CheckupClass : "belongs to"
-    CheckupItem }o--o| CheckupGroup : "displayed in"
-    ReferenceValue }o--|| ReferenceGroup : "grouped by"
-
-    Patient {
-        int Id PK
-        string HospitalNumber
-        string Prefix
-        string FirstName
-        string LastName
-        string Gender
-        date BirthDate
-        string BloodGroup
-        string DrugAllergy
-        string ChronicDisease
-    }
-
-    Checkup {
-        int Id PK
-        string VisitNumber
-        string HospitalNumber
-        datetime VisitDate
-        float Weight
-        float Height
-        float Temperature
-        int Pulse
-        string BloodPressure
-        string SmokingStatus
-        string AlcoholStatus
-    }
-
-    Lab {
-        int Id PK
-        int CheckupId FK
-        string LabItemCode
-        string LabItemName
-        string ResultValue
-        string ReferenceRange
-        string AbnormalFlag
-    }
+```
+ProcurementPlan (PPR)  →  PurchaseRequisition (PR)  →  PurchaseOrder (PO)  →  GoodsReceipt
+   แผนจัดซื้อจัดจ้าง          ใบขอซื้อ/ขอจ้าง              ใบสั่งซื้อ/สั่งจ้าง          ใบตรวจรับพัสดุ
 ```
 
-## Entity Details
+Contract sits alongside/after PO — a PO can either be ad-hoc or a call-off order against an existing period Contract.
 
-### Patient (Aggregate Root)
-Represents a hospital patient. Synced from HOSxP. Key fields: HN, Thai/English names, demographics, medical history (allergies, chronic diseases), employer (Company).
+- **ProcurementPlan (PPR)** — the annual/period procurement plan, budget-linked, department-scoped, listing planned items/categories and budgeted amounts. States (proposed, not final): `Draft → Approved → Active → Closed`.
+- **PurchaseRequisition (PR)** — raised by a requesting department, optionally against a `ProcurementPlan` line, listing the Items and quantities needed. States (proposed, not final): `Requested → Approved (dept head) → Approved (procurement) → Rejected`.
+- **PurchaseOrder (PO)** — raised by procurement against approved PR line(s), issued to one Vendor, referencing a Contract when one applies. States (proposed, not final): `Draft → Sent → Acknowledged → PartiallyReceived → Received → Closed/Cancelled`.
+- **GoodsReceipt** — records receipt of goods/services against a PO; this is the event that will eventually update Stock (see below).
 
-### Checkup (Aggregate Root)
-Central entity representing a checkup visit. Contains:
-- **Visit metadata:** visit number, date/time, HN
-- **Vital signs:** weight, height, temperature, pulse, BP, respiratory rate, waist, hips
-- **Lifestyle:** smoking status, alcohol status
-- **Orders:** LabOrder, XrayOrder, ServiceOrder (lists of ordered tests)
-- **FinalReport:** Value object containing finalized lab and vision results
-- **Child collections:** Labs, Xrays, Visions, Audiograms, Lungs, PhysicalExams, SpecialTests
+**Budget tracking**: `ProcurementPlan` budget-remaining is derived from an append-only ledger of budget events (commit on PR approval, consume on PO/GoodsReceipt, release on cancellation) — never a single mutable balance field. `Contract.SumPOAmount` (currently a manually-maintained decimal) should become a derived value once real POs exist and link to a Contract.
 
-### Lab
-Laboratory test result. Contains item code/name, result value, reference range, abnormal flag (Y/N/H/L), comments, and result timestamp.
+**Not yet designed** (needs a dedicated domain session with procurement/finance stakeholders before implementation):
+- Exact approval / delegation-of-authority limits per role and PR/PO value.
+- Precise budget-checking rules against `ProcurementPlan` (hard stop vs. warn-and-override, who can override).
+- Integration contract with the existing legacy system / HOSXP — what data flows in which direction, real-time or batch.
 
-### Xray
-X-ray imaging result. Contains result value, abnormal flag, report text (RTF from PACS), and accession number.
+## Inventory/stock workflow
 
-### Vision
-Eye examination result. Includes visual acuity (both eyes), pinhole, color blindness, eye pressure, 3D vision, squint, visual field, and retina findings.
+Foundation landed (roadmap.md Phase 5, pulled forward early) — the full workflow (GoodsReceipt-triggered receiving, issue/transfer/adjustment UI, lot/batch/expiry) is still pending a dedicated design session, but the core ledger model is real and working today.
 
-### Audiogram / Hearing / HearingHertz
-Hearing test hierarchy. Audiogram contains Hearing entries (left/right), each with HearingHertz frequency measurements.
+- **Warehouse (คลัง/สถานที่จัดเก็บ)** — see above.
+- **StockItem** — Item × Warehouse × on-hand quantity, materialized from movements (never a directly-edited counter) — mutated only via `StockItem.ApplyMovement(StockMovement)`.
+- **StockMovement** — Receipt, Issue, Transfer, Adjustment; append-only ledger, on-hand quantity is always derived from summing this ledger (`SUM(Quantity)` per Item × Warehouse). A `Transfer` is two linked rows (out of the source, into the destination — correlated by `TransferGroupId`), not one row with from/to columns, so reconciliation stays a plain sum. Only `Receipt` has an Application-layer command today (`ReceiveStockCommand`); `Issue`/`Transfer`/`Adjustment` exist as domain factory methods but have no command/endpoint yet.
+- **Traceability**: a `StockMovement` can optionally reference the `ContractItem` it was received against, so "where did this stock come from" is always answerable — this is what a `GoodsReceipt` entity will eventually formalize (Phase 4).
+- **Open question**: whether lot/batch/expiry tracking is required — very likely yes given drugs are in scope, but not decided.
 
-### Lung
-Spirometry result. Contains FVC, FEV1 with percentages, abnormality types (restriction/obstruction/combined), severity levels, and consultation recommendation.
+## External systems
 
-### PhysicalExamination
-Systematic physical exam. Covers: GA (General Appearance), HEENT, Mouth, Lymph, Thyroid, Chest, Heart, Abdomen, Extremities, Skin. Each has coded result + free-text notes.
+- **HOSXP** — an existing Thai Hospital Information System the frontend already has a separate API client configuration for (`$hosxpapi` / `VITE_HOSXP_API_BASE_URL`). Exact integration contract (what data flows which direction) is an open question — see [roadmap.md](roadmap.md).
+- **Legacy inventory system** — the system this project is intended to eventually replace. No migration/cutover plan exists yet.
 
-### Careprovider
-Healthcare professional. Contains code (from HOSxP), names, license number, position, and type (doctor/nurse/etc).
+## Notes on terminology
 
-### Company
-Patient's employer organization. Contains company name, address, and location info.
-
-### Reference Data Entities
-- **CheckupType** — Checkup program categories
-- **CheckupClass** — Test classification system
-- **CheckupGroup** — Display grouping for reports
-- **CheckupItem** — Individual test items with cumulative reporting config
-- **ReferenceGroup / ReferenceValue** — Normal ranges for lab tests (legacy, see Smart Enums below)
-- **RecommendationTemplate** — Reusable recommendation text
-- **Province / District / SubDistrict** — Thai geographic reference data
-
-### Smart Enums (Lookup Data)
-
-Static lookup values are implemented as **Smart Enums** in `src/Domain/Common/SmartEnum.cs` -- strongly-typed objects that replace magic strings and provide compile-time safety. Each Smart Enum maps to a former `ReferenceGroup`/`ReferenceValue` pair.
-
-| Smart Enum | File | Maps to ReferenceGroup | Values |
-|------------|------|------------------------|--------|
-| `ExamResult` | `src/Domain/Enums/ExamResult.cs` | GA (Id=1) | Normal, Abnormal, NotExamined |
-| `LabResult` | `src/Domain/Enums/LabResult.cs` | LAB (Id=2) | Normal, Abnormal |
-| `XrayResult` | `src/Domain/Enums/XrayResult.cs` | X (Id=3) | Normal, Abnormal, WaitForSpecialist |
-| `BmdResult` | `src/Domain/Enums/BmdResult.cs` | BMD (Id=4) | Normal, OsteopeniaRisk, Osteoporosis |
-| `AbiResult` | `src/Domain/Enums/AbiResult.cs` | ABI (Id=5) | Normal, Arteriosclerosis, Occlusion |
-| `CheckupStatus` | `src/Domain/Enums/CheckupStatus.cs` | CKST (Id=6) | Pending, InProgress, Reported |
-| `EyeResult` | `src/Domain/Enums/EyeResult.cs` | EYE (Id=8) | Normal, Farsighted, Nearsighted |
-| `HearingLossLevel` | `src/Domain/Enums/HearingLossLevel.cs` | AU (Id=9) | Normal, Mild, Moderate, Severe, Profound |
-
-**Key APIs:**
-- `SmartEnum<T>.All` — All instances (ordered by Sort)
-- `SmartEnum<T>.FromValue(string)` — Lookup by value
-- `instance.Value` — The stable string key (e.g., `"Normal"`, `"Abnormal"`)
-- `instance.DisplayName` — Thai display name (default)
-- `instance.GetDisplayName("en")` — Localized display name via `.resx` files
-
-**Multilingual support:** Each Smart Enum has `.resx` resource files in `src/Domain/Resources/` (Thai default + English). Adding a new language requires only creating new `.resx` files (e.g., `ExamResult.zh.resx` for Chinese) -- zero code changes.
-
-**Coexistence:** The original `ReferenceGroup`/`ReferenceValue` tables and seed data remain intact for team evaluation. Smart Enums are an additive feature.
-
-## Value Objects
-- **Gender** — Male ("M"), Female ("F")
-- **FinalReport** — Contains finalized FinalLab and FinalVision results
-- **StatusFlag** — Y/N/H/L result flags
-- **CareproviderType** — Doctor, Nurse, etc.
-- **LungValue** — Lung measurement with value and percentage
-- **Ear, Eye** — Biometric measurements
-- **CompareRule** — Rules for cumulative data comparison
-
-## Domain Workflows
-
-### 1. New Checkup Registration
-Patient arrives → Nurse creates checkup visit → Records vital signs → Orders labs/xrays → Patient proceeds to stations
-
-### 2. Result Collection
-Lab results arrive from HOSxP (via worker sync) → X-ray results arrive → Vision/hearing/lung tests entered manually → Physical exam performed by doctor
-
-### 3. Report Finalization
-Doctor reviews all results → Writes recommendations → Approves final report → Report available for printing/viewing
-
-### 4. Background Sync (HOSxP)
-Worker polls HOSxP periodically → Detects new/changed records → Creates/updates patients and checkup visits → Syncs lab and x-ray results → Updates careprovider master data
+- "PPR" in this project specifically means Procurement Plan (แผนจัดซื้อจัดจ้าง), not to be confused with other Thai government-procurement acronyms (e.g. ปร.4/ปร.5 construction cost estimate forms) that mean something unrelated — don't assume PPR means the same thing in a different Thai government-procurement context you may have seen elsewhere.
+- Keep entity/property names in English (matching the rest of the codebase's convention), but keep this glossary and UI-facing labels bilingual so the mapping between the Thai business term and the English identifier stays discoverable.

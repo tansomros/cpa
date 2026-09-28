@@ -30,12 +30,12 @@ public class PharmacyGroupDataInitializerCommandHandler : IRequestHandler<Pharma
         var PharmacyGroup = new[]
         {
             new PharmacyGroup("A","ร้ายยาเดี่ยว",0),
-            new PharmacyGroup("B","ร้านยา Boots",2),          
-            new PharmacyGroup("C","ร้านยาเครือข่ายร้อยแก่นสารสินธุ์",3),
-            new PharmacyGroup("H","โรงพยาบาล",4),
-            new PharmacyGroup("P","ร้านยา Pure ( Big C )",5),
-            new PharmacyGroup("W","ร้านยา Watsons",6),
-            new PharmacyGroup("X","ร้านยา Xta ( CP )",7),
+            new PharmacyGroup("B","ร้านยา Boots",1),          
+            new PharmacyGroup("C","ร้านยาเครือข่ายร้อยแก่นสารสินธุ์",2),
+            new PharmacyGroup("H","โรงพยาบาล",3),
+            new PharmacyGroup("P","ร้านยา Pure ( Big C )",4),
+            new PharmacyGroup("W","ร้านยา Watsons",5),
+            new PharmacyGroup("X","ร้านยา Xta ( CP )",6),
         };
 
         await _context.PharmacyGroups.AddRangeAsync(PharmacyGroup, cancellationToken);

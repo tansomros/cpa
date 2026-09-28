@@ -17,7 +17,7 @@ namespace Cpa.Infrastructure.Persistence
        public DbSet<District> Districts => Set<District>();
         public DbSet<SubDistrict> SubDistricts => Set<SubDistrict>();
         public DbSet<Province> Provinces => Set<Province>();
-      
+        public DbSet<ProvinceGroup> ProvinceGroups => Set<ProvinceGroup>();
         public DbSet<Prefix> Prefixs => Set<Prefix>();
         public   DbSet<RunningConfig> RunningConfigs => Set<RunningConfig>();
         public DbSet<Running> Runnings => Set<Running>();

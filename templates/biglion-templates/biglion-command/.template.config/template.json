@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "BigLion CPA",
+  "classifications": [ "BigLion CPA", "Command" ],
+  "identity": "BigLion.CPA.Templates.Command",
+  "name": "BigLion CPA CQRS Command",
+  "shortName": "biglion-command",
+  "sourceName": "CreateExample",
+  "preferNameDirectory": false,
+  "symbols": {
+    "featureName": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "Examples",
+      "isRequired": true,
+      "description": "Feature folder name, plural, e.g. Vendors"
+    },
+    "boundedContext": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "BoundedContext",
+      "isRequired": true,
+      "description": "Bounded context folder: ReferenceData, Catalog, Contracts, Procurement, CPA, Security"
+    },
+    "returnType": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "ReturnTypePlaceholder",
+      "defaultValue": "int",
+      "description": "The MediatR response type, e.g. int, Guid, Unit"
+    }
+  }
+}

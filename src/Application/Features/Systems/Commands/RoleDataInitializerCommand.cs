@@ -32,7 +32,7 @@ public class RoleDataInitializerCommandHandler : IRequestHandler<RoleDataInitial
             new Role(1,"ร้านยา",true,1),
             new Role(2,"สิทธิ์ดูรายงาน",true,2),          
             new Role(3,"ผู้จัดการโครงการ",true,3),
-            new Role(4,"Admin",true,4),
+            new Role(4,"Admin",true,8),
             new Role(9,"ผู้ดูแลระบบ (Host)",true,9)
         };
 

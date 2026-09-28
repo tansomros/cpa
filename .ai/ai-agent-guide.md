@@ -1,235 +1,73 @@
 # AI Agent Guide
 
-Guide for AI agents working with the SUTH Checkup repository. Follow this to safely and correctly modify the system.
+Read this before making any change. It tells you where things go and what not to do. For the "why", see [architecture.md](architecture.md) and [coding-rules.md](coding-rules.md). For current known problems, check [known-issues.md](known-issues.md) first — don't rediscover (or re-break) something already tracked there. Starting a specific task (new entity, new feature, tests)? [prompt-templates.md](prompt-templates.md) has a ready-to-paste starting prompt per stage.
 
----
+## Where to add things
 
-## Quick Reference
+| I need to... | Goes in |
+|---|---|
+| Add a new domain entity | `src/Domain/Entities/{Context}/{Entity}.cs` — pick the bounded context from [architecture.md](architecture.md) (`ReferenceData`, `Pharmacy`, `Patient`, `Service`) |
+| Add a shared domain base type | `src/Domain/Common/` |
+| Add a new command (create/update/delete) | `src/Application/Features/{Context}/{Feature}/Commands/{VerbNoun}/` — `{VerbNoun}Command.cs` (Command + Handler together) and `{VerbNoun}Validator.cs` (Validator, its own file) |
+| Add a new query | `src/Application/Features/{Context}/{Feature}/Queries/{GetNoun[s]}/` — same split: `{UseCase}Query.cs` (Query + Handler), `{UseCase}Validator.cs` if the query is validated |
+| Add EF mapping for an entity | `src/Infrastructure/Data/Configurations/{Context}/{Entity}Configuration.cs`, register the `DbSet<T>` in `CpaDbContext` and `ICpaDbContext` |
+| Add a migration | From `src/Infrastructure`: `dotnet ef migrations add {Name} --startup-project ../API` |
+| Add an API endpoint | Add an action to the matching `src/API/Controllers/{Feature}Controller.cs` (or create one) — the action should only call `Mediator.Send(...)` |
+| Add a frontend page for a feature | `src/vuewebui/src/pages/{feature}/{create,edit,view,list}/` — dedicated routes, not a dialog; use the schema-driven scaffold once it exists (roadmap Phase 3) |
+| Add a shared frontend composable | `src/vuewebui/src/composables/` |
+| Add cross-feature reference data used by many forms | A Pinia store (roadmap Phase 3), not a per-page fetch |
 
-| Task | Where to Work |
-|------|--------------|
-| Add new API endpoint | `src/Application/Features/`, `src/API/Controllers/` |
-| Add business logic | `src/Application/Features/{Feature}/Commands/` or `Queries/` |
-| Add domain entity | `src/Domain/Entities/`, then `Application`, then `Infrastructure` |
-| Add database model | `src/Domain/Entities/`, `src/Infrastructure/Persistence/` |
-| Add background job | `src/HosxpWorkerService/Services/` |
-| Add tests | `tests/Domain.UnitTests/`, `tests/Application.UnitTests/` |
-| Add Vue page | `src/vuewebui/src/pages/` |
-| Add Vue component | `src/vuewebui/src/components/` |
+## MUST
 
----
+- MUST put a new entity's Domain class, Application feature folder, and EF configuration all under the same bounded context (`{Context}` name matches across all three).
+- MUST give every new entity a `Guid ExternalId` and use it (never the internal `Id`) in any API route, request/response DTO, or frontend URL.
+- MUST use `Ardalis.GuardClauses` (or an equivalent explicit check) to enforce entity invariants in the constructor/behavior methods — don't rely on FluentValidation alone.
+- MUST model any running balance or on-hand quantity (budget, stock) as derived from an append-only ledger table — never a single field that gets directly incremented/decremented. This is not optional for this project; see the "Non-negotiable" section of [roadmap.md](roadmap.md).
+- MUST add a concurrency token to any new mutable entity.
+- MUST wrap a multi-aggregate write (touches more than one entity type in one logical operation) in a single database transaction.
+- MUST write a handler-level unit test and a functional test for any change touching money, quantity, or approval/workflow state before considering the work done.
+- MUST keep controllers thin — no business logic, no direct DbContext access in `src/API`.
+- MUST update [known-issues.md](known-issues.md) and [roadmap.md](roadmap.md) after completing a unit of work from the roadmap, so they reflect reality, not just intent.
 
-## Adding a New API Endpoint
+## MUST NOT
 
-### Step 1: Create Domain Entity (if new)
-Location: `src/Domain/Entities/{EntityName}.cs`
-```csharp
-public class NewEntity : BaseEntity
-{
-    public string Name { get; set; }
-    // ... properties
-}
+- MUST NOT copy an existing feature's files and hand-edit field names as the way to start a new feature — this is exactly how the codebase ended up with the `ContractProducts`/`ContractItems` namespace mismatch and the `/Venders` typo (see [known-issues.md](known-issues.md)). Use the scaffolding template instead (below).
+- MUST NOT give a domain entity property a bare public setter if an invalid value would break a business rule — gate the mutation through a validated method.
+- MUST NOT put business logic in a controller, in a Vue page's inline script beyond simple UI state, or directly in a MediatR pipeline behaviour — it belongs in the domain entity or the handler.
+- MUST NOT add a new `Roles`/`Policies` constant — use the `module.action` permission convention.
+- MUST NOT introduce a second HTTP client pattern on the frontend, or a second exception-handling middleware/filter on the backend — there should be exactly one of each. (There were two of each before this restructuring; don't reintroduce the pattern.)
+- MUST NOT leave dead/unregistered scaffolding in the codebase (an interceptor that's never registered, a middleware that's never wired up, an entity with no `DbSet`) — either finish wiring it up or delete it in the same change.
+- MUST NOT expose the internal integer `Id` in any new API surface — use `ExternalId`.
+
+## Scaffolding a new use case
+
+Project-specific templates exist — install once per machine:
+```
+dotnet new install ./templates/biglion-templates
 ```
 
-### Step 2: Add DbSet to Context Interface
-Location: `src/Application/Common/Interfaces/ICheckupDatabaseContext.cs`
-```csharp
-DbSet<NewEntity> NewEntities { get; }
+They only generate the CQRS slice (Command/Query + Validator + Handler) — not the EF configuration or the controller action, since those vary too much per feature to templatize safely without producing a wrong-looking scaffold that gets silently accepted. Write those two by hand or via [prompt-templates.md](prompt-templates.md).
+
+Both templates place their output relative to the current directory using the proven `sourceName` rename mechanism (a symbol-driven `rename` modifier was tried and does **not** work reliably in this SDK version — don't reintroduce it). That means you `cd` into the exact target folder first:
+
+```
+cd src/Application/Features/{BoundedContext}/{FeatureName}/Commands
+dotnet new biglion-command -n CreateVendor --featureName Vendors --boundedContext Procurement --returnType int
+
+cd ../Queries
+dotnet new biglion-query -n GetVendors --featureName Vendors --boundedContext Procurement --returnType "PaginatedList<VendorViewModel>"
 ```
 
-### Step 3: Add DbSet to Context Implementation
-Location: `src/Infrastructure/Persistence/CheckupDatabaseContext.cs`
-```csharp
-public DbSet<NewEntity> NewEntities => Set<NewEntity>();
+`--returnType` has no safe default for `biglion-query` (it's required) — a default embedding the literal word "Examples" would collide with the `--featureName` substitution and silently produce a wrong class name. `biglion-command` defaults `--returnType` to `int` since that default contains no substitutable tokens.
+
+The generic upstream template is still available as a fallback for anything outside this project's own conventions:
 ```
-
-### Step 4: Create Feature (Command/Query)
-Location: `src/Application/Features/NewEntities/`
-
-Create the CQRS structure:
+dotnet new ca-usecase --name CreateVendor --feature-name Vendors --usecase-type command --return-type Guid
 ```
-Features/NewEntities/
-├── Commands/
-│   └── Create/
-│       ├── CreateNewEntityCommand.cs      (IRequest<int>)
-│       ├── CreateNewEntityCommandHandler.cs
-│       └── CreateNewEntityCommandValidator.cs
-├── Queries/
-│   ├── Get/
-│   │   ├── GetNewEntityQuery.cs           (IRequest<NewEntityViewModel>)
-│   │   └── GetNewEntityQueryHandler.cs
-│   └── NewEntityViewModel.cs             (implements IMapFrom<NewEntity>)
-```
+(If not installed: `dotnet new install Clean.Architecture.Solution.Template::9.0.10`, per `README.md`.)
 
-### Step 5: Create Controller
-Location: `src/API/Controllers/NewEntitiesController.cs`
-```csharp
-[Route("api/[controller]")]
-public class NewEntitiesController : BaseController
-{
-    [HttpPost]
-    public async Task<ActionResult<int>> Create(CreateNewEntityCommand command)
-    {
-        return await Mediator.Send(command);
-    }
+## Before you start any change
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<NewEntityViewModel>> Get(int id)
-    {
-        return await Mediator.Send(new GetNewEntityQuery { Id = id });
-    }
-}
-```
-
-### Step 6: Add EF Configuration (if needed)
-Location: `src/Infrastructure/Persistence/Configurations/NewEntityConfiguration.cs`
-
-### Step 7: Create Migration
-```bash
-dotnet ef migrations add AddNewEntity --project src/Infrastructure --startup-project src/API
-```
-
-### Step 8: Add Tests
-- `tests/Domain.UnitTests/Entities/NewEntityTests.cs`
-- `tests/Application.UnitTests/Features/NewEntities/CreateNewEntityCommandTests.cs`
-
----
-
-## Adding Business Logic
-
-All business logic goes in **Command/Query Handlers** in the Application layer.
-
-**DO:**
-- Put logic in handlers (`IRequestHandler<TRequest, TResponse>`)
-- Use `ICheckupDatabaseContext` for database access
-- Use FluentValidation for input validation
-- Throw `ValidationException` for business rule violations
-- Use AutoMapper for entity-to-ViewModel mapping
-
-**DO NOT:**
-- Put business logic in controllers (they only dispatch)
-- Put business logic in entities (keep entities as data containers)
-- Access DbContext directly from controllers
-- Use raw SQL unless absolutely necessary
-
----
-
-## Adding a Database Model
-
-1. Create entity in `src/Domain/Entities/`
-2. Inherit from `BaseEntity`
-3. Add `DbSet` to `ICheckupDatabaseContext` and `CheckupDatabaseContext`
-4. Create Fluent API configuration in `Infrastructure/Persistence/Configurations/` if needed
-5. Add migration: `dotnet ef migrations add <Name> --project src/Infrastructure --startup-project src/API`
-
-For JSON columns (complex nested data):
-```csharp
-// In entity
-public MyValueObject MyData { get; set; }
-
-// In configuration
-builder.OwnsOne(e => e.MyData, b => b.ToJson());
-```
-
----
-
-## Adding a Background Job
-
-Location: `src/HosxpWorkerService/Services/`
-
-1. Create sync service implementing the sync pattern:
-```csharp
-public class NewSyncService
-{
-    public async Task DetectAndProcessChanges() { ... }
-}
-```
-
-2. Create state service for tracking last sync position:
-```csharp
-public class NewSyncStateService { ... }
-```
-
-3. Add state JSON file in `src/HosxpWorkerService/State/`
-
-4. Register in `Program.cs`:
-   - Add as singleton service
-   - Add to `WorkerCoordinator`
-
-5. Follow the existing pattern: poll external API → compare with local → create/update via Checkup API
-
----
-
-## Adding Tests
-
-### Domain Unit Tests
-Location: `tests/Domain.UnitTests/Entities/`
-```csharp
-[TestFixture]
-public class NewEntityTests
-{
-    [Test]
-    public void Constructor_Should_Set_Properties()
-    {
-        var entity = new NewEntity { Name = "Test" };
-        entity.Name.Should().Be("Test");
-    }
-}
-```
-
-### Application Unit Tests
-Location: `tests/Application.UnitTests/`
-- Test handlers with mocked `ICheckupDatabaseContext`
-- Verify validation rules with validator tests
-
-### Functional Tests
-Location: `tests/Application.FunctionalTests/`
-- Uses `CustomWebApplicationFactory` for full API tests
-- PostgreSQL
-- Database reset via Respawn between tests
-
----
-
-## Adding Vue.js Pages
-
-### New Page
-Create file in `src/vuewebui/src/pages/{page-name}.vue` — route is auto-generated.
-
-### New API Call
-Use `$api` from `src/vuewebui/src/utils/api.js`:
-```javascript
-import { $api } from '@/utils/api'
-const data = await $api('/api/newentities')
-```
-
-### Add Navigation Menu Item
-Edit `src/vuewebui/src/navigation/vertical/index.js`:
-```javascript
-{ title: 'New Feature', icon: { icon: 'tabler-icon' }, to: 'page-name' }
-```
-
----
-
-## Architectural Constraints
-
-1. **Never bypass MediatR** — All operations go through the mediator pipeline
-2. **Never reference Infrastructure from Domain or Application** — Use interfaces
-3. **Never put UI logic in Application layer** — Keep it presentation-agnostic
-4. **Never hard-delete records** — Use soft delete (`DeleteFlag = true`, `IsActive = false`)
-5. **Never store secrets in code** — Use `appsettings.json` or environment variables
-6. **Never modify auto-generated files** — `OpenAPIs/*.cs` files are regenerated
-7. **Always add validators** — Every Command should have a FluentValidation validator
-8. **Always add tests** — Domain entity tests are mandatory, handler tests recommended
-9. **Always use async/await** — All database and HTTP operations must be async
-10. **Always use cancellation tokens** — Pass `CancellationToken` through the call chain
-
----
-
-## Common Pitfalls
-
-- **Missing DbSet registration:** Adding an entity but forgetting to add `DbSet<T>` to both interface and implementation
-- **Missing AutoMapper mapping:** Creating a ViewModel without implementing `IMapFrom<T>`
-- **Missing DI registration:** Creating a service without registering it in `DependencyInjection.cs`
-- **Circular dependencies:** Infrastructure referencing Application features directly instead of through interfaces
-- **JSON column changes:** Modifying value objects used as JSON columns may require migration
-- **Worker state files:** State JSON files track sync position — corrupting them causes re-sync of all data
+1. Read [known-issues.md](known-issues.md) — is what you're about to touch already a tracked, open issue? Don't fix it twice or in a conflicting way.
+2. Read [roadmap.md](roadmap.md) — which phase is this change part of? Does it depend on something not yet done?
+3. Check [domain.md](domain.md) if the change touches procurement/contract/item vocabulary — use the established terms, don't invent new ones.

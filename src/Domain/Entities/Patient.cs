@@ -106,14 +106,14 @@ public class Patient : BaseEntity
     /// <summary>
     /// สูบบุหรี่
     /// </summary>
-    public bool IsSmoke { get; set; }
+    public bool? IsSmoke { get; set; }
 
     /// <summary>
     /// รายละเอียดอื่นๆเกี่ยวกับการสูบบุหรี่
     /// </summary>
     public string? SmokeRemark { get; set; }
 
-    public bool IsDrink { get; set; }
+    public bool? IsDrink { get; set; }
     public string? DrinkRemark {  get; set; }
 
     // Navigation properties

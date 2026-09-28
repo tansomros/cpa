@@ -29,9 +29,8 @@ public class RunningConfigDataInitializerCommandHandler : IRequestHandler<Runnin
 
         var RunningConfig = new[]
         {
-            new RunningConfig("C","รหัสลูกค้า",true,false,4),
-            new RunningConfig("F","โรงงาน",true,false,2),
-            new RunningConfig("K","เลขที่ใบเสร็จรับเงิน",true,true,5),
+            new RunningConfig("A","รหัสร้านยาเดี่ยว",true,false,4),
+            new RunningConfig("B","รหัสร้านยา Boots",true,false,4), 
         };
 
         await _context.RunningConfigs.AddRangeAsync(RunningConfig, cancellationToken);

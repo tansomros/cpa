@@ -34,7 +34,7 @@ public class Program
         builder.Services.AddCors();
 
         builder.Services.AddDataProtection()
-            .SetApplicationName("BigLion")
+            .SetApplicationName("CPA Thailand")
             .PersistKeysToFileSystem(new DirectoryInfo(@"/app/publish/secret"));
 
         builder.Services
@@ -90,59 +90,59 @@ public class Program
 
         // basic policy
         // this authorization should be config in the infrastructure?, revise later
-        builder.Services.AddAuthorization(options =>
+        builder.Services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(options =>
         {
             options.AddPolicy(CpaPolicies.RequireAuthenticatedUser, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "BigLion-api");
+                policy.RequireClaim("scope", "cpa-api");
                 policy.RequireClaim("scope", "openid");
                 policy.RequireClaim("scope", "profile");
                 policy.RequireClaim("scope", "offline_access");
             });
 
-            options.AddPolicy(CpaPolicies.RequireDoctor, policy =>
+            options.AddPolicy(CpaPolicies.RequireAdmin, (Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder>)(policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireRole(BigLionRoles.Doctor);
-                policy.RequireClaim("scope", "BigLion-api");
+                policy.RequireRole((string)CpaRoles.Admin);
+                policy.RequireClaim("scope", "cpa-api");
                 policy.RequireClaim("scope", "openid");
                 policy.RequireClaim("scope", "profile");
                 policy.RequireClaim("scope", "offline_access");
                 policy.RequireClaim("scope", "license");
-            });
+            }));
 
-            options.AddPolicy(CpaPolicies.RequireNurse, policy =>
+            options.AddPolicy(CpaPolicies.RequirePharmacy, (Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder>)(policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireRole(BigLionRoles.Nurse);
-                policy.RequireClaim("scope", "BigLion-api");
+                policy.RequireRole((string)CpaRoles.Pharmacy);
+                policy.RequireClaim("scope", "cpa-api");
                 policy.RequireClaim("scope", "openid");
                 policy.RequireClaim("scope", "profile");
                 policy.RequireClaim("scope", "offline_access");
-            });
+            }));
 
-            options.AddPolicy(CpaPolicies.RequireAdmin, policy =>
+            options.AddPolicy(CpaPolicies.RequireReporter, (Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder>)(policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireRole(BigLionRoles.Admin);
-                policy.RequireClaim("scope", "BigLion-api");
+                policy.RequireRole((string)CpaRoles.Reporter);
+                policy.RequireClaim("scope", "cpa-api");
                 policy.RequireClaim("scope", "openid");
                 policy.RequireClaim("scope", "profile");
                 policy.RequireClaim("scope", "offline_access");
-            });
+            }));
 
-            options.AddPolicy(CpaPolicies.RequireEmployee, policy =>
+            options.AddPolicy(CpaPolicies.RequireManager, (Action<Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder>)(policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireRole(BigLionRoles.Employee);
-                policy.RequireClaim("scope", "BigLion-api");
+                policy.RequireRole((string)CpaRoles.Manager);
+                policy.RequireClaim("scope", "cpa-api");
                 policy.RequireClaim("scope", "openid");
                 policy.RequireClaim("scope", "profile");
                 policy.RequireClaim("scope", "offline_access");
                 policy.RequireClaim("scope", "employee_id");
-            });
-        });
+            }));
+        }));
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
@@ -150,23 +150,23 @@ public class Program
             c.SupportNonNullableReferenceTypes();
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "BigLion API",
+                Title = "CPA API",
                 Version = "v1",
-                Description = "เอกสารเรียกใช้งาน API BigLion",
+                Description = "เอกสารเรียกใช้งาน API CPA",
                 Contact = new OpenApiContact
                 {
-                    Name = "ติดต่อ BigLion",
+                    Name = "ติดต่อ CPA",
                     Email = "teerapoldev@gmail.com"
                 },
                 License = new OpenApiLicense
                 {
-                    Name = "ลิขสิทธิ์ของ BigLion",
+                    Name = "ลิขสิทธิ์ของ CPA",
                     Url = new Uri("https://www.Cpa.com")
                 }
             });
 
  
-            List<string> xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "BigLion*.xml", SearchOption.TopDirectoryOnly).ToList();
+            List<string> xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "CPA*.xml", SearchOption.TopDirectoryOnly).ToList();
             xmlFiles.ForEach(file => c.IncludeXmlComments(file, includeControllerXmlComments: true));
         });
 
@@ -192,20 +192,20 @@ public class Program
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-            c.DocumentTitle = "BigLion API";
+            c.DocumentTitle = "CPA API";
             if (!string.IsNullOrEmpty(basePath))
             {
                 c.InjectStylesheet($"{basePath}/swagger/ui/fonts/fonts.css");
                 c.InjectStylesheet($"{basePath}/swagger/ui/custom.css");
                 c.InjectJavascript($"{basePath}/swagger/ui/custom.js");
-                c.SwaggerEndpoint($"{basePath}/swagger/v1/swagger.json", "BigLion API v1");
+                c.SwaggerEndpoint($"{basePath}/swagger/v1/swagger.json", "CPA API v1");
             }
             else
             {
                 c.InjectStylesheet("/swagger/ui/fonts/fonts.css");
                 c.InjectStylesheet("/swagger/ui/custom.css");
                 c.InjectJavascript("/swagger/ui/custom.js");
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "BigLion API v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CPA API v1");
             }
 
             c.DefaultModelsExpandDepth(-1);

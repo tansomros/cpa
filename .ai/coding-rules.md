@@ -1,181 +1,58 @@
 # Coding Rules
 
-Rules and conventions detected in this repository. Future AI agents must follow these rules when modifying code.
+These are binding conventions, not suggestions — follow them strictly. See [architecture.md](architecture.md) for the layering these rules sit inside.
 
----
+## Naming (existing project standard, from `README.md`)
 
-## Architecture Rules
+1. Interfaces start with capital `I`, e.g. `ICpaDbContext`.
+2. Names must be meaningful and self-descriptive — classes, variables, methods. If unsure, prefer the more explicit name.
+3. `PascalCase` for class and method names, e.g. `CpaDbContext`, `SaveChangesAsync()`.
+4. `PascalCase` for constants (local and field), e.g. `ConnectionString = "Database"`.
+5. `camelCase` for method arguments, local variables, and private fields, e.g. constructor parameter `connectionString`.
+6. Private instance fields are prefixed with `_`, e.g. `_context`.
+7. Method parameters: if 3 or fewer, keep them on one line; if more than 3, one parameter per line.
 
-### Clean Architecture (Mandatory)
-1. **Domain layer** has ZERO external framework dependencies (only MediatR for events)
-2. **Application layer** depends only on Domain
-3. **Infrastructure layer** implements Application interfaces
-4. **Presentation layers** (API, WinForms, Vue) depend on Application, never directly on Infrastructure
-5. Dependencies always point inward: Presentation → Application → Domain ← Infrastructure
+## Backend conventions
 
-### CQRS Pattern (Mandatory)
-1. Every state-changing operation is a **Command** (`IRequest<T>`)
-2. Every read operation is a **Query** (`IRequest<T>`)
-3. Commands and Queries have dedicated **Handlers** (`IRequestHandler<TRequest, TResponse>`)
-4. Dispatch through **MediatR** (never call handlers directly)
-5. Each Command/Query lives in its own folder under `Features/{FeatureName}/Commands/{OperationName}/` or `Queries/{OperationName}/`
+- **API routes are lower-kebab-case.** `Program.cs` registers a global `RouteTokenTransformerConvention(new SlugifyParameterTransformer())`, which automatically converts `[controller]`/`[action]` tokens to kebab-case (`VendorsController` → `/vendors`, `ContractTypesController` → `/contract-types`). This does **not** apply to hand-written literal route segments (e.g. `[HttpGet("SapCode")]` stays exactly `SapCode`, not transformed) — always write literal route segments in kebab-case yourself (`[HttpGet("sap-code")]`) so the whole API surface is consistently kebab-case. Prefer the `[action]` token over a hand-written literal when the segment should just be the action name, since the token gets slugified automatically.
+- **Dual key on every entity**: internal `int Id` for FKs/joins (never exposed outside the backend), `Guid ExternalId` (UUIDv7, generated on create) as the only identifier used in API routes, request/response DTOs, and frontend URLs.
+- **CQRS use case shape**: one folder per use case (`Features/{Context}/{Feature}/{Commands|Queries}/{UseCase}/`), with each type in its own file:
+  - `{UseCase}Command.cs` / `{UseCase}Query.cs` — the `IRequest<TResponse>` record. The `IRequestHandler<TRequest, TResponse>` may live in the **same file** as its request (they're tightly coupled and always used together — this is the one exception to "one type per file" here).
+  - `{UseCase}Validator.cs` — the `AbstractValidator<T>` gets its **own file**, always. Validators often grow independent of the handler (DB-backed rules, cross-field checks) and are easier to find, review, and unit-test in isolation.
+  Naming: `{Verb}{Noun}Command` / `Get{Noun}Query` (single) or `Get{Noun}sQuery` (list), `{Request}Handler`, `{Request}Validator`.
+- **Controllers are thin**: inject `Mediator` (via the shared `BaseController`), call `Send`, return the result. No business logic, no direct `DbContext` access, no manual mapping beyond what AutoMapper/`ProjectTo` already does.
+- **Domain entities enforce their own invariants.** Do not rely on validators alone. Use `Ardalis.GuardClauses` in entity constructors and behavior methods (e.g. `Guard.Against.OutOfRange`, `Guard.Against.NegativeOrZero`) so an invalid entity cannot exist in memory, let alone be persisted. Prefer behavior methods (`contract.Terminate()`, `pr.Approve(approverId)`) over `handler.Property = value` assignment scattered across Update handlers.
+- **Public setters are not a substitute for invariants.** If a property can be set to a value that would break a business rule (`EndDate < StartDate`, negative quantity/price), that property should not have a bare public setter — gate the mutation through a method that validates first.
+- **Money and quantity fields are never mutated in place.** Anything representing a running balance or on-hand quantity (budget remaining, stock on hand) is *derived* from an append-only ledger table (one row per event: commit, consume, release, receive, issue, adjust), never a single column that gets directly incremented/decremented. See [architecture.md](architecture.md) and the "Non-negotiable" section of [roadmap.md](roadmap.md) for why.
+- **State transitions are logged, not just stored.** Any entity with an approval/status workflow (Contract, and future PR/PO/ProcurementPlan) must record who changed the state, from what, to what, when, and why (for rejections) — as an append-only trail, not just an overwritten `Status` column.
+- **Optimistic concurrency**: every mutable entity carries a concurrency token (`RowVersion` / Postgres `xmin`). A conflicting concurrent write must fail loudly (`DbUpdateConcurrencyException`), never silently overwrite.
+- **Multi-aggregate operations are transactional.** If a single logical action touches more than one aggregate (e.g. approving a PR reduces `ProcurementPlan` budget-remaining), wrap it in one database transaction. Partial application on failure is not acceptable.
+- **Validation is layered, not singular.** FluentValidation at the Application boundary, invariant guard clauses in the Domain entity, and (where practical) database `CHECK` constraints in the EF configuration — a bug in one layer should not be able to corrupt data on its own.
+- **Item/Catalog attributes**: `Item.Attributes` (JSONB) holds category-specific fields. Document each `ItemCategory`'s expected attribute shape in [domain.md](domain.md) when you add or change one — a new category is a documentation + data change, not a schema migration.
+- **Permissions**: use the `module.action` convention (e.g. `contracts.create`, `vendors.update`) with `[RequirePermission]` on commands/queries — do not add new ad-hoc `Roles`/`Policies` constants.
+- **Entity naming**: entity class names must match their folder, namespace, controller, and route exactly — no partial renames (this is exactly how the `ContractProducts`/`ContractItems` mismatch happened, see [known-issues.md](known-issues.md)). Prefer the plain business noun (`ContractItem`, not `ContractProduct` or `ContractLineItem`) and keep it consistent everywhere the concept appears.
+- **EF configuration**: Fluent API only (`IEntityTypeConfiguration<T>`), no data annotations on entities. Audit fields (`CreatedBy`, `LastModifiedBy`, `CreatedOn`, `LastModified`) come from `ConfigureEntityBase<T>()`, applied to every entity; soft-delete fields (`IsDeleted`, `DeletedOn`, `DeletedBy`) come from `ConfigureSoftDelete<T>()`, applied only to entities extending `SoftDeletableEntityBase`; the active/inactive toggle (`IsActive`) comes from `ConfigureActiveFlag<T>()`, applied only to entities implementing `IHasActiveFlag` — call whichever combination applies, don't hand-repeat any of these per entity. Every relationship must be configured explicitly: `HasOne`/`HasMany`/`WithOne`/`WithMany`, an explicit `HasForeignKey`, and an explicit `OnDelete` behavior (`Restrict` unless cascade is deliberately correct for that relationship — don't accept the EF Core default silently). Required scalar properties get `IsRequired()` and an explicit `HasMaxLength()` for strings; nothing is left to infer from the CLR type alone.
+- **Soft-delete vs. active/inactive are different concepts — don't conflate them.** `SoftDeletableEntityBase` (`IsDeleted`/`DeletedOn`/`DeletedBy`, mutated only via `entity.MarkAsDeleted(actor)`) means "this record has been deleted." `IHasActiveFlag` (`IsActive`) means "this record is currently enabled/visible," a separate, optional, domain-meaningful toggle that most master/reference-data entities want and most transactional/ledger entities don't. Every soft-deletable entity gets a **global EF query filter** automatically (`CpaDbContext.OnModelCreating`) — never add a manual `.Where(x => !x.IsDeleted)` to a query, the filter already does it, and doing it manually just adds dead code. **Never** make an append-only ledger entity (`StockMovement`, `StockItem`, or anything playing that role in the future) soft-deletable or give it `IsActive` — both would let a row conceptually disappear while other rows still reference it, silently breaking a reconciliation invariant. See `.ai/known-issues.md`'s "`EntityBase` redesign" entry for the full rationale and the current per-entity decisions.
+- **Scaffold, don't hand-copy.** Use the project's `dotnet new` use-case template (see [ai-agent-guide.md](ai-agent-guide.md)) to start a new feature so the integrity mechanisms above are present by default, instead of copy-pasting an existing feature and risking a partial adaptation (this is exactly how the `ContractProducts`/`ContractItems` namespace mismatch and the `/Venders` typo happened — see [known-issues.md](known-issues.md)).
 
-### Feature Organization
-```
-Features/{FeatureName}/
-├── Commands/
-│   ├── Create/
-│   │   ├── Create{Entity}Command.cs
-│   │   ├── Create{Entity}CommandHandler.cs
-│   │   └── Create{Entity}CommandValidator.cs
-│   ├── Update/
-│   └── Delete/
-├── Queries/
-│   ├── Get/
-│   ├── GetList/
-│   ├── Search/
-│   └── {FeatureName}ViewModel.cs
-└── (ViewModels at feature root or in Queries folder)
-```
+## Frontend conventions
 
----
+- Vue 3 Composition API (`<script setup>`), JavaScript (not TypeScript).
+- Dedicated `create/`, `edit/[id].vue`, `view/[id].vue`, `list/index.vue` routes per feature — no dead stub routes that redirect back to a dialog-based list.
+- **API calls use lower-kebab-case paths**, matching the backend's real (slugified) routes: `/vendors`, `/contract-types`, `/vendors/sap-code` — never `/Vendors`, `/ContractTypes`. ASP.NET Core's routing matches case-insensitively so PascalCase calls would still technically work, but kebab-case is the project convention on both sides — write it correctly rather than relying on lenient matching.
+- Build new CRUD pages from the schema-driven scaffold (field schema → generic list/form/view components), not by copying an existing feature's page and editing field names in place.
+- One HTTP client only, generated from the backend's OpenAPI spec — never hand-type an endpoint path or payload shape.
+- Shared composables (`useCrud`, `useConfirmDelete`, etc.) for cross-cutting CRUD/UX behavior — don't reimplement pagination, delete-confirmation, or row-highlighting per feature.
+- Reference/lookup data used across many forms (UnitOfMeasure, Vendor, Department, ...) comes from a Pinia store, not a per-page fetch.
 
-## Naming Conventions
+## Testing
 
-### C# (.NET)
-| Element | Convention | Example |
-|---------|-----------|---------|
-| Classes | PascalCase | `CheckupService` |
-| Interfaces | `I` + PascalCase | `ICheckupDatabaseContext` |
-| Methods | PascalCase | `GetCheckupByIdAsync` |
-| Properties | PascalCase | `HospitalNumber` |
-| Constants | PascalCase | `RequireDoctor` |
-| Private fields | `_camelCase` | `_context` |
-| Private static fields | `s_camelCase` | `s_instance` |
-| Parameters | camelCase | `cancellationToken` |
-| Local variables | camelCase | `checkupList` |
-| Type parameters | `T` + PascalCase | `TResponse` |
-| Enums | PascalCase | `PriorityLevel` |
-| Namespaces | PascalCase | `Application.Features.Checkups` |
+- A handler-level unit test and a functional test are **merge-blocking** for any change touching money, quantity, or approval/workflow state — not optional, not "nice to have." See the "Non-negotiable" section of [roadmap.md](roadmap.md).
+- Domain entity unit tests must cover the constructor/guard-clause invariants for every required field and business rule.
+- Test files mirror the source path 1:1 (one test file per command/query), so a future contributor — human or AI — can find the matching test without searching.
+- **Functional/integration tests use a local, dedicated PostgreSQL database — never Testcontainers/Docker.** `tests/Application.FunctionalTests` connects to the `inventory-test` database (see its `appsettings.json`, connection string key `InventoryDb`) on the same local Postgres server the dev `inventory` database lives on; `PostgreSQLTestDatabase` drops/recreates the schema and resets rows (via Respawn) between runs. This is a deliberate project convention, not a placeholder — do not reintroduce `Testcontainers.PostgreSql`.
+- **Frontend e2e tests use Playwright**, under `src/vuewebui/e2e/`. `.ts` files there are intentionally excluded from the project's JS-only ESLint config (see `.eslintrc.cjs`'s `ignorePatterns`) — Playwright transpiles TypeScript internally, so no project-wide TypeScript migration is needed just to write specs. See `src/vuewebui/e2e/README.md` for the folder layout, the `data-testid` convention, and — importantly — the current gap in scripting an authenticated session (this project uses external OIDC, not a local login endpoint, so `e2e/helpers/auth.ts`'s token acquisition is a documented TODO pending identity-team support for E2E test accounts).
 
-### File Naming
-| Type | Pattern | Example |
-|------|---------|---------|
-| Entity | `{EntityName}.cs` | `Checkup.cs` |
-| Command | `{Action}{Entity}Command.cs` | `CreateCheckupCommand.cs` |
-| Handler | `{Action}{Entity}CommandHandler.cs` | `CreateCheckupCommandHandler.cs` |
-| Validator | `{Action}{Entity}CommandValidator.cs` | `CreateCheckupCommandValidator.cs` |
-| Query | `{Action}{Entity}Query.cs` | `GetCheckupQuery.cs` |
-| ViewModel | `{Entity}ViewModel.cs` | `CheckupViewModel.cs` |
-| Controller | `{Entity}sController.cs` | `CheckupsController.cs` |
-| Configuration | `{Entity}Configuration.cs` | `CheckupConfiguration.cs` |
-| Test | `{Entity}Tests.cs` | `CheckupTests.cs` |
+## Commit / PR process
 
-### Vue.js / JavaScript
-| Element | Convention | Example |
-|---------|-----------|---------|
-| Components | PascalCase `.vue` | `NavSearchBar.vue` |
-| Pages | kebab-case `.vue` | `signin-oidc.vue` |
-| Composables | `use` + PascalCase | `useApi.js` |
-| Stores | camelCase | `config.js` |
-| Utils | camelCase | `formatters.js` |
-| Constants | UPPER_SNAKE_CASE | `VITE_API_BASE_URL` |
-
----
-
-## Code Style Rules (from .editorconfig)
-
-### C#
-- **Indentation:** 4 spaces
-- **Namespaces:** File-scoped (`namespace X;`)
-- **var usage:** Explicit types for built-in types, `var` for apparent types
-- **Expression bodies:** Use for accessors and lambdas
-- **Pattern matching:** Preferred over type checks
-- **Null operators:** Use `?.`, `??`, `??=`
-- **Primary constructors:** Preferred (C# 12)
-- **Readonly fields:** Mark fields readonly when possible (`:warning`)
-- **Static local functions:** Preferred when possible (`:warning`)
-
-### XML/JSON
-- **Indentation:** 2 spaces
-
-### General
-- **Line endings:** LF
-- **Final newline:** Required
-- **Trailing whitespace:** Trim
-
----
-
-## Controller Rules
-
-1. All controllers inherit from `BaseController` (which provides `Mediator` property)
-2. Route: `[Route("api/[controller]")]`
-3. Controllers only dispatch MediatR requests — no business logic
-4. Use `[HttpGet]`, `[HttpPost]`, `[HttpPut]`, `[HttpDelete]` attributes
-5. Return appropriate status codes: `Ok()`, `Created()`, `NoContent()`
-6. Controller methods are `async Task<ActionResult<T>>`
-
----
-
-## Entity Rules
-
-1. All entities inherit from `BaseEntity`
-2. `BaseEntity` provides: `Id`, `DeleteFlag`, `IsActive`, `CreatedOn`, `LastModified`
-3. Use soft delete (`DeleteFlag = true`) — never hard delete from code
-4. Audit fields are auto-populated by `AuditableEntitySaveChangesInterceptors`
-5. Complex nested data uses value objects stored as JSON columns
-6. Collections use `List<T>` properties (e.g., `List<Lab> Labs`)
-
----
-
-## Validation Rules
-
-1. Use **FluentValidation** for all Commands
-2. Validator class name: `{CommandName}Validator`
-3. Validators are auto-discovered and run via `ValidationBehaviour` in the MediatR pipeline
-4. Throw `ValidationException` for business rule violations
-5. Throw `ForbiddenAccessException` for authorization failures
-
----
-
-## Mapping Rules
-
-1. Use **AutoMapper** for entity-to-ViewModel mapping
-2. ViewModels implement `IMapFrom<TEntity>` interface
-3. Custom mappings override `Mapping(Profile profile)` method
-4. Mapping profiles are auto-registered from the Application assembly
-
----
-
-## Database Rules
-
-1. Use **EF Core** for data access — no raw SQL unless necessary
-2. Access database through `ICheckupDatabaseContext` interface (never concrete context)
-3. Entity configurations go in `Infrastructure/Persistence/Configurations/`
-4. Use Fluent API for configurations (not data annotations on entities)
-5. JSON columns for complex value objects (via Npgsql JSON support)
-6. Migrations are code-first: define entity → add migration → apply
-
----
-
-## Testing Rules
-
-1. **Domain tests:** Cover entity constructors and behavior
-2. **Application tests:** Cover command/query handlers — test success, validation failure, not found
-3. **Functional tests:** Use `CustomWebApplicationFactory` with PostgreSQL
-4. **Framework:** NUnit 3 + FluentAssertions + Moq
-5. Test class naming: `{Entity}Tests`
-6. Test method naming: descriptive (e.g., `Should_Create_Checkup_With_Valid_Data`)
-
----
-
-## Vue.js Rules
-
-1. **Composition API** only (no Options API)
-2. **Pinia** for state management
-3. **ofetch** for HTTP calls (not axios)
-4. **Auto-imports:** Composables and utilities are auto-imported via unplugin
-5. **File-based routing:** Pages in `pages/` directory auto-generate routes
-6. **Plugin numbering:** Plugins prefixed with numbers for load order (e.g., `1.router`, `2.pinia`)
-7. **Cookie-based persistence:** Use `cookieRef()` for persistent state
-8. **i18n:** All user-facing text should use `$t()` translation function
+See `README.md` for the Git workflow (branch naming, PR process on the GitLab instance). After any phase of restructuring work completes, update [known-issues.md](known-issues.md) and [roadmap.md](roadmap.md) to reflect what actually landed — do not let them drift from the code (see the `cwie` reference-project lesson noted in [roadmap.md](roadmap.md)).

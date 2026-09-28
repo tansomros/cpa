@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "BigLion CPA",
+  "classifications": [ "BigLion CPA", "Query" ],
+  "identity": "BigLion.CPA.Templates.Query",
+  "name": "BigLion CPA CQRS Query",
+  "shortName": "biglion-query",
+  "sourceName": "GetExamples",
+  "preferNameDirectory": false,
+  "symbols": {
+    "featureName": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "Examples",
+      "isRequired": true,
+      "description": "Feature folder name, plural, e.g. Vendors"
+    },
+    "boundedContext": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "BoundedContext",
+      "isRequired": true,
+      "description": "Bounded context folder: ReferenceData, Catalog, Contracts, Procurement, CPA, Security"
+    },
+    "returnType": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "ReturnTypePlaceholder",
+      "isRequired": true,
+      "description": "The MediatR response type, e.g. VendorViewModel, PaginatedList<VendorViewModel> — always pass explicitly, there is no safe default for a query"
+    }
+  }
+}
