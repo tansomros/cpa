@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.Constants;
+﻿namespace BigLion.CPA.Domain.Constants;
 
 public abstract class Policies
 {

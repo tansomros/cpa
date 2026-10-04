@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.ValueObjects;
+﻿namespace BigLion.CPA.Domain.ValueObjects;
 public class FinalVision
 {   
     public string? VA_Left_Note { get; set; }

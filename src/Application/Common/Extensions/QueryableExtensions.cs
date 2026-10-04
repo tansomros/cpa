@@ -2,7 +2,7 @@
 using System.Reflection;
 using static System.Linq.Expressions.Expression;
 
-namespace Cpa.Application.Common.Extensions;
+namespace BigLion.CPA.Application.Common.Extensions;
 public static class QueryableExtensions
 {
     public static IQueryable<T> OrderBy<T>(this IQueryable<T> query, string column, bool descending)

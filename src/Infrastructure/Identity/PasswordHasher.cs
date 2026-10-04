@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cpa.Application.Identity.Interfaces;
+using BigLion.CPA.Application.Identity.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace Cpa.Infrastructure.Identity;
+namespace BigLion.CPA.Infrastructure.Identity;
 
-using Cpa.Domain.Entities;
+using BigLion.CPA.Domain.Entities;
 using Microsoft.AspNetCore.Identity; 
 
 public sealed class PasswordHasher : IPasswordHasher

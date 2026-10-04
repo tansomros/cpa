@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Cpa.Application.Extensions.EfHelper
+namespace BigLion.CPA.Application.Extensions.EfHelper
 {
     /*
      * https://stackoverflow.com/a/66336173/2948523

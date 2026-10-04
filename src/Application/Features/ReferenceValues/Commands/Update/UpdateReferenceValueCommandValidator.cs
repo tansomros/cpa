@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CS0618
-namespace Cpa.Application.Features.ReferenceValues.Commands.Update;
+namespace BigLion.CPA.Application.Features.ReferenceValues.Commands.Update;
 [Obsolete("ใช้ SmartEnum จาก Domain.Enums แทน — ดู LookupRegistry.cs")]
 public class UpdateReferenceValueCommandValidator : AbstractValidator<UpdateReferenceValueCommand>
 {

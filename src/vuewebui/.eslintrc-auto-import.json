@@ -367,6 +367,19 @@
     "formatPercent": true,
     "getAgeTextFromBirthDate": true,
     "toBuddhistYear": true,
-    "useHosxpApi": true
+    "useHosxpApi": true,
+    "AbiResult": true,
+    "BmdResult": true,
+    "CheckupStatus": true,
+    "ExamResult": true,
+    "EyeResult": true,
+    "HearingLossLevel": true,
+    "LabResult": true,
+    "LookupCategories": true,
+    "XrayResult": true,
+    "emptyPharmacyForm": true,
+    "extractValidationErrors": true,
+    "formToPayload": true,
+    "pharmacyToForm": true
   }
 }

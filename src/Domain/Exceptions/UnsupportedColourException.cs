@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.Exceptions;
+﻿namespace BigLion.CPA.Domain.Exceptions;
 
 public class UnsupportedColourException : Exception
 {

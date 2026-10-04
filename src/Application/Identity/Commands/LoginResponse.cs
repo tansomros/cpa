@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cpa.Application.Identity.Commands;
+namespace BigLion.CPA.Application.Identity.Commands;
 public sealed class LoginResponse
 {
     public int UserId { get; init; }

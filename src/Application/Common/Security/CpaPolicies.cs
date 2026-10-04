@@ -1,4 +1,4 @@
-﻿namespace Cpa.Application.Common.Security;
+﻿namespace BigLion.CPA.Application.Common.Security;
 public static class CpaPolicies
 {
     public const string AllowAnonymous = "AllowAnonymous"; // อนุญาตเข้าใช้งาน feature ได้โดยที่ไม่ต้องระบุตัวตน

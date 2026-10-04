@@ -1,4 +1,4 @@
-using Cpa.Application.Extensions.EfHelper;
+using BigLion.CPA.Application.Extensions.EfHelper;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;
@@ -12,7 +12,7 @@ using System.Reflection;
  * install Microsoft.EntityFrameworkCore.Relational
  */
 
-namespace Cpa.Application.Extensions.EfHelper
+namespace BigLion.CPA.Application.Extensions.EfHelper
 {
     public static class EfSqlHelper
     {

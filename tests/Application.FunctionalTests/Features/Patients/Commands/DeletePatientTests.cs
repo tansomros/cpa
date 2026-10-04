@@ -1,6 +1,6 @@
-using BigLion.Application.Features.Patients.Commands.Create;
-using BigLion.Application.Features.Patients.Commands.Delete;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Application.Features.Patients.Commands.Create;
+using BigLion.CPA.Application.Features.Patients.Commands.Delete;
+using BigLion.CPA.Domain.Entities;
 using static BigLion.Application.FunctionalTests.Testing;
 
 namespace BigLion.Application.FunctionalTests.Features.Patients.Commands;
@@ -37,6 +37,6 @@ public class DeletePatientTests : BaseTestFixture
         RunAsDefaultUser();
 
         await FluentActions.Invoking(() => SendAsync(new DeletePatientCommand { Id = 99999 }))
-            .Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+            .Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 }

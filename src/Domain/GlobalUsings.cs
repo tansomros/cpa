@@ -1,2 +1,2 @@
-﻿global using Cpa.Domain.Common;
-global using Cpa.Domain.Exceptions;
+﻿global using BigLion.CPA.Domain.Common;
+global using BigLion.CPA.Domain.Exceptions;

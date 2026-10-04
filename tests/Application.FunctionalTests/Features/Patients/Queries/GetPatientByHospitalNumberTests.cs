@@ -1,6 +1,6 @@
-using BigLion.Application.Features.Patients.Commands.Create;
-using BigLion.Application.Features.Patients.Queries.Get;
-using BigLion.Domain.ValueObjects;
+using BigLion.CPA.Application.Features.Patients.Commands.Create;
+using BigLion.CPA.Application.Features.Patients.Queries.Get;
+using BigLion.CPA.Domain.ValueObjects;
 
 using static BigLion.Application.FunctionalTests.Testing;
 
@@ -44,6 +44,6 @@ public class GetPatientByHospitalNumberTests : BaseTestFixture
 
         await FluentActions.Invoking(() =>
             SendAsync(new GetPatientByHospitalNumberQuery { HospitalNumber = "NONEXIST" }))
-            .Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+            .Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 }

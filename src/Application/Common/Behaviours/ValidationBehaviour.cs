@@ -1,6 +1,6 @@
-﻿using ValidationException = Cpa.Application.Exceptions.ValidationException;
+﻿using ValidationException = BigLion.CPA.Application.Exceptions.ValidationException;
 
-namespace Cpa.Application.Common.Behaviours;
+namespace BigLion.CPA.Application.Common.Behaviours;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
      where TRequest : notnull

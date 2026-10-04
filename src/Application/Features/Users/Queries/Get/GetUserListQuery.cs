@@ -1,7 +1,7 @@
-﻿using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Features.Users.ViewModel;
+﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Features.Users.ViewModel;
 
-namespace Cpa.Application.Features.Users.Queries.Get;
+namespace BigLion.CPA.Application.Features.Users.Queries.Get;
 
 public record GetUserListQuery : IRequest<UserListViewModel>
 {

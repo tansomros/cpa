@@ -1,4 +1,4 @@
-﻿namespace Cpa.Application.Common.Exceptions;
+﻿namespace BigLion.CPA.Application.Common.Exceptions;
 
 public class ForbiddenAccessException : Exception
 {

@@ -1,7 +1,7 @@
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Exceptions;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Exceptions;
 
-namespace Cpa.Application.Features.Patients.Commands.Update;
+namespace BigLion.CPA.Application.Features.Patients.Commands.Update;
 
 public record UpdatePatientCommand : IRequest<Unit>
 {

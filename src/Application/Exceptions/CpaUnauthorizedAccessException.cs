@@ -1,4 +1,4 @@
-﻿namespace Cpa.Application.Exceptions
+﻿namespace BigLion.CPA.Application.Exceptions
 {
     public class BigLionUnauthorizedAccessException : Exception
     {

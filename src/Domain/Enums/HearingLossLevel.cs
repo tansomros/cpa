@@ -1,6 +1,6 @@
-using Cpa.Domain.Common;
+using BigLion.CPA.Domain.Common;
 
-namespace Cpa.Domain.Enums;
+namespace BigLion.CPA.Domain.Enums;
 
 /// <summary>
 /// ระดับความผิดปกติของการได้ยิน — เทียบเท่า ReferenceGroup "AU"

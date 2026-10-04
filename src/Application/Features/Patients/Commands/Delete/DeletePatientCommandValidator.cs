@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Patients.Commands.Delete
+namespace BigLion.CPA.Application.Features.Patients.Commands.Delete
 {
     public class DeletePatientCommandValidator : AbstractValidator<DeletePatientCommand>
     {
@@ -15,7 +15,7 @@ namespace Cpa.Application.Features.Patients.Commands.Delete
         {
             _context = context;
 
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id äÁèÊÒÁÒÃ¶à»ç¹¤èÒÇèÒ§ä´é").NotNull().WithMessage("â»Ã´ÃÐºØ Id");
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ç¹¤ï¿½ï¿½ï¿½ï¿½Ò§ï¿½ï¿½").NotNull().WithMessage("ï¿½Ã´ï¿½Ðºï¿½ Id");
         }
     }
 }

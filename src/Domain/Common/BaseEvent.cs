@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Cpa.Domain.Common;
+namespace BigLion.CPA.Domain.Common;
 
 public abstract class BaseEvent : INotification
 {

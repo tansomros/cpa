@@ -1,6 +1,9 @@
 <template>
   <div>
-    <VCard class="mb-6" title="Kick start your project 🚀">
+    <VCard
+      class="mb-6"
+      title="Kick start your project 🚀"
+    >
       <VCardText>Signing out, please wait...</VCardText>
       <VCardText>
         You will be redirect to the app home page
@@ -10,7 +13,7 @@
 </template>
 
 <script setup>
-import { userService } from '@/plugins/auth';
+import { userService } from '@/plugins/auth'
 
 const ability = useAbility()
 

@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Resources;
 
-namespace Cpa.Domain.Common;
+namespace BigLion.CPA.Domain.Common;
 
 public abstract class SmartEnum<T> where T : SmartEnum<T>
 {
@@ -20,7 +20,7 @@ public abstract class SmartEnum<T> where T : SmartEnum<T>
 
     private static readonly Lazy<ResourceManager?> _resourceManager = new(() =>
     {
-        var baseName = $"Cpa.Domain.Resources.{typeof(T).Name}";
+        var baseName = $"BigLion.CPA.Domain.Resources.{typeof(T).Name}";
         try
         {
             var rm = new ResourceManager(baseName, typeof(T).Assembly);

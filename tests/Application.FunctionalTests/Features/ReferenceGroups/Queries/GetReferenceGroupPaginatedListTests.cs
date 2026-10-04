@@ -1,5 +1,5 @@
 #pragma warning disable CS0618
-using BigLion.Application.Features.ReferenceGroups.Queries.GetPaginatedList;
+using BigLion.CPA.Application.Features.ReferenceGroups.Queries.Get;
 using BigLion.Application.FunctionalTests.Features._Shared;
 using static BigLion.Application.FunctionalTests.Testing;
 

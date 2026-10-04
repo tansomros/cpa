@@ -1,6 +1,6 @@
-using Cpa.Domain.Common;
+using BigLion.CPA.Domain.Common;
 
-namespace Cpa.Domain.Enums;
+namespace BigLion.CPA.Domain.Enums;
 
 /// <summary>
 /// ผลการตรวจมวลกระดูก (Bone Mineral Density) — เทียบเท่า ReferenceGroup "BMD"

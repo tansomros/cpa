@@ -1,6 +1,6 @@
-﻿using Cpa.Application.Identity.Commands;
+﻿using BigLion.CPA.Application.Identity.Commands;
 
-namespace Cpa.Application.Identity.Interfaces;
+namespace BigLion.CPA.Application.Identity.Interfaces;
 public interface IIdentityService
 {
     Task<LoginResponse> LoginAsync(

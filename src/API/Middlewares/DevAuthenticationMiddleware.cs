@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Cpa.Presentation.API.Middlewares;
+namespace BigLion.CPA.Presentation.API.Middlewares;
 
 /// <summary>
 /// Development bypass middleware — ใช้แทน JWT Bearer authentication ตอน dev บน internet

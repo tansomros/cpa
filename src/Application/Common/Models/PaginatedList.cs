@@ -1,4 +1,4 @@
-﻿namespace Cpa.Application.Common.Models;
+﻿namespace BigLion.CPA.Application.Common.Models;
 
 public class PaginatedList<T>
 {

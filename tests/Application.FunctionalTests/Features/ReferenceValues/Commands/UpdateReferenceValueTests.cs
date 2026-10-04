@@ -1,7 +1,7 @@
 #pragma warning disable CS0618
-using BigLion.Application.Features.ReferenceValues.Commands.Update;
+using BigLion.CPA.Application.Features.ReferenceValues.Commands.Update;
 using BigLion.Application.FunctionalTests.Features._Shared;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Domain.Entities;
 using static BigLion.Application.FunctionalTests.Testing;
 
 namespace BigLion.Application.FunctionalTests.Features.ReferenceValues.Commands;
@@ -43,6 +43,6 @@ public class UpdateReferenceValueTests : BaseTestFixture
             Descriptions = "X",
             ReferenceGroupId = 1,
             Sort = 1
-        })).Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+        })).Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 }

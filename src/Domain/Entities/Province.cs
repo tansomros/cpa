@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Cpa.Domain.Entities;
+namespace BigLion.CPA.Domain.Entities;
 
 public class Province
 {
@@ -10,7 +10,7 @@ public class Province
     public string Name { get; set; }
     public string NameEnglish { get; set; }
     public string Region { get; set; }
-    public int? ProvinceGroupId { get; set; }
+    public string? ProvinceGroupId { get; set; }
     public virtual ProvinceGroup? ProvinceGroup { get; set; }
     public ICollection<District> Districts { get; set; }
 

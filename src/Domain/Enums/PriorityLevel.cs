@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.Enums;
+﻿namespace BigLion.CPA.Domain.Enums;
 
 public enum PriorityLevel
 {

@@ -1,8 +1,8 @@
-﻿using Moq;
+using Moq;
 using NUnit.Framework;
-using SUTH.HealthCheckup.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace SUTH.HealthCheckup.Application.UnitTests.Common.Behaviours;
+namespace BigLion.CPA.Application.UnitTests.Common.Behaviours;
 
 public class RequestLoggerTests
 {

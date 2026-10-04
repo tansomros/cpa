@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Cpa.Presentation.API.Converters;
+namespace BigLion.CPA.Presentation.API.Converters;
 
 public class JsonTimeOnlyConverter : JsonConverter<TimeOnly>
 {

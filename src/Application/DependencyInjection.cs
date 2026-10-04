@@ -1,8 +1,8 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Cpa.Application.Common.Behaviours;
+using BigLion.CPA.Application.Common.Behaviours;
 
-namespace Cpa.Application;
+namespace BigLion.CPA.Application;
 
 public static class DependencyInjection
 {

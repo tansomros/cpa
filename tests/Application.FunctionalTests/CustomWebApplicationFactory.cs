@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
-using BigLion.Application.Common.Interfaces;
-using BigLion.Infrastructure.Persistence;
-using BigLion.Presentation.API;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Infrastructure.Persistence;
+using BigLion.CPA.Presentation.API;
 
 namespace BigLion.Application.FunctionalTests;
 
@@ -46,18 +46,15 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 .RemoveAll<ICurrentUserService>()
                 .AddSingleton<ICurrentUserService>(_fakeCurrentUserService);
 
-            // Configure Npgsql data source with Dynamic JSON enabled for tests
-            var conn = builder.Configuration.GetConnectionString("SUTH_CheckupTestDb")
-                ?? builder.Configuration.GetConnectionString("DefaultConnection");
-
-            var dataSourceBuilder = new NpgsqlDataSourceBuilder(conn);
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(_connectionString);
             dataSourceBuilder.EnableDynamicJson();
             var dataSource = dataSourceBuilder.Build();
 
             services
-                .RemoveAll<DbContextOptions<CheckupDatabaseContext>>()
-                .AddDbContext<CheckupDatabaseContext>((sp, options) =>
-                    options.UseNpgsql(dataSource, npgsql => npgsql.MigrationsAssembly(typeof(CheckupDatabaseContext).Assembly.FullName)));
+                .RemoveAll<DbContextOptions<CpaDatabaseContext>>()
+                .RemoveAll<CpaDatabaseContext>()
+                .AddDbContext<CpaDatabaseContext>(options =>
+                    options.UseNpgsql(dataSource, npgsql => npgsql.MigrationsAssembly(typeof(CpaDatabaseContext).Assembly.FullName)));
         });
     }
 }

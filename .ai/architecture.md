@@ -25,24 +25,29 @@ API             → Application, Infrastructure
 ```
 
 - **Domain** (`src/Domain`): entities, enums, value objects, domain exceptions. No EF, no MediatR request types (only `BaseEvent : INotification` for domain events). Entities should enforce their own invariants (guard clauses via `Ardalis.GuardClauses`), not just be property bags — see [coding-rules.md](coding-rules.md).
-- **Application** (`src/Application`): CQRS use cases under `Features/{Context}/{Feature}/{Commands|Queries}/{UseCase}/`, each folder containing a Command/Query record + FluentValidation validator + MediatR handler together. Talks to persistence only through `ICpaDbContext` (defined here, implemented in Infrastructure). Pipeline behaviours (`Common/Behaviours/`): `UnhandledExceptionBehaviour` → `AuthorizationBehaviour` → `ValidationBehaviour` → `PerformanceBehaviour` → `LoggingBehaviour`, wired in `Application/DependencyInjection.cs`.
-- **Infrastructure** (`src/Infrastructure`): `CpaDbContext` (EF Core, PostgreSQL, snake_case naming via `EFCore.NamingConventions`), `IEntityTypeConfiguration<T>` classes under `Data/Configurations/`, migrations under `Data/Migrations/`, save-changes interceptors under `Data/Interceptors/`.
+- **Application** (`src/Application`): CQRS use cases under `Features/{Feature}/`. Commands go in `Commands/Create`, `Commands/Update`, and `Commands/Delete`. Queries, both the single-item query and the list query, go in `Queries/Get`. Those folder names stay exactly that — do not append the entity. Class names still include the entity (`CreateBankCommand`, `GetBankQuery`, `GetBankListQuery`). The namespace matches the folder, for example `BigLion.CPA.Application.Features.Banks.Commands.Create` and `BigLion.CPA.Application.Features.Banks.Queries.Get`. Each of those folders holds the Command/Query record, its FluentValidation validator, and its MediatR handler. Persistence is reached only through `ICpaDatabaseContext` (defined here, implemented in Infrastructure). Pipeline behaviours (`Common/Behaviours/`): `UnhandledExceptionBehaviour` → `AuthorizationBehaviour` → `ValidationBehaviour` → `PerformanceBehaviour` → `LoggingBehaviour`, wired in `Application/DependencyInjection.cs`.
+- **Infrastructure** (`src/Infrastructure`): `CpaDatabaseContext` (EF Core, PostgreSQL), `IEntityTypeConfiguration<T>` classes under `Persistence/Configurations/`, migrations under `Persistence/Migrations/`, save-changes interceptors under `Persistence/Interceptors/`.
 - **API** (`src/API`): thin controllers under `Controllers/` — inject `Mediator`, call `Send`, return the result. No business logic here. Global exception handling via `Filters/ApiExceptionFilterAttribute`.
 
-## Bounded-context folder map
+## Feature folder map
 
-`Domain/Entities` and `Infrastructure/Data/Configurations` are organized by bounded context (landed in Phase 2). `Application/Features` was moved to match the same physical layout, but namespaces there were deliberately left as `BigLion.Cpa.Application.Features.{Feature}...` rather than rewritten to `...Features.{Context}.{Feature}...` — the physical move gets the folder legibility benefit without a several-hundred-file `using` ripple. A new feature's Domain entity and EF configuration should land under the same `{Context}/{Feature}` path; where the Application slice's namespace ends up is a separate, lower-stakes decision.
+Physical layout is one folder per feature. There is no `{Context}/{Feature}` nest and no `{VerbNoun}` use-case folder.
 
-- `MasterData/` — Province/District/SubDistrict, Prefix 
-- `Pharmacy/` — `Group` (single entity + `PharmacyGroup` discriminator + JSONB `Attributes` — see [domain.md](domain.md))
-- `Patient/` — Contract, ContractItem, ContractType, ContractCollateral, ContractCommittee(Type), ContractVendor
-- `Security/` — `Permission` (module.action catalog), `RolePermission` (role-name → permission grant; role name matches the external IdP's role claim, no local Role/User table)
-- `Domain/Common/` — cross-cutting types with no single bounded context: `EntityBase`, `AuditLog`, `AuditAction`
+- Domain entities: `src/Domain/Entities/{Entity}.cs`
+- EF configurations: `src/Infrastructure/Persistence/Configurations/{Entity}Configuration.cs`
+- CQRS: `src/Application/Features/{Feature}/`
+  - `Commands/Create`, `Commands/Update`, `Commands/Delete`
+  - `Queries/Get` — the single-item query and the list query live here together
+  - `ViewModels/`
+- Namespace follows that path: `BigLion.CPA.Application.Features.{Feature}.Commands.Create` (and `.Update`, `.Delete`, `.Queries.Get`)
+
+The feature folder is usually the plural name (`Banks`, `Patients`). A few names differ from the entity so they do not clash with a type (`Pharmacy`, `ServiceRecords`, `NewsArticles`, `UserRoleAssignments`).
 
 ## CQRS / MediatR conventions
 
-- One folder per use case: `Features/{Context}/{Feature}/Commands/{VerbNoun}/` or `.../Queries/{GetNoun}/`.
-- Command/Query, Validator, and Handler live together in that folder (this project's convention — co-located, not split across separate projects).
+- Command folders are only `Create`, `Update`, and `Delete`. Query folders are only `Get`. Do not append the entity name to those folders.
+- Class names keep the entity: `CreateBankCommand`, `UpdateBankCommand`, `DeleteBankCommand`, `GetBankQuery`, `GetBankListQuery`.
+- Command/Query, Validator, and Handler live in that folder (co-located, not split across projects).
 - Controllers call `Mediator.Send(...)` and nothing else.
 - Use the scaffolding template (see [ai-agent-guide.md](ai-agent-guide.md)) to generate a new use case rather than hand-copying an existing one — it keeps the integrity mechanisms (concurrency token, audit log, guard clauses) consistent by default.
 
@@ -68,13 +73,13 @@ API             → Application, Infrastructure
 
 | Concern | Path |
 |---|---|
-| Domain entities | `src/Domain/Entities/{Context}/` |
-| Domain base types | `src/Domain/Common/` (`EntityBase`, `AuditLog`, `AuditAction`) |
-| CQRS use cases | `src/Application/Features/{Context}/{Feature}/{Commands\|Queries}/{UseCase}/` |
+| Domain entities | `src/Domain/Entities/` |
+| Domain base types | `src/Domain/Common/` |
+| CQRS use cases | `src/Application/Features/{Feature}/Commands/{Create\|Update\|Delete}/` and `.../Queries/Get/` |
 | Pipeline behaviours | `src/Application/Common/Behaviours/` |
-| DbContext + interface | `src/Infrastructure/Data/CpaDbContext.cs`, `src/Application/Common/Interfaces/ICpaDbContext.cs` |
-| EF configurations | `src/Infrastructure/Data/Configurations/{Context}/` |
-| Migrations | `src/Infrastructure/Data/Migrations/` |
+| DbContext + interface | `src/Infrastructure/Persistence/CpaDatabaseContext.cs`, `src/Application/Common/Interfaces/ICpaDatabaseContext.cs` |
+| EF configurations | `src/Infrastructure/Persistence/Configurations/` |
+| Migrations | `src/Infrastructure/Persistence/Migrations/` |
 | API controllers | `src/API/Controllers/` |
 | Frontend pages | `src/vuewebui/src/pages/{feature}/{create,edit,view,list}/` |
 | Frontend composables | `src/vuewebui/src/composables/` |

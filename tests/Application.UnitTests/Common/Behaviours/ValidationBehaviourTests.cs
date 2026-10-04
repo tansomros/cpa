@@ -4,10 +4,10 @@ using FluentValidation.Results;
 using MediatR;
 using Moq;
 using NUnit.Framework;
-using SUTH.HealthCheckup.Application.Common.Behaviours;
-using ValidationException = SUTH.HealthCheckup.Application.Exceptions.ValidationException;
+using BigLion.CPA.Application.Common.Behaviours;
+using ValidationException = BigLion.CPA.Application.Exceptions.ValidationException;
 
-namespace SUTH.HealthCheckup.Application.UnitTests.Common.Behaviours;
+namespace BigLion.CPA.Application.UnitTests.Common.Behaviours;
 
 public class ValidationBehaviourTests
 {

@@ -25,8 +25,8 @@ API             → reference Application, Infrastructure
 ```
 
 - **Domain** (`src/Domain`) — Entity, enum, business rule ล้วน ๆ ไม่รู้จัก EF Core ไม่รู้จัก MediatR ไม่รู้จักแม้แต่ว่าเก็บข้อมูลลง PostgreSQL
-- **Application** (`src/Application`) — use case ทั้งหมด (CQRS — ดูข้อ 0.2) คุยกับฐานข้อมูลผ่าน **interface** เท่านั้น (`IInventoryDbContext`) ไม่รู้จัก EF Core ตัวจริง
-- **Infrastructure** (`src/Infrastructure`) — เป็นคน implement `IInventoryDbContext` จริง ด้วย EF Core + PostgreSQL
+- **Application** (`src/Application`) — use case ทั้งหมด (CQRS — ดูข้อ 0.2) คุยกับฐานข้อมูลผ่าน **interface** เท่านั้น (`ICpaDatabaseContext`) ไม่รู้จัก EF Core ตัวจริง
+- **Infrastructure** (`src/Infrastructure`) — เป็นคน implement `ICpaDatabaseContext` จริง ด้วย EF Core + PostgreSQL (`CpaDatabaseContext`)
 - **API** (`src/API`) — controller บาง ๆ รับ request แล้วส่งต่อให้ Application เท่านั้น ไม่มี business logic
 
 **ทำไมต้องใช้ / ประโยชน์:**
@@ -39,11 +39,10 @@ API             → reference Application, Infrastructure
 
 **คืออะไร:** แยกโค้ดที่ "เขียน/เปลี่ยนข้อมูล" (**Command** เช่น สร้าง/แก้ไข/ลบ) ออกจากโค้ดที่ "อ่านข้อมูลอย่างเดียว" (**Query**) ให้เป็นคนละคลาสกันชัดเจน แทนที่จะรวมทุกอย่างไว้ใน Service class ตัวเดียวที่ใหญ่ขึ้นเรื่อย ๆ
 
-**ทำงานอย่างไรในโปรเจกต์นี้:** แต่ละ use case มีโฟลเดอร์ของตัวเองที่ `src/Application/Features/{Context}/{Feature}/{Commands|Queries}/{ชื่อ}/` เช่น สร้าง Vendor ใหม่จะอยู่ที่ `Features/Procurement/Vendors/Commands/CreateVendor/` และในโฟลเดอร์เดียวกันนั้นมี 3 ไฟล์เก็บไว้ด้วยกัน:
+**ทำงานอย่างไรในโปรเจกต์นี้:** แต่ละ feature อยู่ที่ `src/Application/Features/{Feature}/` โฟลเดอร์คำสั่งมีแค่ `Commands/Create`, `Commands/Update`, `Commands/Delete` และคำสั่งอ่านอยู่รวมกันที่ `Queries/Get` ไม่ต่อชื่อ entity ท้ายโฟลเดอร์ ชื่อคลาสยังมีชื่อ entity อยู่ เช่น สร้างธนาคารอยู่ที่ `Features/Banks/Commands/Create/` และ namespace คือ `BigLion.CPA.Application.Features.Banks.Commands.Create` ส่วนดึงรายการเดียวกับดึงรายการอยู่ด้วยกันที่ `Features/Banks/Queries/Get/` (`GetBankQuery`, `GetBankListQuery`) ในโฟลเดอร์นั้นมีไฟล์เหล่านี้:
 
-1. `CreateVendorCommand.cs` — record ที่เก็บข้อมูล input
-2. `CreateVendorCommandValidator.cs` — กติกาตรวจสอบข้อมูล (FluentValidation)
-3. `CreateVendorCommandHandler.cs` — โค้ดที่ทำงานจริงเมื่อ command นี้ถูกส่งเข้ามา
+1. `CreateBankCommand.cs` — record ที่เก็บข้อมูล input และ Handler ที่ทำงานจริง
+2. `CreateBankCommandValidator.cs` — กติกาตรวจสอบข้อมูล (FluentValidation) แยกไฟล์ของตัวเอง
 
 **ทำไมต้องใช้ / ประโยชน์:**
 
@@ -58,11 +57,11 @@ API             → reference Application, Infrastructure
 **ทำงานอย่างไรในโปรเจกต์นี้:** ใน Controller (`src/API/Controllers/`) จะเห็นแค่โค้ดประมาณนี้เสมอ:
 
 ```csharp
-var result = await Mediator.Send(new CreateVendorCommand { ... });
+var result = await Mediator.Send(new CreateBankCommand { ... });
 return Ok(result);
 ```
 
-Controller ไม่ได้ inject `CreateVendorCommandHandler` เข้ามาตรง ๆ — MediatR เป็นคนหา Handler ที่รับ `CreateVendorCommand` ได้ (ผ่านการสแกนตอน startup) แล้วเรียกให้อัตโนมัติ
+Controller ไม่ได้ inject `CreateBankCommandHandler` เข้ามาตรง ๆ — MediatR เป็นคนหา Handler ที่รับ `CreateBankCommand` ได้ (ผ่านการสแกนตอน startup) แล้วเรียกให้อัตโนมัติ
 
 **ทำไมต้องใช้ / ประโยชน์:**
 
@@ -86,14 +85,14 @@ UnhandledExceptionBehaviour → AuthorizationBehaviour → ValidationBehaviour
 
 ### 0.5 Dependency Injection (DI) และ Dependency Inversion
 
-**คืออะไร:** แทนที่ class จะ "สร้าง" สิ่งที่ต้องใช้ขึ้นมาเอง (เช่น `new InventoryDbContext()`) ให้ "รับ" มันเข้ามาทาง constructor แทน แล้วปล่อยให้ตัวกลาง (DI container ของ ASP.NET Core) เป็นคนสร้างของจริงมาป้อนให้เองตอนรันจริง
+**คืออะไร:** แทนที่ class จะ "สร้าง" สิ่งที่ต้องใช้ขึ้นมาเอง (เช่น `new CpaDatabaseContext()`) ให้ "รับ" มันเข้ามาทาง constructor แทน แล้วปล่อยให้ตัวกลาง (DI container ของ ASP.NET Core) เป็นคนสร้างของจริงมาป้อนให้เองตอนรันจริง
 
-**ทำงานอย่างไรในโปรเจกต์นี้:** Application layer (ชั้นในที่ห้ามรู้จัก EF Core) นิยาม interface `IInventoryDbContext` ไว้เอง (`src/Application/Common/Interfaces/IInventoryDbContext.cs`) ส่วน Infrastructure (ชั้นนอก) เป็นคน implement มันจริงด้วย EF Core (`src/Infrastructure/Data/InventoryDbContext.cs`) แล้วลงทะเบียนไว้ที่ `Infrastructure/DependencyInjection.cs` เวลา Handler ต้องการใช้ฐานข้อมูล ก็แค่ขอ `IInventoryDbContext` ผ่าน constructor — DI container จะหยิบของจริง (`InventoryDbContext`) มาป้อนให้เองโดย Handler ไม่ต้องรู้เลยว่าเบื้องหลังเป็น EF Core หรือ PostgreSQL
+**ทำงานอย่างไรในโปรเจกต์นี้:** Application layer (ชั้นในที่ห้ามรู้จัก EF Core) นิยาม interface `ICpaDatabaseContext` ไว้เอง (`src/Application/Common/Interfaces/ICpaDatabaseContext.cs`) ส่วน Infrastructure (ชั้นนอก) เป็นคน implement มันจริงด้วย EF Core (`src/Infrastructure/Persistence/CpaDatabaseContext.cs`) แล้วลงทะเบียนไว้ที่ `Infrastructure/DependencyInjection.cs` เวลา Handler ต้องการใช้ฐานข้อมูล ก็แค่ขอ `ICpaDatabaseContext` ผ่าน constructor — DI container จะหยิบของจริง (`CpaDatabaseContext`) มาป้อนให้เองโดย Handler ไม่ต้องรู้เลยว่าเบื้องหลังเป็น EF Core หรือ PostgreSQL
 
 **ทำไมต้องใช้ / ประโยชน์:**
 
 - นี่คือกลไกที่ทำให้ข้อ 0.1 (Clean Architecture) เป็นจริงได้จริง ๆ ไม่ใช่แค่ทฤษฎี — เรียกว่า **Dependency Inversion** (ตัว "D" ใน SOLID, ดูข้อ 0.6): ชั้นในกำหนด "สัญญา" (interface) ไว้ก่อน ชั้นนอกเป็นฝ่ายเดินตามสัญญานั้น ทำให้ทิศทางการพึ่งพา "กลับด้าน" จากที่ควรจะเป็นถ้าเขียนตรงไปตรงมา (ปกติควรจะเป็น business logic ไปเรียก EF Core ตรง ๆ)
-- เทส Handler ได้โดยไม่ต้องต่อฐานข้อมูลจริง — ตอนเขียน unit test สามารถสร้าง `IInventoryDbContext` ปลอม (mock/fake) แทนของจริงได้
+- เทส Handler ได้โดยไม่ต้องต่อฐานข้อมูลจริง — ตอนเขียน unit test สามารถสร้าง `ICpaDatabaseContext` ปลอม (mock/fake) แทนของจริงได้
 - เปลี่ยน implementation เบื้องหลังได้โดยไม่กระทบโค้ดที่เรียกใช้เลย
 
 ### 0.6 SOLID Principles
@@ -103,7 +102,7 @@ README ของโปรเจกต์ระบุไว้ว่าใช้�
 - **S — Single Responsibility:** หนึ่ง Handler รับผิดชอบแค่หนึ่ง use case (ข้อ 0.2) ไม่ทำหลายอย่างปนกัน
 - **O — Open/Closed:** เพิ่ม Pipeline Behaviour ใหม่ได้ (ข้อ 0.4) โดยไม่ต้องแก้โค้ด MediatR หรือ Handler เดิมที่มีอยู่แล้วเลย
 - **L — Liskov Substitution:** ทุก Behaviour/Handler ทำงานผ่าน interface กลางของ MediatR แทนกันได้ตามสัญญาเดียวกัน
-- **I — Interface Segregation:** `IInventoryDbContext` เปิดเผยเฉพาะสิ่งที่ Application ต้องใช้จริง ไม่ใช่ทุกความสามารถของ EF Core `DbContext` ทั้งหมด
+- **I — Interface Segregation:** `ICpaDatabaseContext` เปิดเผยเฉพาะสิ่งที่ Application ต้องใช้จริง ไม่ใช่ทุกความสามารถของ EF Core `DbContext` ทั้งหมด
 - **D — Dependency Inversion:** ตามข้อ 0.5 ด้านบน — Application กำหนด interface, Infrastructure เดินตาม
 
 ### 0.7 pattern อื่น ๆ ที่ใช้ในโปรเจกต์ (โดยสรุป)
@@ -121,7 +120,7 @@ README ของโปรเจกต์ระบุไว้ว่าใช้�
 
 1. **[known-issues.md](known-issues.md)** — สิ่งที่กำลังจะแก้ เคยมีปัญหาที่รู้อยู่แล้วหรือเปล่า? เช็คก่อนเสีย เวลาแก้ปัญหาเดิมซ้ำ หรือแก้แบบขัดกับของเดิมที่เคยแก้ไปแล้ว
 2. **[roadmap.md](roadmap.md)** — งานนี้อยู่ phase ไหน ต้องรอของอย่างอื่นเสร็จก่อนไหม และมีหัวข้อ "Non-negotiable" ที่เป็นกฎห้ามฝ่าฝืนของทั้งโปรเจกต์ (เช่น ห้ามแก้ตัวเลขเงิน/จำนวนแบบเขียนทับตรง ๆ)
-3. **[domain.md](domain.md)** — ศัพท์ภาษาไทยที่ใช้ในงานจัดซื้อจัดจ้างโรงพยาบาล (Procurement Plan / PR / PO / Contract / Item / Stock) ถ้างานที่ทำเกี่ยวกับคำพวกนี้ ให้ใช้ศัพท์ตามที่นิยามไว้ในนี้ อย่าตั้งชื่อเอาเองใหม่
+3. **[domain.md](domain.md)** — ศัพท์ภาษาไทยที่ใช้ในงาน ถ้างานที่ทำเกี่ยวกับคำพวกนี้ ให้ใช้ศัพท์ตามที่นิยามไว้ในนี้ อย่าตั้งชื่อเอาเองใหม่
 4. **[coding-rules.md](coding-rules.md)** — กฎการตั้งชื่อและกฎเทคนิคที่บังคับ (concurrency, ledger, audit trail, permission) ไม่ใช่ทางเลือก
 5. **[ai-agent-guide.md](ai-agent-guide.md)** — โค้ดแต่ละส่วนควรไปอยู่ตรงไหน, กฎ MUST/MUST NOT
 
@@ -137,7 +136,7 @@ README ของโปรเจกต์ระบุไว้ว่าใช้�
 
 **คืออะไร:** Git คือระบบควบคุมเวอร์ชันของซอร์สโค้ด (version control) ส่วน [SourceTree](https://www.sourcetreeapp.com/) คือโปรแกรม GUI สำหรับใช้งาน Git โดยไม่ต้องพิมพ์คำสั่งเองทั้งหมด
 
-**ทำไมต้องใช้:** ทีมนี้เก็บซอร์สโค้ดไว้ที่ GitLab ภายในองค์กร (`https://git.suth.go.th/dev/inventory`) ทุกคนต้อง clone/commit/push/merge ผ่าน Git — SourceTree ช่วยให้เห็น branch, diff, และ conflict เป็นภาพ ทำให้ทำงานร่วมกันผิดพลาดน้อยลง (ดูขั้นตอน Git แบบเต็มที่ [README.md](../README.md) หัวข้อ "ขั้นตอนเข้าร่วมพัฒนา")
+**ทำไมต้องใช้:** ทีมนี้เก็บซอร์สโค้ดไว้ที่ GitLab ภายในองค์กร (`https://github.com/tansomros/cpa.git`) ทุกคนต้อง clone/commit/push/merge ผ่าน Git — SourceTree ช่วยให้เห็น branch, diff, และ conflict เป็นภาพ ทำให้ทำงานร่วมกันผิดพลาดน้อยลง (ดูขั้นตอน Git แบบเต็มที่ [README.md](../README.md) หัวข้อ "ขั้นตอนเข้าร่วมพัฒนา")
 
 **ติดตั้ง:**
 
@@ -279,7 +278,7 @@ npm install -g pnpm
 | **ESLint** (`dbaeumer.vscode-eslint`) | โปรเจกต์บังคับ lint ผ่าน ESLint (`.eslintrc.cjs`) — extension นี้ขึ้นเตือน error/warning ให้เห็นทันทีในไฟล์ ไม่ต้องรอรัน `pnpm lint` |
 | **EditorConfig for VS Code** (`EditorConfig.EditorConfig`) | อ่านค่า indent/charset จากไฟล์ `.editorconfig` ของโปรเจกต์ ให้ format ตรงกันทุกคนอัตโนมัติ |
 
-**Visual Studio 2026** — ถ้าถนัดฝั่ง backend มากกว่า เปิด `suth-inventory.sln` ได้เลย เหมาะกับคนที่ทำงานฝั่ง .NET เป็นหลักและอยากได้ debugger ที่ครบเครื่องกว่า (ฝั่ง frontend ยังต้องใช้ terminal/VS Code แยกอยู่ดี เพราะ Visual Studio ไม่รองรับ Vue โดยตรง)
+**Visual Studio 2026** — ถ้าถนัดฝั่ง backend มากกว่า เปิด `cpa.sln` ได้เลย เหมาะกับคนที่ทำงานฝั่ง .NET เป็นหลักและอยากได้ debugger ที่ครบเครื่องกว่า (ฝั่ง frontend ยังต้องใช้ terminal/VS Code แยกอยู่ดี เพราะ Visual Studio ไม่รองรับ Vue โดยตรง)
 
 ### 1.10 (ไม่บังคับ) เครื่องมือทดสอบ API
 
@@ -292,8 +291,8 @@ npm install -g pnpm
 ### 2.1 Clone โปรเจกต์
 
 ```bash
-git clone https://git.suth.go.th/dev/inventory.git
-cd inventory
+git clone https://github.com/tansomros/cpa.git
+cd cpa
 ```
 
 (หรือ clone ผ่าน SourceTree ก็ได้ตามที่อธิบายไว้ในข้อ 1.1)
@@ -316,16 +315,16 @@ cd ../..
 เปิด `psql` หรือ pgAdmin แล้วสร้าง 2 ฐานข้อมูล — ตัวหนึ่งไว้ใช้พัฒนาจริง อีกตัวไว้ให้ automated test ใช้แยกกัน จะได้ไม่กระทบข้อมูลที่กำลังพัฒนาอยู่:
 
 ```sql
-CREATE DATABASE inventory OWNER suth;
-CREATE DATABASE "inventory-test" OWNER suth;
+CREATE DATABASE cpathai OWNER cpat;
+CREATE DATABASE "cpathai-test" OWNER cpat;
 ```
 
-> ถ้ายังไม่มี role/user ชื่อ `suth` ต้องสร้างก่อน เช่น `CREATE USER suth WITH PASSWORD 'suth' SUPERUSER;` แล้วปรับ connection string ให้ตรงกับ password ที่ตั้งจริง
+> ถ้ายังไม่มี role/user ชื่อ `cpa` ต้องสร้างก่อน เช่น `CREATE USER cpat WITH PASSWORD 'cpat' SUPERUSER;` แล้วปรับ connection string ให้ตรงกับ password ที่ตั้งจริง
 
 connection string อยู่ที่:
 
 - `src/API/appsettings.Development.json` → key `ConnectionStrings:Database` (สำหรับรัน API ตอนพัฒนา)
-- `tests/Application.FunctionalTests/appsettings.json` → key `ConnectionStrings:InventoryDb` (สำหรับ automated test)
+- `tests/Application.FunctionalTests/appsettings.json` → key `ConnectionStrings:CpaDb` (สำหรับ automated test)
 
 ### 2.4 สร้าง/เชื่อถือใบรับรอง HTTPS สำหรับเครื่อง dev (ทำครั้งเดียว)
 
@@ -360,7 +359,7 @@ cd src/vuewebui && pnpm dev
 
 **Backend (VS Code):** โปรเจกต์มีไฟล์ `.vscode/launch.json` ให้พร้อมใช้แล้ว — เปิด repo ใน VS Code, ไปที่แท็บ **Run and Debug** (`Ctrl+Shift+D` / `Cmd+Shift+D`) เลือก **▶ Debug API** แล้วกด `F5` ได้เลย จะ build ให้อัตโนมัติ (ผ่าน task `build-api`), รันด้วย breakpoint ใช้งานได้จริง, และเปิดเบราว์เซอร์ไปที่ Swagger ให้เองเมื่อ API พร้อม — คลิกซ้ายที่ขอบซ้ายของเลขบรรทัดในโค้ดเพื่อตั้ง breakpoint ตามปกติ
 
-**Backend (Visual Studio 2026):** เปิด `suth-inventory.sln` แล้วกด `F5` ตามปกติ (ตั้งค่า `API` เป็น Startup Project ถ้ายังไม่ได้ตั้ง — คลิกขวาที่ project `API` → **Set as Startup Project**)
+**Backend (Visual Studio 2026):** เปิด `cpa.sln` แล้วกด `F5` ตามปกติ (ตั้งค่า `API` เป็น Startup Project ถ้ายังไม่ได้ตั้ง — คลิกขวาที่ project `API` → **Set as Startup Project**)
 
 **Frontend (Vue):** ปกติไม่ค่อยตั้ง breakpoint ในไฟล์ `.vue` ผ่าน editor กันตรง ๆ แต่ debug ผ่านเบราว์เซอร์แทน — เปิด DevTools ของเบราว์เซอร์ (`F12`) ตั้ง breakpoint ในแท็บ Sources ได้เหมือน JavaScript ทั่วไป (มี source map ให้แล้ว) และแนะนำติดตั้งส่วนขยาย [Vue DevTools](https://devtools.vuejs.org/) เพื่อดู component tree, props, state, Pinia store แบบเรียลไทม์
 
@@ -424,12 +423,12 @@ Claude Code ไม่มีความสามารถ "ฟัง" การ�
 
 ```bash
 # Backend — รันทุกโปรเจกต์
-dotnet test suth-inventory.sln
+dotnet test cpa.sln
 
 # รันเฉพาะโปรเจกต์เดียว
 dotnet test tests/Domain.UnitTests/
 dotnet test tests/Application.UnitTests/
-dotnet test tests/Application.FunctionalTests/   # ต้องมีฐานข้อมูล inventory-test ตามข้อ 2.3 ไม่ใช้ Docker
+dotnet test tests/Application.FunctionalTests/   # ต้องมีฐานข้อมูล cpa-test ตามข้อ 2.3 ไม่ใช้ Docker
 
 # รันเทสเดียวโดยระบุชื่อ
 dotnet test --filter "FullyQualifiedName~ContractItemTests"
@@ -448,7 +447,7 @@ PW_SLOW_MO=500 pnpm test:e2e:headed
 ## ส่วนที่ 5 — Build
 
 ```bash
-dotnet build suth-inventory.sln --nologo
+dotnet build cpa.sln --nologo
 ```
 
 ---
@@ -460,7 +459,7 @@ dotnet build suth-inventory.sln --nologo
 ```bash
 # ลบฐานข้อมูลเดิมแล้วสร้างใหม่ (ผ่าน psql/pgAdmin) จากนั้น:
 dotnet ef migrations remove --project src/Infrastructure --startup-project src/API   # ถ้ามี migration เดิมอยู่แล้ว
-dotnet ef migrations add InitialCreate --project src/Infrastructure --startup-project src/API -o Data/Migrations
+dotnet ef migrations add InitialCreate --project src/Infrastructure --startup-project src/API -o Persistence/Migrations
 dotnet ef database update --project src/Infrastructure --startup-project src/API
 ```
 
@@ -472,17 +471,19 @@ dotnet ef database update --project src/Infrastructure --startup-project src/API
 
 ## ส่วนที่ 7 — สร้างโค้ดใหม่ด้วย Scaffolding
 
-รันคำสั่งพวกนี้จากในโฟลเดอร์ `src/Application/`:
+ติดตั้ง template ของโปรเจกต์ครั้งเดียวต่อเครื่อง แล้วรันจากโฟลเดอร์ `Commands` หรือ `Queries` ของ feature:
 
 ```bash
-dotnet new ca-usecase --name CreateVendor --feature-name Vendors --usecase-type command --return-type Guid
-dotnet new ca-usecase -n GetVendors -fn Vendors -ut query -rt VendorsVm
+dotnet new install ./templates/biglion-templates
 
-# ถ้าเจอ error "No templates or subcommands found matching: 'ca-usecase'" ให้ติดตั้ง template ก่อน:
-dotnet new install Clean.Architecture.Solution.Template::9.0.10
+cd src/Application/Features/Banks/Commands
+dotnet new biglion-command -n CreateBank --featureName Banks --boundedContext Banks --returnType int
+
+cd ../Queries
+dotnet new biglion-query -n GetBank --featureName Banks --boundedContext Banks --returnType "BankViewModel"
 ```
 
-template เฉพาะโปรเจกต์ที่สร้าง EF configuration stub และ controller action ให้พร้อมกับ command/query (แผน Phase 2 — ดู [roadmap.md](roadmap.md)) ยังไม่มี — ระหว่างนี้ส่วนที่ template ทั่วไปไม่ได้ครอบคลุมให้ทำตาม [coding-rules.md](coding-rules.md) เอง
+template ยังสร้างโฟลเดอร์ตามชื่อ `-n` (`CreateBank`, `GetBank`) และใส่ segment `BoundedContext` ใน namespace หลังสร้างแล้วให้ย้ายไฟล์เข้า `Commands/Create`, `Commands/Update`, `Commands/Delete` หรือ `Queries/Get` แล้วตั้ง namespace เป็น `BigLion.CPA.Application.Features.{Feature}.Commands.Create` (หรือ `.Update`, `.Delete`, `.Queries.Get`) คำสั่งดึงรายการเดียวกับดึงรายการอยู่โฟลเดอร์ `Get` เดียวกัน รายละเอียดเพิ่มอยู่ที่ [ai-agent-guide.md](ai-agent-guide.md)
 
 ---
 
@@ -490,9 +491,9 @@ template เฉพาะโปรเจกต์ที่สร้าง EF conf
 
 กติกาแบบเต็ม (การตั้งชื่อ, การแบ่ง layer, concurrency, audit trail) อยู่ที่ [coding-rules.md](coding-rules.md) — **เป็นข้อบังคับ ไม่ใช่ทางเลือก** สรุปสั้น ๆ ที่ต้องจำให้ขึ้นใจ:
 
-1. Interface ขึ้นต้นด้วย `I` ตัวใหญ่ เช่น `IInventoryDbContext`
+1. Interface ขึ้นต้นด้วย `I` ตัวใหญ่ เช่น `ICpaDatabaseContext`
 2. ตั้งชื่อคลาส/ตัวแปร/เมธอด ให้สื่อความหมายในตัวเอง ไม่แน่ใจให้ถามทีม
-3. `PascalCase` สำหรับชื่อคลาสและเมธอด เช่น `InventoryDbContext`, `SaveChangesAsync()`
+3. `PascalCase` สำหรับชื่อคลาสและเมธอด เช่น `CpaDatabaseContext`, `SaveChangesAsync()`
 4. `PascalCase` สำหรับค่าคงที่ (constant) ทั้ง local และ field
 5. `camelCase` สำหรับ method argument, local variable, และ private field
 6. private field ขึ้นต้นด้วย `_` เช่น `_context`
@@ -512,7 +513,7 @@ template เฉพาะโปรเจกต์ที่สร้าง EF conf
 3. **ห้าม push เข้า branch อื่นโดยตรง** — push ขึ้น branch ตัวเองเท่านั้น
 4. ก่อนรวมเข้า branch หลัก: ต้องมี unit test ของ Entity, integration test ของ command/query ที่สำคัญ (ดูรายละเอียดเงื่อนไขใน README.md)
 5. rebase กับ branch หลักก่อนสร้าง Pull Request ถ้ามี conflict ให้ resolve แล้วปรึกษาทีม
-6. สร้าง Pull Request ที่ `https://git.suth.go.th/dev/inventory` ระบุ branch ต้นทาง/ปลายทางให้ถูก พร้อมคำอธิบายสั้น ๆ
+6. สร้าง Pull Request ที่ `https://github.com/tansomros/cpa.git` ระบุ branch ต้นทาง/ปลายทางให้ถูก พร้อมคำอธิบายสั้น ๆ
 7. รอ review ก่อน merge (ยกเว้น merge เข้า branch ตัวเอง)
 
 ---
@@ -522,7 +523,7 @@ template เฉพาะโปรเจกต์ที่สร้าง EF conf
 ```
 src/
 ├── Domain/              # Entity, enum, value object — ไม่มี EF, ไม่มี MediatR request type
-├── Application/          # CQRS Features/{Context}/{Feature}/{Commands|Queries}/{UseCase}/
+├── Application/          # CQRS Features/{Feature}/Commands/{Create|Update|Delete} และ Queries/Get
 ├── Infrastructure/        # EF Core, DbContext, EF configuration, migrations
 ├── API/                  # Controller แบบบาง (thin), Program.cs
 └── vuewebui/             # Vue 3 frontend (pages/, components/, composables/, e2e/)
@@ -548,7 +549,7 @@ tests/
 | อาการ | สาเหตุที่เป็นไปได้ / วิธีแก้ |
 | --- | --- |
 | `dotnet run` ฟ้อง connection refused ตอนต่อฐานข้อมูล | PostgreSQL service ไม่ได้รันอยู่ — เช็คด้วย `psql -U postgres -h localhost` ถ้าต่อไม่ได้ ให้เปิด service ก่อน (Windows: Services app หา "postgresql-x64-16"; macOS ผ่าน brew: `brew services start postgresql@16`) |
-| ต่อฐานข้อมูลได้ แต่ auth ล้มเหลว (password authentication failed) | password ใน `ConnectionStrings:Database` (`appsettings.Development.json`) ไม่ตรงกับ password จริงของ role `suth` ที่สร้างไว้ — ดูข้อ 2.3 |
+| ต่อฐานข้อมูลได้ แต่ auth ล้มเหลว (password authentication failed) | password ใน `ConnectionStrings:Database` (`appsettings.Development.json`) ไม่ตรงกับ password จริงของ role `cpat` ที่สร้างไว้ — ดูข้อ 2.3 |
 | เบราว์เซอร์ขึ้น "ไม่ปลอดภัย" / `NET::ERR_CERT_AUTHORITY_INVALID` ตอนเปิด `https://localhost:...` | ยังไม่ได้ trust dev cert — รัน `dotnet dev-certs https --trust` (ข้อ 2.4) แล้วรีสตาร์ทเบราว์เซอร์ |
 | `pnpm dev` หรือ `pnpm install` ค้าง/error เกี่ยวกับ `dotnet dev-certs` | `pnpm dev` เรียก `dotnet dev-certs` เองเพื่อ export ใบรับรองให้ Vite ใช้ — ถ้า .NET SDK ยังไม่ได้ติดตั้ง หรือยังไม่เคย `dotnet dev-certs https --trust` มาก่อนจะมีปัญหาตรงนี้ ติดตั้ง/trust ให้เรียบร้อยก่อน (ข้อ 1.3, 2.4) |
 | `pnpm install` error เกี่ยวกับ native dependency หรือ version mismatch | เช็คว่า `node --version` ตรงกับที่ `.nvmrc` ต้องการหรือยัง (`nvm use` ในโฟลเดอร์ `src/vuewebui` ก่อนเสมอ — ข้อ 1.5); ถ้ายังไม่หายลองลบ `node_modules` แล้ว `pnpm install` ใหม่ |
@@ -556,6 +557,6 @@ tests/
 | `dotnet ef` ฟ้องว่าไม่รู้จักคำสั่ง | ยังไม่ได้ติดตั้ง dotnet-ef global tool — ดูข้อ 1.4 |
 | build/run ผ่านปกติตอนใช้ `dotnet run` แต่พอรัน DLL ที่ build ไว้ตรง ๆ (`dotnet path/to/API.dll`) กลับ error "Please config identity authority" | `dotnet run` ใช้ profile จาก `launchSettings.json` ซึ่งตั้ง `ASPNETCORE_ENVIRONMENT=Development` ให้อัตโนมัติ แต่รัน DLL ตรง ๆ จะ default เป็น `Production` แทน ซึ่งต้องการค่า `Identity:Authority` ที่ไม่ได้ตั้งไว้ในเครื่อง dev — ให้ตั้ง `ASPNETCORE_ENVIRONMENT=Development` เองก่อนรัน หรือใช้ `dotnet run`/VS Code debug config (ข้อ 3.1) แทน |
 | ไฟล์ที่แก้บน Windows แล้ว diff ใน Git ขึ้นทั้งไฟล์ทั้งที่แก้แค่บรรทัดเดียว | ปัญหา line ending (CRLF บน Windows vs LF ที่ repo ใช้) — เช็คว่า `git config core.autocrlf` ตั้งเป็น `true` (Windows) หรือ `input` (macOS/Linux) ไว้แล้วหรือยัง; ไฟล์ `.gitattributes` ของ repo กำหนดไว้ส่วนหนึ่งแล้วแต่บาง editor (โดยเฉพาะ shell script ที่รันบน macOS/Linux เช่นสคริปต์ใน `deploy/`) ยังต้องระวังเรื่องนี้อยู่ |
-| ไม่แน่ใจว่าเปิด `suth-inventory.sln` หรือ `.slnx` ใน Visual Studio | ทั้งสองไฟล์เปิดโปรเจกต์เดียวกัน — `.slnx` เป็นฟอร์แมตใหม่ (XML แทน text format เดิม) ของ Visual Studio ใช้ตัวไหนก็ได้ แต่คำสั่ง `dotnet build`/`dotnet test` ในคู่มือนี้อ้างอิง `.sln` เป็นหลัก |
+| ไม่แน่ใจว่าเปิด `cpa.sln` หรือ `.slnx` ใน Visual Studio | ทั้งสองไฟล์เปิดโปรเจกต์เดียวกัน — `.slnx` เป็นฟอร์แมตใหม่ (XML แทน text format เดิม) ของ Visual Studio ใช้ตัวไหนก็ได้ แต่คำสั่ง `dotnet build`/`dotnet test` ในคู่มือนี้อ้างอิง `.sln` เป็นหลัก |
 
 หาไม่เจอในตารางนี้ ให้เช็ค [known-issues.md](known-issues.md) ก่อนว่าเคยมีคนเจอปัญหาเดียวกันมาก่อนหรือเปล่า แล้วค่อยถามทีม

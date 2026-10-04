@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cpa.Application.Common.Exceptions; 
+namespace BigLion.CPA.Application.Common.Exceptions; 
 
 public class AuthenticationException : Exception
 {

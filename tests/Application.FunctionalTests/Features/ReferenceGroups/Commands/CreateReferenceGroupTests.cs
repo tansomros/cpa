@@ -1,8 +1,8 @@
 #pragma warning disable CS0618
-using BigLion.Application.Features.ReferenceGroups.Commands.Create;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Application.Features.ReferenceGroups.Commands.Create;
+using BigLion.CPA.Domain.Entities;
 using static BigLion.Application.FunctionalTests.Testing;
-using ValidationException = BigLion.Application.Exceptions.ValidationException;
+using ValidationException = BigLion.CPA.Application.Exceptions.ValidationException;
 
 namespace BigLion.Application.FunctionalTests.Features.ReferenceGroups.Commands;
 

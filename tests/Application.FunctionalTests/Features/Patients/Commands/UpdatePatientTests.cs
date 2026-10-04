@@ -1,6 +1,6 @@
-using BigLion.Application.Features.Patients.Commands.Create;
-using BigLion.Application.Features.Patients.Commands.Update;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Application.Features.Patients.Commands.Create;
+using BigLion.CPA.Application.Features.Patients.Commands.Update;
+using BigLion.CPA.Domain.Entities;
 using static BigLion.Application.FunctionalTests.Testing;
 
 namespace BigLion.Application.FunctionalTests.Features.Patients.Commands;
@@ -60,6 +60,6 @@ public class UpdatePatientTests : BaseTestFixture
             LastName = "X",
             Gender = "M",
             BirthDate = DateOnly.FromDateTime(DateTime.Now)
-        })).Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+        })).Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 }

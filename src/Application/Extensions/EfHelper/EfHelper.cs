@@ -10,7 +10,7 @@ using System.Linq.Expressions;
  * install Microsoft.EntityFrameworkCore.Relational
  */
 
-namespace Cpa.Application.Extensions.EfHelper
+namespace BigLion.CPA.Application.Extensions.EfHelper
 {
     public static class EfHelper
     {

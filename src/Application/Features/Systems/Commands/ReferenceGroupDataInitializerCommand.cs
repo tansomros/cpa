@@ -1,9 +1,9 @@
-﻿using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Common.Security;
-using Cpa.Domain.Entities;
+﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
+using BigLion.CPA.Domain.Entities;
 
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.Systems.Commands;
+namespace BigLion.CPA.Application.Features.Systems.Commands;
 
 /// <summary>
 /// [OBSOLETE] à¸à¹à¸­à¸¡à¸¹à¸¥à¹à¸«à¸¥à¹à¸²à¸à¸µà¹à¸à¸¹à¸à¹à¸à¸à¸à¸µà¹à¸à¹à¸§à¸¢ SmartEnum à¹à¸ Domain.Enums à¹à¸¥à¹à¸§

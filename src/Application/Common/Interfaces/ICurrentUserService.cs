@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Cpa.Application.Common.Interfaces
+namespace BigLion.CPA.Application.Common.Interfaces
 {
     public interface ICurrentUserService
     {

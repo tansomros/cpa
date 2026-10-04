@@ -9,8 +9,7 @@ If a template's assumptions turn out to be wrong or stale (a file moved, a conve
 ## Shared preamble (paste at the top of every session)
 
 ```
-You are working on SUTH Inventory, a hospital inventory/procurement ERP for
-Suranaree University of Technology Hospital.
+You are working on CPA Thai , a Database System for Health Promotion and Medication Management Services Provided by Community Pharmacists.
 
 Before making any change:
 1. Read CLAUDE.md, then .ai/known-issues.md (is what I'm about to touch already
@@ -37,7 +36,7 @@ underlies real hospital procurement/budget/stock decisions:
   (Ardalis.GuardClauses) + DB constraints — don't rely on just one.
 
 When done:
-- Run `dotnet build suth-inventory.sln` and `dotnet test suth-inventory.sln`
+- Run `dotnet build CPA.sln` and `dotnet test CPA.sln`
   (backend), `pnpm run lint` and `pnpm run build` (frontend, from
   src/vuewebui) — report the results, don't just claim success.
 - Update .ai/known-issues.md and .ai/roadmap.md only if something you did
@@ -58,21 +57,21 @@ Design a new domain entity: {EntityName}.
 Fields: {list fields, types, required/optional, and any business rules
   — e.g. "EndDate must be after StartDate", "Quantity must be positive"}
 Relationships: {e.g. "belongs to Vendor (required)", "has many {Entity}Items"}
-Bounded context: {ReferenceData | Catalog | Contracts | Procurement | Inventory
-  — see .ai/architecture.md for the folder map}
+Feature folder: {Feature} under src/Application/Features
+  (for example Banks, Pharmacy, Patients — see .ai/architecture.md)
 
 Do:
-- Entity class in src/Domain/Entities/{Context}/{EntityName}.cs, inheriting
-  EntityBase. Constructor takes required fields; enforce invariants with
+- Entity class in src/Domain/Entities/{EntityName}.cs, inheriting
+  the project's entity base. Constructor takes required fields; enforce invariants with
   Ardalis.GuardClauses (Guard.Against.NullOrEmpty, .NegativeOrZero, etc.) —
   don't leave a property with a bare public setter if an invalid value would
   break a business rule.
-- EF configuration in src/Infrastructure/Data/Configurations/{Context}/
+- EF configuration in src/Infrastructure/Persistence/Configurations/
   {EntityName}Configuration.cs: explicit HasOne/HasForeignKey/OnDelete for
   every relationship (Restrict unless cascade is deliberately correct),
   explicit IsRequired()/HasMaxLength() for every scalar — nothing left to
-  convention. Register the DbSet in InventoryDbContext and
-  IInventoryDbContext.
+  convention. Register the DbSet in CpaDatabaseContext and
+  ICpaDatabaseContext.
 - If this entity represents a running balance or on-hand quantity, it must
   be derived from an append-only ledger, not a mutable column — ask me if
   you're not sure whether that applies here before implementing.
@@ -93,10 +92,18 @@ Behavior: {what it does, required/optional inputs, validation rules beyond
   "field is required" — e.g. cross-field checks, DB-backed uniqueness}
 
 Do:
-- src/Application/Features/{Context}/{Feature}/{Commands|Queries}/{UseCase}/
-  {UseCase}Command.cs (or Query.cs) — the IRequest<T> record + the
+- Commands: src/Application/Features/{Feature}/Commands/Create,
+  Commands/Update, or Commands/Delete.
+  Queries: src/Application/Features/{Feature}/Queries/Get
+  (single-item and list queries share this folder).
+  Folder names are only Create, Update, Delete, and Get — do not append
+  the entity. Class names still include it (CreateBankCommand,
+  GetBankQuery, GetBankListQuery). Namespace matches the folder:
+  BigLion.CPA.Application.Features.{Feature}.Commands.Create
+  or ...Queries.Get.
+- {Verb}{Noun}Command.cs or Get{Noun}Query.cs — the IRequest<T> record + the
   IRequestHandler in the same file.
-- {UseCase}Validator.cs in the same folder — AbstractValidator<T>, its own
+- {Request}Validator.cs in the same folder — AbstractValidator<T>, its own
   file (this project's convention — Validator is always separate,
   Command+Handler may share a file).
 - Controller action on the matching {Feature}Controller (create one if it
@@ -149,9 +156,9 @@ Testcontainers — see .ai/coding-rules.md) via WebApplicationFactory. Cover:
 - NotFound, if this is a query/command that looks up an existing entity by
   id and it doesn't exist.
 
-File: tests/Application.FunctionalTests/{Context}/{Feature}/{UseCase}Tests.cs
-(mirror the Application/Features path — this project's convention is test
-files mirror source 1:1). Follow the existing pattern in
+File: tests/Application.FunctionalTests/Features/{Feature}/Commands/
+or .../Queries/ (mirror the Application feature; the test class name keeps
+the use case, for example CreateBankTests). Follow the existing pattern in
 Testing.cs/BaseTestFixture.cs for sending commands/queries through the real
 pipeline. Run `dotnet test tests/Application.FunctionalTests/` and confirm
 they pass before reporting done — the inventory-test database must exist

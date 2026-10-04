@@ -1,4 +1,4 @@
-﻿namespace Cpa.Presentation.API.Middlewares
+﻿namespace BigLion.CPA.Presentation.API.Middlewares
 {
     public static class ExceptionMiddlewareExtension
     {

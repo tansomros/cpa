@@ -1,18 +1,18 @@
-using Cpa.Application.Features.ReferenceValues.ViewModels;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Exceptions;
-using Cpa.Domain.Entities;
+using BigLion.CPA.Application.Features.ReferenceValues.ViewModels;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Domain.Entities;
 
 
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.ReferenceValues.Queries.Get;
-[Obsolete("ãªé SmartEnum ¨Ò¡ Domain.Enums á·¹ — ´Ù LookupRegistry.cs")]
+namespace BigLion.CPA.Application.Features.ReferenceValues.Queries.Get;
+[Obsolete("ï¿½ï¿½ SmartEnum ï¿½Ò¡ Domain.Enums á·¹ ï¿½ ï¿½ï¿½ LookupRegistry.cs")]
 public class GetReferenceValueQuery : IRequest<ReferenceValueViewModel>
 {
     public required int Id { get; set; }
 }
 
-[Obsolete("ãªé SmartEnum ¨Ò¡ Domain.Enums á·¹ — ´Ù LookupRegistry.cs")]
+[Obsolete("ï¿½ï¿½ SmartEnum ï¿½Ò¡ Domain.Enums á·¹ ï¿½ ï¿½ï¿½ LookupRegistry.cs")]
 public class GetReferenceValueQueryHandler : IRequestHandler<GetReferenceValueQuery, ReferenceValueViewModel>
 {
     private readonly IMapper _mapper;

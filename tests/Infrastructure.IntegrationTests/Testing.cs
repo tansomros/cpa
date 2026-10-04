@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Npgsql;
 using Respawn;
-using BigLion.Application.Common.Interfaces;
-using BigLion.Infrastructure.Persistence;
-using BigLion.Infrastructure.Persistence.Interceptors;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Infrastructure.Persistence;
+using BigLion.CPA.Infrastructure.Persistence.Interceptors;
 
 namespace BigLion.Infrastructure.IntegrationTests;
 
@@ -29,8 +29,8 @@ public partial class Testing
             .AddEnvironmentVariables()
             .Build();
 
-        _connectionString = configuration.GetConnectionString("SUTH_CheckupTestDb") 
-            ?? "Server=127.0.0.1;Port=5432;Database=checkup-test;Username=suth;Password=suth;";
+        _connectionString = configuration.GetConnectionString("CpaDb")
+            ?? "Server=127.0.0.1;Port=5432;Database=cpathai-test;Username=cpat;Password=c#$th@1;";
         _connection = new NpgsqlConnection(_connectionString);
         
         var services = new ServiceCollection();
@@ -39,7 +39,7 @@ public partial class Testing
         services.AddSingleton(DateTimeMock.Object);
         services.AddScoped<AuditableEntitySaveChangesInterceptors>();
         
-        services.AddDbContext<CheckupDatabaseContext>((sp, options) =>
+        services.AddDbContext<CpaDatabaseContext>((sp, options) =>
         {
             options.UseNpgsql(_connectionString);
         });
@@ -47,7 +47,7 @@ public partial class Testing
         _serviceProvider = services.BuildServiceProvider();
 
         using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<CheckupDatabaseContext>();
+        var context = scope.ServiceProvider.GetRequiredService<CpaDatabaseContext>();
         
         context.Database.EnsureDeleted();
         await context.Database.MigrateAsync();
@@ -66,10 +66,10 @@ public partial class Testing
         await _respawner.ResetAsync(_connection);
     }
     
-    public static CheckupDatabaseContext CreateContext()
+    public static CpaDatabaseContext CreateContext()
     {
         var scope = _serviceProvider.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<CheckupDatabaseContext>();
+        return scope.ServiceProvider.GetRequiredService<CpaDatabaseContext>();
     }
 
     [OneTimeTearDown]

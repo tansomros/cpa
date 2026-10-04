@@ -4,8 +4,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>7ce67b68-0428-4039-94fa-0b835f70d161</UserSecretsId>
-    <AssemblyName>Cpa.Presentation.API</AssemblyName>
-    <RootNamespace>Cpa.Presentation.API</RootNamespace>
+    <AssemblyName>BigLion.CPA.Presentation.API</AssemblyName>
+    <RootNamespace>BigLion.CPA.Presentation.API</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
@@ -44,7 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\AddressesController.cs" />
     <Compile Remove="Controllers\AudiogramsController.cs" />
     <Compile Remove="Controllers\BodyCompositionsController.cs" />
     <Compile Remove="Controllers\CareprovidersController.cs" />
@@ -60,7 +59,6 @@
     <Compile Remove="Controllers\LabsController.cs" />
     <Compile Remove="Controllers\LungsController.cs" />
     <Compile Remove="Controllers\OptionsController.cs" />
-    <Compile Remove="Controllers\PatientsController.cs" />
     <Compile Remove="Controllers\PhysicalExaminationsController.cs" />
     <Compile Remove="Controllers\RecommendationTemplatesController.cs" />
     <Compile Remove="Controllers\RecommendationsController.cs" />

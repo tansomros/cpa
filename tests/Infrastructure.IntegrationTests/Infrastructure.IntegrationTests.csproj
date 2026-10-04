@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>Cpa.Infrastructure.IntegrationTests</RootNamespace>
-        <AssemblyName>Cpa.Infrastructure.IntegrationTests</AssemblyName>
+        <RootNamespace>BigLion.CPA.Infrastructure.IntegrationTests</RootNamespace>
+        <AssemblyName>BigLion.CPA.Infrastructure.IntegrationTests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,6 +27,12 @@
         <ProjectReference Include="..\..\src\Application\Application.csproj" />
         <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
         <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

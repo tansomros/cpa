@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Respawn;
-using BigLion.Infrastructure.Persistence;
+using BigLion.CPA.Infrastructure.Persistence;
+using BigLion.CPA.Infrastructure.Persistence.Interceptors;
+using BigLion.CPA.Infrastructure.Services;
 
 namespace BigLion.Application.FunctionalTests;
 
@@ -20,7 +22,7 @@ public class PostgreSQLTestDatabase : ITestDatabase
             .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("SUTH_CheckupTestDb");
+        var connectionString = configuration.GetConnectionString("CpaDb");
 
         Guard.Against.Null(connectionString);
 
@@ -31,11 +33,13 @@ public class PostgreSQLTestDatabase : ITestDatabase
     {
         _connection = new NpgsqlConnection(_connectionString);
 
-        var options = new DbContextOptionsBuilder<CheckupDatabaseContext>()
+        var options = new DbContextOptionsBuilder<CpaDatabaseContext>()
             .UseNpgsql(_connectionString)
             .Options;
 
-        var context = new CheckupDatabaseContext(options);
+        var context = new CpaDatabaseContext(
+            options,
+            new AuditableEntitySaveChangesInterceptors(new DateTimeService()));
 
         context.Database.EnsureDeleted();
         context.Database.Migrate();

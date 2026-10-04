@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Users.Commands.Create;
+namespace BigLion.CPA.Application.Features.Users.Commands.Create;
 
 
 public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>

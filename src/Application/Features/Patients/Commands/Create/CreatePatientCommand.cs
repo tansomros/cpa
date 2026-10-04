@@ -1,9 +1,9 @@
-using Cpa.Application.Common.Interfaces;
-using Cpa.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Domain.Entities;
 
-namespace Cpa.Application.Features.Patients.Commands.Create
+namespace BigLion.CPA.Application.Features.Patients.Commands.Create
 {
-    // input ËÃ×Í request
+    // input ï¿½ï¿½ï¿½ï¿½ request
     public class CreatePatientCommand : IRequest<int>
     {
         public required string HospitalNumber { get; set; }
@@ -36,7 +36,7 @@ namespace Cpa.Application.Features.Patients.Commands.Create
         public string? ChronicDisease {  get; set; }
     }
 
-    // àÍÒ INPUT ÁÒ Process
+    // ï¿½ï¿½ï¿½ INPUT ï¿½ï¿½ Process
     public class CreatePatientCommmandHandler : IRequestHandler<CreatePatientCommand, int>
     {
         private readonly ICpaDatabaseContext _checkupDatabaseContext;

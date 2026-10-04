@@ -1,5 +1,5 @@
 #pragma warning disable CS0618
-using BigLion.Application.Features.ReferenceValues.Queries.Get;
+using BigLion.CPA.Application.Features.ReferenceValues.Queries.Get;
 using BigLion.Application.FunctionalTests.Features._Shared;
 using static BigLion.Application.FunctionalTests.Testing;
 
@@ -28,6 +28,6 @@ public class GetReferenceValueTests : BaseTestFixture
         RunAsDefaultUser();
 
         await FluentActions.Invoking(() => SendAsync(new GetReferenceValueQuery { Id = 99999 }))
-            .Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+            .Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 }

@@ -1,9 +1,9 @@
-﻿using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Exceptions;
-using Cpa.Domain.Entities;
+﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Domain.Entities;
 
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.ReferenceGroups.Commands.Update;
+namespace BigLion.CPA.Application.Features.ReferenceGroups.Commands.Update;
 [Obsolete("ใช้ SmartEnum จาก Domain.Enums แทน — ดู LookupRegistry.cs")]
 public class UpdateReferenceGroupCommand : IRequest<Unit>
 {

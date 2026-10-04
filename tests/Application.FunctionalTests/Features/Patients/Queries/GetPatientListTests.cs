@@ -1,4 +1,4 @@
-using BigLion.Application.Features.Patients.Queries.Get;
+using BigLion.CPA.Application.Features.Patients.Queries.Get;
 using BigLion.Application.FunctionalTests.Features._Shared;
 using static BigLion.Application.FunctionalTests.Testing;
 

@@ -1,6 +1,6 @@
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Patients.Commands.Create
+namespace BigLion.CPA.Application.Features.Patients.Commands.Create
 {
     public class CreatePatientCommandValidator : AbstractValidator<CreatePatientCommand>
     {

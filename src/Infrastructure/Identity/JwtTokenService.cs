@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cpa.Application.Identity.Interfaces;
+using BigLion.CPA.Application.Identity.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 //using System.Text;
@@ -11,9 +11,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
-using Cpa.Domain.Entities;
+using BigLion.CPA.Domain.Entities;
 
-namespace Cpa.Infrastructure.Identity;
+namespace BigLion.CPA.Infrastructure.Identity;
 public sealed class JwtTokenService : IJwtTokenService
 {
     private readonly JwtSettings _settings;

@@ -1,6 +1,6 @@
-using BigLion.Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace BigLion.Cpa.Application.Features.BoundedContext.Examples.Commands.CreateExample;
+namespace BigLion.CPA.Application.Features.BoundedContext.Examples.Commands.CreateExample;
 
 public record CreateExampleCommand : IRequest<ReturnTypePlaceholder>
 {

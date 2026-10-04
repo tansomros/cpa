@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Cpa.Infrastructure.Identity;
+namespace BigLion.CPA.Infrastructure.Identity;
 
 public class ApplicationUser : IdentityUser
 {

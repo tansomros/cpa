@@ -1,7 +1,7 @@
 #pragma warning disable CS0618
-using BigLion.Application.Features.ReferenceValues.Commands.Delete;
+using BigLion.CPA.Application.Features.ReferenceValues.Commands.Delete;
 using BigLion.Application.FunctionalTests.Features._Shared;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Domain.Entities;
 using static BigLion.Application.FunctionalTests.Testing;
 
 namespace BigLion.Application.FunctionalTests.Features.ReferenceValues.Commands;
@@ -29,6 +29,6 @@ public class DeleteReferenceValueTests : BaseTestFixture
         RunAsDefaultUser();
 
         await FluentActions.Invoking(() => SendAsync(new DeleteReferenceValueCommand { Id = 99999 }))
-            .Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+            .Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 }

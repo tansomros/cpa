@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Cpa.Application.Common.Models;
-using Cpa.Application.Features.Users.Commands.Create;
-using Cpa.Application.Features.Users.Commands.Delete;
-using Cpa.Application.Features.Users.Commands.Update;
-using Cpa.Application.Features.Users.Queries.Get;
-using Cpa.Application.Features.Users.ViewModel;
+using BigLion.CPA.Application.Common.Models;
+using BigLion.CPA.Application.Features.Users.Commands.Create;
+using BigLion.CPA.Application.Features.Users.Commands.Delete;
+using BigLion.CPA.Application.Features.Users.Commands.Update;
+using BigLion.CPA.Application.Features.Users.Queries.Get;
+using BigLion.CPA.Application.Features.Users.ViewModel;
+using BigLion.CPA.Application.Identity.Commands;
 
-namespace Cpa.Presentation.API.Controllers;
+namespace BigLion.CPA.Presentation.API.Controllers;
 
 /// <summary>
 /// กลุ่ม API Endpoint สำหรับจัดการข้อมูลการตรวจเอกซเรย์ (X-Rays)
@@ -81,15 +83,16 @@ public class UsersController : BaseController
 
    
     /// <summary>
-    /// API Endpoint สำหรับ Login 
+    /// API Endpoint สำหรับ Login
     /// </summary>
-    [HttpGet("login", Name = "GetUserLogin")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserListViewModel))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-    public async Task<ActionResult<UserListViewModel>> GetUserLogin(string username,string password)
+    [AllowAnonymous]
+    [HttpPost("login", Name = "Login")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
     {
-        var query = new GetUserLoginQuery { Username = username,Password=password };
-        return Ok(await Mediator.Send(query));
+        var response = await Mediator.Send(command, cancellationToken);
+        return Ok(response);
     }
         
 }

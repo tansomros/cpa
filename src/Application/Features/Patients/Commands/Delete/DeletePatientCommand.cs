@@ -1,7 +1,7 @@
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Exceptions;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Exceptions;
 
-namespace Cpa.Application.Features.Patients.Commands.Delete;
+namespace BigLion.CPA.Application.Features.Patients.Commands.Delete;
 
 public record DeletePatientCommand : IRequest<Unit>
 {

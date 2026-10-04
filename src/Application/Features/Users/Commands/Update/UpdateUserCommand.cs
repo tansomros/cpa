@@ -1,8 +1,8 @@
-﻿using Cpa.Application.Exceptions;
-using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
+﻿using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Users.Commands.Update;
+namespace BigLion.CPA.Application.Features.Users.Commands.Update;
 
 public record UpdateUserCommand : IRequest<Unit>
 {

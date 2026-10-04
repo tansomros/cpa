@@ -1,6 +1,6 @@
-﻿using Cpa.Application.Common.Models;
+﻿using BigLion.CPA.Application.Common.Models;
 
-namespace Cpa.Application.Common.Mappings;
+namespace BigLion.CPA.Application.Common.Mappings;
 
 public static class MappingExtensions
 {

@@ -1,8 +1,8 @@
-﻿using Cpa.Application.Exceptions;
-using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
+﻿using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Users.Commands.Delete;
+namespace BigLion.CPA.Application.Features.Users.Commands.Delete;
 
 public record DeleteUserCommand : IRequest<Unit>
 {

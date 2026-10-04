@@ -10,6 +10,7 @@ export const setupGuards = router => {
 
     if(!user) {
       clearUserData()
+
       // redirect to local login page instead of OIDC
       return { name: 'login', query: { to: to.path !== '/' ? to.path : undefined } }
     }

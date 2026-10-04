@@ -1,10 +1,10 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
-using SUTH.HealthCheckup.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace SUTH.HealthCheckup.Application.UnitTests.Common.Mappings;
+namespace BigLion.CPA.Application.UnitTests.Common.Mappings;
 
 public class MappingTests
 {
@@ -14,7 +14,7 @@ public class MappingTests
     public MappingTests()
     {
         _configuration = new MapperConfiguration(config =>
-            config.AddMaps(Assembly.GetAssembly(typeof(ICheckupDatabaseContext))));
+            config.AddMaps(typeof(ICpaDatabaseContext).Assembly), NullLoggerFactory.Instance);
 
         _mapper = _configuration.CreateMapper();
     }

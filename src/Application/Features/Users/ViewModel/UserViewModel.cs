@@ -1,7 +1,7 @@
-using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Users.ViewModel;
+namespace BigLion.CPA.Application.Features.Users.ViewModel;
 public class UserViewModel : IMapFrom<User>
 {
     public int Id { get; set; }

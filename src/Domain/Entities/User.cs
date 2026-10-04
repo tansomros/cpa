@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Cpa.Domain.Entities;
+namespace BigLion.CPA.Domain.Entities;
 public class User : BaseEntity
 {
     public string Username { get; private set; } = default!;
@@ -10,7 +10,7 @@ public class User : BaseEntity
     public string DisplayName { get; private set; } = default!;
     public string? PositionName { get; private set; }
     public string? Email { get; set; }
-    public int PharmacyId { get; set; }
+    public int? PharmacyId { get; set; }
     public DateTime? LastLog { get; private set; }
     public int RoleId { get; private set; }
     public virtual Role? Role { get; private set; }
@@ -21,7 +21,7 @@ public class User : BaseEntity
         string displayName,
         string? positionName,
         string? email,
-        int pharmacyId,
+        int? pharmacyId,
         int roleId)
     {
         Username = username;

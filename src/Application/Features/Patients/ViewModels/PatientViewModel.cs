@@ -1,9 +1,11 @@
 using System.Text.Json.Serialization;
-using Cpa.Application.Features.Addresses.ViewModel;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Features.Districts.ViewModels;
+using BigLion.CPA.Application.Features.Provinces.ViewModels;
+using BigLion.CPA.Application.Features.SubDistricts.ViewModels;
+using BigLion.CPA.Domain.Entities;
 
-namespace Cpa.Application.Features.Patients.ViewModels
+namespace BigLion.CPA.Application.Features.Patients.ViewModels
 {
     public class PatientViewModel : IMapFrom<Patient>
     {

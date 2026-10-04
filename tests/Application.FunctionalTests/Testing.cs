@@ -1,8 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using BigLion.Application.Common.Security;
-using BigLion.Infrastructure.Persistence;
+using BigLion.CPA.Application.Common.Security;
+using BigLion.CPA.Infrastructure.Persistence;
 
 namespace BigLion.Application.FunctionalTests;
 
@@ -57,7 +57,7 @@ public partial class Testing
         _fakeCurrentUserService.Id = "test-user-id";
         _fakeCurrentUserService.Name = "Test User";
         _fakeCurrentUserService.LoginName = "test@local";
-        _fakeCurrentUserService.AddPolicies(HealthCheckupPolicies.RequireAuthenticatedUser);
+        _fakeCurrentUserService.AddPolicies(CpaPolicies.RequireAuthenticatedUser);
         _userId = _fakeCurrentUserService.Id;
     }
 
@@ -69,10 +69,10 @@ public partial class Testing
         _fakeCurrentUserService.LoginName = "doctor@local";
         _fakeCurrentUserService.DoctorCode = doctorCode;
         _fakeCurrentUserService.HasDoctorRole = true;
-        _fakeCurrentUserService.AddRoles(HealthCheckupRoles.Doctor);
+        _fakeCurrentUserService.AddRoles(CpaRoles.Pharmacy);
         _fakeCurrentUserService.AddPolicies(
-            HealthCheckupPolicies.RequireAuthenticatedUser,
-            HealthCheckupPolicies.RequireDoctor);
+            CpaPolicies.RequireAuthenticatedUser,
+            CpaPolicies.RequirePharmacy);
         _userId = _fakeCurrentUserService.Id;
     }
 
@@ -82,10 +82,10 @@ public partial class Testing
         _fakeCurrentUserService.Id = "test-nurse-id";
         _fakeCurrentUserService.Name = "Nurse Test";
         _fakeCurrentUserService.LoginName = "nurse@local";
-        _fakeCurrentUserService.AddRoles(HealthCheckupRoles.Nurse);
+        _fakeCurrentUserService.AddRoles(CpaRoles.Reporter);
         _fakeCurrentUserService.AddPolicies(
-            HealthCheckupPolicies.RequireAuthenticatedUser,
-            HealthCheckupPolicies.RequireNurse);
+            CpaPolicies.RequireAuthenticatedUser,
+            CpaPolicies.RequireReporter);
         _userId = _fakeCurrentUserService.Id;
     }
 
@@ -96,10 +96,10 @@ public partial class Testing
         _fakeCurrentUserService.Name = "Admin Test";
         _fakeCurrentUserService.LoginName = "admin@local";
         _fakeCurrentUserService.HasAdminRole = true;
-        _fakeCurrentUserService.AddRoles(HealthCheckupRoles.Admin);
+        _fakeCurrentUserService.AddRoles(CpaRoles.Admin);
         _fakeCurrentUserService.AddPolicies(
-            HealthCheckupPolicies.RequireAuthenticatedUser,
-            HealthCheckupPolicies.RequireAdmin);
+            CpaPolicies.RequireAuthenticatedUser,
+            CpaPolicies.RequireAdmin);
         _userId = _fakeCurrentUserService.Id;
     }
 
@@ -110,10 +110,10 @@ public partial class Testing
         _fakeCurrentUserService.Name = "Employee Test";
         _fakeCurrentUserService.LoginName = "employee@local";
         _fakeCurrentUserService.EmployeeId = employeeId;
-        _fakeCurrentUserService.AddRoles(HealthCheckupRoles.Employee);
+        _fakeCurrentUserService.AddRoles(CpaRoles.Manager);
         _fakeCurrentUserService.AddPolicies(
-            HealthCheckupPolicies.RequireAuthenticatedUser,
-            HealthCheckupPolicies.RequireEmployee);
+            CpaPolicies.RequireAuthenticatedUser,
+            CpaPolicies.RequireManager);
         _userId = _fakeCurrentUserService.Id;
     }
 
@@ -142,7 +142,7 @@ public partial class Testing
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var context = scope.ServiceProvider.GetRequiredService<CheckupDatabaseContext>();
+        var context = scope.ServiceProvider.GetRequiredService<CpaDatabaseContext>();
 
         return await context.FindAsync<TEntity>(keyValues);
     }
@@ -152,7 +152,7 @@ public partial class Testing
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var context = scope.ServiceProvider.GetRequiredService<CheckupDatabaseContext>();
+        var context = scope.ServiceProvider.GetRequiredService<CpaDatabaseContext>();
 
         context.Add(entity);
 
@@ -164,7 +164,7 @@ public partial class Testing
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var context = scope.ServiceProvider.GetRequiredService<CheckupDatabaseContext>();
+        var context = scope.ServiceProvider.GetRequiredService<CpaDatabaseContext>();
 
         context.Update(entity);
 
@@ -175,7 +175,7 @@ public partial class Testing
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var context = scope.ServiceProvider.GetRequiredService<CheckupDatabaseContext>();
+        var context = scope.ServiceProvider.GetRequiredService<CpaDatabaseContext>();
 
         return await context.Set<TEntity>().CountAsync();
     }
@@ -185,7 +185,7 @@ public partial class Testing
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var context = scope.ServiceProvider.GetRequiredService<CheckupDatabaseContext>();
+        var context = scope.ServiceProvider.GetRequiredService<CpaDatabaseContext>();
 
         return await context.Set<TEntity>().Where(predicate).AsNoTracking().ToListAsync();
     }

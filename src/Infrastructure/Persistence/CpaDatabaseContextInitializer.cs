@@ -1,10 +1,10 @@
-using Cpa.Application.Features.Systems.Commands;
+using BigLion.CPA.Application.Features.Systems.Commands;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Cpa.Infrastructure.Persistence
+namespace BigLion.CPA.Infrastructure.Persistence
 {
     public class CpaDatabaseContextInitializer
     {

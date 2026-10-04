@@ -1,6 +1,6 @@
-using Cpa.Application.Common.Security;
+using BigLion.CPA.Application.Common.Security;
 
-namespace Cpa.Application.Features.Lookups;
+namespace BigLion.CPA.Application.Features.Lookups;
 
 [Authorize(Policy = CpaPolicies.AllowAnonymous)]
 public record GetLookupCategoriesQuery : IRequest<List<string>>;

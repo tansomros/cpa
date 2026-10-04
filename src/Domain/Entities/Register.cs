@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.Entities;
+﻿namespace BigLion.CPA.Domain.Entities;
 
 public class Register
 {

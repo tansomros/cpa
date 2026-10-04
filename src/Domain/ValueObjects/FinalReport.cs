@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Cpa.Domain.ValueObjects;
+namespace BigLion.CPA.Domain.ValueObjects;
 public class FinalReport
 {
     public ICollection<FinalLab> Labs { get; set; }

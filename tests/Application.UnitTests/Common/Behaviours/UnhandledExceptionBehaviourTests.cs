@@ -6,9 +6,9 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SUTH.HealthCheckup.Application.Common.Behaviours;
+using BigLion.CPA.Application.Common.Behaviours;
 
-namespace SUTH.HealthCheckup.Application.UnitTests.Common.Behaviours;
+namespace BigLion.CPA.Application.UnitTests.Common.Behaviours;
 
 public class UnhandledExceptionBehaviourTests
 {

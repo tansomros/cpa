@@ -1,6 +1,6 @@
-﻿using Cpa.Application.Common.Interfaces;
+﻿using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Infrastructure.Services
+namespace BigLion.CPA.Infrastructure.Services
 {
     public class DateTimeService : IDateTime
     {

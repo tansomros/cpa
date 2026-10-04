@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>Cpa.Infrastructure</RootNamespace>
-    <AssemblyName>Cpa.Infrastructure</AssemblyName>
+    <RootNamespace>BigLion.CPA.Infrastructure</RootNamespace>
+    <AssemblyName>BigLion.CPA.Infrastructure</AssemblyName>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -36,9 +36,7 @@
 
   <ItemGroup>
     <Compile Remove="Persistence\Configurations\AudiogramConfiguration.cs" />
-    <Compile Remove="Persistence\Configurations\BankConfiguration.cs" />
     <Compile Remove="Persistence\Configurations\CareproviderConfiguration.cs" />
-    <Compile Remove="Persistence\Configurations\PatientConfiguration.cs" />
     <Compile Remove="Persistence\Configurations\RecommendationTemplateConfiguration.cs" />
     <Compile Remove="Persistence\Configurations\ReportConfiguration.cs" />
   </ItemGroup>

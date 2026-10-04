@@ -1,10 +1,10 @@
-using Cpa.Application.Common.Mappings;
-using Cpa.Application.Common.Models;
+using BigLion.CPA.Application.Common.Mappings;
+using BigLion.CPA.Application.Common.Models;
 using MediatR;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Features.Patients.ViewModels;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Features.Patients.ViewModels;
 
-namespace Cpa.Application.Features.Patients.Queries.Get;
+namespace BigLion.CPA.Application.Features.Patients.Queries.Get;
 
 public class GetPatientListQuery : IRequest<PaginatedList<PatientViewModel>>
 {

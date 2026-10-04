@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Cpa.Application.Common.Models;
+using BigLion.CPA.Application.Common.Models;
 
-namespace Cpa.Infrastructure.Identity;
+namespace BigLion.CPA.Infrastructure.Identity;
 
 public static class IdentityResultExtensions
 {

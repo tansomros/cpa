@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Patients.Commands.Update
+namespace BigLion.CPA.Application.Features.Patients.Commands.Update
 {
     public class UpdatePatientCommandValidator : AbstractValidator<UpdatePatientCommand>
     {
@@ -14,10 +14,10 @@ namespace Cpa.Application.Features.Patients.Commands.Update
         {
             _context = context;
 
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id äÁèÊÒÁÒÃ¶à»ç¹¤èÒÇèÒ§ä´é").NotNull().WithMessage("â»Ã´ÃÐºØ Id");
-            RuleFor(x => x.HospitalNumber).NotEmpty().WithMessage("HN äÁèÊÒÁÒÃ¶à»ç¹¤èÒÇèÒ§ä´é").NotNull().WithMessage("â»Ã´ÃÐºØ HN");
-            RuleFor(p => p.FirstName).NotEmpty().WithMessage("ª×èÍ äÁèÊÒÁÒÃ¶à»ç¹¤èÒÇèÒ§ä´é").NotNull().WithMessage("¡ÃØ³ÒÃÐºØª×èÍ");
-            RuleFor(p => p.LastName).NotEmpty().WithMessage("¹ÒÁÊ¡ØÅ äÁèÊÒÁÒÃ¶à»ç¹¤èÒÇèÒ§ä´é").NotNull().WithMessage("¡ÃØ³ÒÃÐºØ¹ÒÁÊ¡ØÅ");
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ç¹¤ï¿½ï¿½ï¿½ï¿½Ò§ï¿½ï¿½").NotNull().WithMessage("ï¿½Ã´ï¿½Ðºï¿½ Id");
+            RuleFor(x => x.HospitalNumber).NotEmpty().WithMessage("HN ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ç¹¤ï¿½ï¿½ï¿½ï¿½Ò§ï¿½ï¿½").NotNull().WithMessage("ï¿½Ã´ï¿½Ðºï¿½ HN");
+            RuleFor(p => p.FirstName).NotEmpty().WithMessage("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ç¹¤ï¿½ï¿½ï¿½ï¿½Ò§ï¿½ï¿½").NotNull().WithMessage("ï¿½ï¿½Ø³ï¿½ï¿½ÐºØªï¿½ï¿½ï¿½");
+            RuleFor(p => p.LastName).NotEmpty().WithMessage("ï¿½ï¿½ï¿½Ê¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ç¹¤ï¿½ï¿½ï¿½ï¿½Ò§ï¿½ï¿½").NotNull().WithMessage("ï¿½ï¿½Ø³ï¿½ï¿½ÐºØ¹ï¿½ï¿½Ê¡ï¿½ï¿½");
         }
     }
 }

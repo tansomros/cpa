@@ -1,6 +1,6 @@
-﻿using Cpa.Domain.Common;
+﻿using BigLion.CPA.Domain.Common;
 
-namespace Cpa.Domain.ValueObjects;
+namespace BigLion.CPA.Domain.ValueObjects;
 
 public class Colour(string code) : ValueObject
 {

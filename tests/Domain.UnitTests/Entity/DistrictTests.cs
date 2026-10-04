@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Domain.Entities;
 
-namespace BigLion.Domain.UnitTests.Entity;
+namespace BigLion.CPA.Domain.UnitTests.Entity;
 public class DistrictTests
 {
     [Test]
@@ -14,7 +14,7 @@ public class DistrictTests
 
         address.Should().NotBeNull();
         address.ProvinceId.Should().Be("30");
-        address.DistrictId.Should().Be("3001");
+        address.Id.Should().Be("3001");
         address.Name.Should().Be("เมืองนครราชสีมา");
         address.NameEnglish.Should().Be("Muang");
     }

@@ -1,5 +1,5 @@
-using BigLion.Domain.Enums;
-using BigLion.Application.Features.Lookups;
+using BigLion.CPA.Domain.Enums;
+using BigLion.CPA.Application.Features.Lookups;
 using static BigLion.Application.FunctionalTests.Testing;
 
 namespace BigLion.Application.FunctionalTests.Features.Lookups;
@@ -55,7 +55,7 @@ public class GetLookupOptionsTests : BaseTestFixture
 
         await FluentActions.Invoking(() =>
             SendAsync(new GetLookupOptionsQuery { Category = "nonexistent" }))
-            .Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+            .Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 
     /// ทดสอบ: SmartEnum.FromValue round-trip ควรคืนค่าที่ถูกต้อง
@@ -64,7 +64,7 @@ public class GetLookupOptionsTests : BaseTestFixture
     {
         var normal = ExamResult.FromValue("Normal");
         normal.Should().BeSameAs(ExamResult.Normal);
-        normal.DisplayName.Should().Be("ปกติ (Normal)");
+        normal.GetDisplayName().Should().Be("ปกติ (Normal)");
     }
 
     /// ทดสอบ: SmartEnum.FromValue ด้วยค่าที่ไม่มี ควร throw InvalidOperationException

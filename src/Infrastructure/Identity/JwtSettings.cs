@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cpa.Infrastructure.Identity;
+namespace BigLion.CPA.Infrastructure.Identity;
 public sealed class JwtSettings
 {
     public const string SectionName = "Jwt";

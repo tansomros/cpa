@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentValidation.Results;
 using NUnit.Framework;
-using SUTH.HealthCheckup.Application.Common.Exceptions;
+using BigLion.CPA.Application.Common.Exceptions;
 
-namespace SUTH.HealthCheckup.Application.UnitTests.Common.Exceptions;
+namespace BigLion.CPA.Application.UnitTests.Common.Exceptions;
 
 public class ValidationExceptionTests
 {

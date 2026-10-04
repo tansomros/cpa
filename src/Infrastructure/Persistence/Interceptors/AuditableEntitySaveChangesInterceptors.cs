@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Infrastructure.Persistence.Interceptors
+namespace BigLion.CPA.Infrastructure.Persistence.Interceptors
 {
     public class AuditableEntitySaveChangesInterceptors : SaveChangesInterceptor
     {

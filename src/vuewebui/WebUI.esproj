@@ -7,8 +7,11 @@
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
+    <!-- This repo installs with pnpm. The SDK's npm install fails on the peer tree and on an existing pnpm node_modules. -->
+    <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="src\pages\contracts\" />
-  </ItemGroup>
+
+  <Target Name="PnpmInstall" BeforeTargets="CoreCompile">
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="corepack pnpm install --frozen-lockfile" />
+  </Target>
 </Project>

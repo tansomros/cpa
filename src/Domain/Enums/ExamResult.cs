@@ -1,6 +1,6 @@
-using Cpa.Domain.Common;
+using BigLion.CPA.Domain.Common;
 
-namespace Cpa.Domain.Enums;
+namespace BigLion.CPA.Domain.Enums;
 
 /// <summary>
 /// ผลการตรวจทั่วไป (General Examination) — แทนที่ ReferenceGroup "GA" (Id=1) + ReferenceValue ในฐานข้อมูล

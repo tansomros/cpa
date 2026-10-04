@@ -1,4 +1,4 @@
-﻿namespace Cpa.Application.Features.Patients.ViewModels
+﻿namespace BigLion.CPA.Application.Features.Patients.ViewModels
 {
    public class PatientListViewModel
     {

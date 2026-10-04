@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cpa.Application.Identity.Commands;
+namespace BigLion.CPA.Application.Identity.Commands;
 public sealed record LoginCommand(
     string Username,
     string Password)

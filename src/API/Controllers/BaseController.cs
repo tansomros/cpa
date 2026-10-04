@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Cpa.Presentation.API.Controllers
+namespace BigLion.CPA.Presentation.API.Controllers
 {
     [Route("[controller]")]
     [Produces("application/json")]

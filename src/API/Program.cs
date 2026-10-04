@@ -2,11 +2,11 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Cpa.Application;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Common.Security;
-using Cpa.Presentation.API.Converters;
-using Cpa.Presentation.API.Routing;
+using BigLion.CPA.Application;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
+using BigLion.CPA.Presentation.API.Converters;
+using BigLion.CPA.Presentation.API.Routing;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -14,13 +14,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using Cpa.Presentation.API.Services;
-using Cpa.Presentation.API.Middlewares;
-using Cpa.Infrastructure.Identity;
-using Cpa.Infrastructure.Persistence;
-using Cpa.Infrastructure;
+using BigLion.CPA.Presentation.API.Services;
+using BigLion.CPA.Presentation.API.Middlewares;
+using BigLion.CPA.Infrastructure.Identity;
+using BigLion.CPA.Infrastructure.Persistence;
+using BigLion.CPA.Infrastructure;
 
-namespace Cpa.Presentation.API;
+namespace BigLion.CPA.Presentation.API;
 public class Program
 {
     public static async Task Main(string[] args)
@@ -148,6 +148,7 @@ public class Program
         builder.Services.AddSwaggerGen(c =>
         {
             c.SupportNonNullableReferenceTypes();
+            c.CustomSchemaIds(SchemaId);
             c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "CPA API",
@@ -161,7 +162,7 @@ public class Program
                 License = new OpenApiLicense
                 {
                     Name = "ลิขสิทธิ์ของ CPA",
-                    Url = new Uri("https://www.Cpa.com")
+                    Url = new Uri("https://www.BigLion.CPA.com")
                 }
             });
 
@@ -246,5 +247,26 @@ public class Program
                 pattern: "{controller:slugify}/{action:slugify}/{id:slugify?}");
 
         app.Run();
+    }
+
+    private static string SchemaId(Type type)
+    {
+        if (type.IsGenericType)
+        {
+            var name = type.Name.Split('`')[0];
+            var args = string.Join("And", type.GetGenericArguments().Select(SchemaId));
+            return name + "Of" + args;
+        }
+
+        const string marker = ".Features.";
+        var ns = type.Namespace ?? string.Empty;
+        var index = ns.IndexOf(marker, StringComparison.Ordinal);
+        if (index < 0)
+        {
+            return type.Name;
+        }
+
+        var feature = ns[(index + marker.Length)..].Split('.')[0];
+        return feature + type.Name;
     }
 }

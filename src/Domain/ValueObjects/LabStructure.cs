@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Cpa.Domain.ValueObjects;
+namespace BigLion.CPA.Domain.ValueObjects;
 public class LabStructure
 {
     public required int CheckupItemId { get; set; }

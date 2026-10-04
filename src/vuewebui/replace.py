@@ -1,6 +1,6 @@
-﻿import re
+import re
 
-file_path = r'd:\Project\Kondongpu\src\vuewebui\src\pages\companies\list\index.vue'
+file_path = r'd:\Project\CPA\src\vuewebui\src\pages\companies\list\index.vue'
 
 with open(file_path, 'r', encoding='utf-8') as f:
     content = f.read()

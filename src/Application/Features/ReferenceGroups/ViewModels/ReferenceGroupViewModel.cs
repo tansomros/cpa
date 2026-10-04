@@ -1,8 +1,8 @@
-﻿using Cpa.Application.Common.Interfaces;
-using Cpa.Domain.Entities;
+﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Domain.Entities;
 
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.ReferenceGroups.ViewModels;
+namespace BigLion.CPA.Application.Features.ReferenceGroups.ViewModels;
 [Obsolete("ใช้ SmartEnum จาก Domain.Enums แทน — ดู LookupRegistry.cs")]
 public class ReferenceGroupViewModel : IMapFrom<ReferenceGroup>
 {

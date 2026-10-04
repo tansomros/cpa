@@ -1,6 +1,6 @@
 #pragma warning disable CS0618
-using BigLion.Domain.ValueObjects;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Domain.ValueObjects;
+using BigLion.CPA.Domain.Entities;
 
 using static BigLion.Application.FunctionalTests.Testing;
 

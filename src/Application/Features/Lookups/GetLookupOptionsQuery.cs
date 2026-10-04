@@ -1,7 +1,7 @@
-using Cpa.Application.Common.Security;
-using Cpa.Application.Exceptions;
+using BigLion.CPA.Application.Common.Security;
+using BigLion.CPA.Application.Exceptions;
 
-namespace Cpa.Application.Features.Lookups;
+namespace BigLion.CPA.Application.Features.Lookups;
 
 [Authorize(Policy = CpaPolicies.AllowAnonymous)]
 public record GetLookupOptionsQuery : IRequest<List<LookupOptionDto>>

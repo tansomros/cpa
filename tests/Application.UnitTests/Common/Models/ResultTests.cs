@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SUTH.HealthCheckup.Application.Common.Models;
+using BigLion.CPA.Application.Common.Models;
 
-namespace SUTH.HealthCheckup.Application.UnitTests.Common.Models;
+namespace BigLion.CPA.Application.UnitTests.Common.Models;
 
 public class ResultTests
 {

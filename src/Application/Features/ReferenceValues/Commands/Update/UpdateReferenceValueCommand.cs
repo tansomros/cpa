@@ -1,10 +1,10 @@
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Exceptions;
-using Cpa.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Domain.Entities;
 
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.ReferenceValues.Commands.Update;
-[Obsolete("ãªé SmartEnum ¨Ò¡ Domain.Enums á·¹ — ´Ù LookupRegistry.cs")]
+namespace BigLion.CPA.Application.Features.ReferenceValues.Commands.Update;
+[Obsolete("ï¿½ï¿½ SmartEnum ï¿½Ò¡ Domain.Enums á·¹ ï¿½ ï¿½ï¿½ LookupRegistry.cs")]
 public class UpdateReferenceValueCommand : IRequest<Unit>
 {
     public required int Id { get; set; }
@@ -14,7 +14,7 @@ public class UpdateReferenceValueCommand : IRequest<Unit>
     public int Sort { get; set; }
 }
 
-[Obsolete("ãªé SmartEnum ¨Ò¡ Domain.Enums á·¹ — ´Ù LookupRegistry.cs")]
+[Obsolete("ï¿½ï¿½ SmartEnum ï¿½Ò¡ Domain.Enums á·¹ ï¿½ ï¿½ï¿½ LookupRegistry.cs")]
 public class UpdateReferenceValueCommandHandler : IRequestHandler<UpdateReferenceValueCommand, Unit>
 {
     private readonly ICpaDatabaseContext _checkupContext;

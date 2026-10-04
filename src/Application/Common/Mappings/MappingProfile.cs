@@ -1,7 +1,7 @@
 using System.Reflection;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Common.Mappings;
+namespace BigLion.CPA.Application.Common.Mappings;
 public class MappingProfile : Profile
 {
     public MappingProfile()

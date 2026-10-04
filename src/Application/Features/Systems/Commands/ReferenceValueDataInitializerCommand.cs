@@ -1,9 +1,9 @@
-﻿using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Common.Security;
-using Cpa.Domain.Entities;
+﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
+using BigLion.CPA.Domain.Entities;
 
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.Systems.Commands;
+namespace BigLion.CPA.Application.Features.Systems.Commands;
 
 /// <summary>
 /// [OBSOLETE] ข้อมูลเหล่านี้ถูกแทนที่ด้วย SmartEnum ใน Domain.Enums แล้ว

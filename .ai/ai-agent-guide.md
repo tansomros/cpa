@@ -6,11 +6,11 @@ Read this before making any change. It tells you where things go and what not to
 
 | I need to... | Goes in |
 |---|---|
-| Add a new domain entity | `src/Domain/Entities/{Context}/{Entity}.cs` — pick the bounded context from [architecture.md](architecture.md) (`ReferenceData`, `Pharmacy`, `Patient`, `Service`) |
+| Add a new domain entity | `src/Domain/Entities/{Entity}.cs` |
 | Add a shared domain base type | `src/Domain/Common/` |
-| Add a new command (create/update/delete) | `src/Application/Features/{Context}/{Feature}/Commands/{VerbNoun}/` — `{VerbNoun}Command.cs` (Command + Handler together) and `{VerbNoun}Validator.cs` (Validator, its own file) |
-| Add a new query | `src/Application/Features/{Context}/{Feature}/Queries/{GetNoun[s]}/` — same split: `{UseCase}Query.cs` (Query + Handler), `{UseCase}Validator.cs` if the query is validated |
-| Add EF mapping for an entity | `src/Infrastructure/Data/Configurations/{Context}/{Entity}Configuration.cs`, register the `DbSet<T>` in `CpaDbContext` and `ICpaDbContext` |
+| Add a new command (create/update/delete) | `src/Application/Features/{Feature}/Commands/Create`, `Commands/Update`, or `Commands/Delete` — `{Verb}{Noun}Command.cs` (Command + Handler together) and `{Verb}{Noun}CommandValidator.cs` (Validator, its own file). The folder name is only `Create`, `Update`, or `Delete` |
+| Add a new query | `src/Application/Features/{Feature}/Queries/Get/` — both the single query and the list query. `{Get}{Noun}Query.cs` and `{Get}{Noun}ListQuery.cs` (Query + Handler), plus a validator file when the query is validated |
+| Add EF mapping for an entity | `src/Infrastructure/Persistence/Configurations/{Entity}Configuration.cs`, register the `DbSet<T>` in `CpaDatabaseContext` and `ICpaDatabaseContext` |
 | Add a migration | From `src/Infrastructure`: `dotnet ef migrations add {Name} --startup-project ../API` |
 | Add an API endpoint | Add an action to the matching `src/API/Controllers/{Feature}Controller.cs` (or create one) — the action should only call `Mediator.Send(...)` |
 | Add a frontend page for a feature | `src/vuewebui/src/pages/{feature}/{create,edit,view,list}/` — dedicated routes, not a dialog; use the schema-driven scaffold once it exists (roadmap Phase 3) |
@@ -19,7 +19,7 @@ Read this before making any change. It tells you where things go and what not to
 
 ## MUST
 
-- MUST put a new entity's Domain class, Application feature folder, and EF configuration all under the same bounded context (`{Context}` name matches across all three).
+- MUST put a new command in `Features/{Feature}/Commands/Create`, `Update`, or `Delete`, and a new query in `Features/{Feature}/Queries/Get`. The namespace must match that folder (`BigLion.CPA.Application.Features.{Feature}.Commands.Create` or `...Queries.Get`). Do not add a `{Context}` segment or an entity suffix to those folders.
 - MUST give every new entity a `Guid ExternalId` and use it (never the internal `Id`) in any API route, request/response DTO, or frontend URL.
 - MUST use `Ardalis.GuardClauses` (or an equivalent explicit check) to enforce entity invariants in the constructor/behavior methods — don't rely on FluentValidation alone.
 - MUST model any running balance or on-hand quantity (budget, stock) as derived from an append-only ledger table — never a single field that gets directly incremented/decremented. This is not optional for this project; see the "Non-negotiable" section of [roadmap.md](roadmap.md).
@@ -51,12 +51,14 @@ They only generate the CQRS slice (Command/Query + Validator + Handler) — not 
 Both templates place their output relative to the current directory using the proven `sourceName` rename mechanism (a symbol-driven `rename` modifier was tried and does **not** work reliably in this SDK version — don't reintroduce it). That means you `cd` into the exact target folder first:
 
 ```
-cd src/Application/Features/{BoundedContext}/{FeatureName}/Commands
-dotnet new biglion-command -n CreateVendor --featureName Vendors --boundedContext Procurement --returnType int
+cd src/Application/Features/{FeatureName}/Commands
+dotnet new biglion-command -n CreateBank --featureName Banks --boundedContext Banks --returnType int
 
 cd ../Queries
-dotnet new biglion-query -n GetVendors --featureName Vendors --boundedContext Procurement --returnType "PaginatedList<VendorViewModel>"
+dotnet new biglion-query -n GetBank --featureName Banks --boundedContext Banks --returnType "BankViewModel"
 ```
+
+The template still emits a `BoundedContext` namespace segment and a folder named after `-n` (`CreateBank`, `GetBank`). After generating, move the files into `Commands/Create`, `Commands/Update`, `Commands/Delete`, or `Queries/Get`, and set the namespace to `BigLion.CPA.Application.Features.{Feature}.Commands.Create` (or `.Update`, `.Delete`, `.Queries.Get`). Put both the single-item query and the list query in `Queries/Get`.
 
 `--returnType` has no safe default for `biglion-query` (it's required) — a default embedding the literal word "Examples" would collide with the `--featureName` substitution and silently produce a wrong class name. `biglion-command` defaults `--returnType` to `int` since that default contains no substitutable tokens.
 

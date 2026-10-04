@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Domain.Entities;
 
-namespace BigLion.Domain.UnitTests.Entity;
+namespace BigLion.CPA.Domain.UnitTests.Entity;
 public class SubDistrictTests
 {
     [Test]

@@ -1,6 +1,6 @@
-﻿using Cpa.Domain.Entities;
+﻿using BigLion.CPA.Domain.Entities;
 
-namespace Cpa.Domain.Constants;
+namespace BigLion.CPA.Domain.Constants;
 
 public abstract class Roles
 {

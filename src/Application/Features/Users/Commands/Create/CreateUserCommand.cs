@@ -1,7 +1,7 @@
-﻿using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
+﻿using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Users.Commands.Create;
+namespace BigLion.CPA.Application.Features.Users.Commands.Create;
 
 public record CreateUserCommand : IRequest<int>
 {

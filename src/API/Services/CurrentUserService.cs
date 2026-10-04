@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Presentation.API.Services;
+namespace BigLion.CPA.Presentation.API.Services;
 
 public class CurrentUserService : ICurrentUserService
 {

@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.ValueObjects;
+﻿namespace BigLion.CPA.Domain.ValueObjects;
 public class FinalLab
 {
     public required string CheckupGroupCode { get; set; }

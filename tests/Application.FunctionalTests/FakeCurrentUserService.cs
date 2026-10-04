@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using BigLion.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
 
 namespace BigLion.Application.FunctionalTests;
 

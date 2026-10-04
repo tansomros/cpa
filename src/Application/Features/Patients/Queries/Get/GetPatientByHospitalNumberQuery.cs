@@ -1,9 +1,9 @@
-using Cpa.Application.Features.Patients.ViewModels;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Exceptions;
-using Cpa.Domain.Entities;
+using BigLion.CPA.Application.Features.Patients.ViewModels;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Domain.Entities;
 
-namespace Cpa.Application.Features.Patients.Queries.Get;
+namespace BigLion.CPA.Application.Features.Patients.Queries.Get;
 
 public class GetPatientByNationIdQuery : IRequest<PatientViewModel>
 {

@@ -13,6 +13,7 @@ const isLoading = ref(false)
 const login = async () => {
   if (!username.value || !password.value) {
     errorMessage.value = 'Please enter username and password'
+    
     return
   }
 
@@ -20,17 +21,18 @@ const login = async () => {
     isLoading.value = true
     errorMessage.value = ''
 
-    const data = await $api('/api/auth/login', {
+    const data = await $api('/users/login', {
       method: 'POST',
       body: {
         username: username.value,
-        password: password.value
-      }
+        password: password.value,
+      },
     })
 
     if (data.accessToken) {
       // Set accessToken
       const token = useCookie('accessToken')
+
       token.value = data.accessToken
       localStorage.setItem('accessToken', token.value)
       
@@ -41,13 +43,16 @@ const login = async () => {
         displayName: data.displayName,
         role: data.role || 'admin',
       }
+
       const userDataCookie = useCookie('userData')
+
       userDataCookie.value = userData
       localStorage.setItem('userData', JSON.stringify(userData))
     }
     
     // Redirect to the originally requested route or dashboards
     const routeQuery = router.currentRoute.value.query
+
     router.push(routeQuery.to ? String(routeQuery.to) : '/dashboards')
   } catch (error) {
     if (error.response?.status === 401) {
@@ -63,16 +68,19 @@ const login = async () => {
 
 <template>
   <div class="auth-wrapper d-flex align-center justify-center pa-4">
-    <VCard class="auth-card pa-4 pt-7" max-width="448">
+    <VCard
+      class="auth-card pa-4 pt-7"
+      max-width="448"
+    >
       <VCardItem class="justify-center">
         <VCardTitle class="font-weight-bold text-h4 py-1 text-primary">
-          Kondongpu
+          CPA
         </VCardTitle>
       </VCardItem>
 
       <VCardText class="pt-2">
         <h5 class="text-h5 font-weight-semibold mb-1">
-          Welcome to Kondongpu! 👋🏻
+          Welcome to CPA! 👋🏻
         </h5>
         <p class="mb-0">
           Please sign-in to your account and start the adventure
@@ -80,7 +88,12 @@ const login = async () => {
       </VCardText>
 
       <VCardText>
-        <VAlert v-if="errorMessage" type="error" variant="tonal" class="mb-4">
+        <VAlert
+          v-if="errorMessage"
+          type="error"
+          variant="tonal"
+          class="mb-4"
+        >
           {{ errorMessage }}
         </VAlert>
 
@@ -88,24 +101,44 @@ const login = async () => {
           <VRow>
             <!-- username -->
             <VCol cols="12">
-              <VTextField v-model="username" label="Username" type="text" placeholder="admin" :error="!!errorMessage" />
+              <VTextField
+                v-model="username"
+                label="Username"
+                type="text"
+                placeholder="admin"
+                :error="!!errorMessage"
+              />
             </VCol>
 
             <!-- password -->
             <VCol cols="12">
-              <VTextField v-model="password" label="Password" placeholder="············"
+              <VTextField
+                v-model="password"
+                label="Password"
+                placeholder="············"
                 :type="isPasswordVisible ? 'text' : 'password'"
                 :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                @click:append-inner="isPasswordVisible = !isPasswordVisible" :error="!!errorMessage" />
+                :error="!!errorMessage"
+                @click:append-inner="isPasswordVisible = !isPasswordVisible"
+              />
 
               <!-- remember me checkbox -->
               <div class="d-flex align-center justify-space-between flex-wrap mt-1 mb-4">
                 <VCheckbox label="Remember me" />
-                <a class="text-primary text-decoration-none" href="javascript:void(0)">Forgot Password?</a>
+                <a
+                  class="text-primary text-decoration-none"
+                  href="javascript:void(0)"
+                >Forgot Password?</a>
               </div>
 
               <!-- login button -->
-              <VBtn block type="submit" color="primary" :loading="isLoading" :disabled="isLoading">
+              <VBtn
+                block
+                type="submit"
+                color="primary"
+                :loading="isLoading"
+                :disabled="isLoading"
+              >
                 Login
               </VBtn>
             </VCol>

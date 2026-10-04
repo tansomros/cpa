@@ -1,6 +1,5 @@
 <script setup>
 import Shepherd from 'shepherd.js'
-import { withQuery } from 'ufo'
 import { useConfigStore } from '@core/stores/config'
 
 defineOptions({
@@ -142,16 +141,8 @@ const router = useRouter()
 const searchResult = ref([])
 
 const fetchResults = async () => {
-  isLoading.value = true
-
-  const { data } = await useApi(withQuery('/app-bar/search', { q: searchQuery.value }))
-
-  searchResult.value = data.value
-
-  // ℹ️ simulate loading: we have used setTimeout for better user experience your can remove it
-  setTimeout(() => {
-    isLoading.value = false
-  }, 500)
+  searchResult.value = []
+  isLoading.value = false
 }
 
 watch(searchQuery, fetchResults)
@@ -162,7 +153,11 @@ const closeSearchBar = () => {
 }
 
 const redirectToSuggestedPage = selected => {
-  router.push(selected.url)
+  const name = selected.url?.name
+
+  if (name && router.hasRoute(name))
+    router.push(selected.url)
+
   closeSearchBar()
 }
 

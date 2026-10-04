@@ -1,5 +1,5 @@
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.ReferenceGroups.Commands.Create;
+namespace BigLion.CPA.Application.Features.ReferenceGroups.Commands.Create;
 [Obsolete("ใช้ SmartEnum จาก Domain.Enums แทน — ดู LookupRegistry.cs")]
 public class CreateReferenceGroupCommandValidator : AbstractValidator<CreateReferenceGroupCommand>
 {

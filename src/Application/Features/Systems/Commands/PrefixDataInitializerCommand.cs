@@ -1,8 +1,8 @@
-﻿using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Common.Security;
+﻿using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
 
-namespace Cpa.Application.Features.Systems.Commands;
+namespace BigLion.CPA.Application.Features.Systems.Commands;
 [Authorize(Policy = CpaPolicies.AllowAnonymous)]
 public class PrefixDataInitializerCommand : IRequest<Unit> { }
 public class PrefixDataInitializerCommandHandler : IRequestHandler<PrefixDataInitializerCommand, Unit>

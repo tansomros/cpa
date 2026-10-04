@@ -2,12 +2,12 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 using NUnit.Framework;
-using SUTH.HealthCheckup.Application.Common.Behaviours;
-using SUTH.HealthCheckup.Application.Common.Interfaces;
-using SUTH.HealthCheckup.Application.Common.Security;
-using SUTH.HealthCheckup.Application.Exceptions;
+using BigLion.CPA.Application.Common.Behaviours;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
+using BigLion.CPA.Application.Exceptions;
 
-namespace SUTH.HealthCheckup.Application.UnitTests.Common.Behaviours;
+namespace BigLion.CPA.Application.UnitTests.Common.Behaviours;
 
 public class AuthorizationBehaviourTests
 {
@@ -45,7 +45,7 @@ public class AuthorizationBehaviourTests
 
         var action = async () => await _authBehaviour.Handle(request, _next, CancellationToken.None);
 
-        await action.Should().ThrowAsync<CheckupUnauthorizedAccessException>();
+        await action.Should().ThrowAsync<BigLionUnauthorizedAccessException>();
     }
 
     [Test]
@@ -68,7 +68,7 @@ public class AuthorizationBehaviourTests
 
         var action = async () => await _roleBehaviour.Handle(request, _next, CancellationToken.None);
 
-        await action.Should().ThrowAsync<CheckupForbiddenAccessException>();
+        await action.Should().ThrowAsync<BigLionForbiddenAccessException>();
     }
 
     [Test]
@@ -92,7 +92,7 @@ public class AuthorizationBehaviourTests
 
         var action = async () => await _policyBehaviour.Handle(request, _next, CancellationToken.None);
 
-        await action.Should().ThrowAsync<CheckupForbiddenAccessException>();
+        await action.Should().ThrowAsync<BigLionForbiddenAccessException>();
     }
     
     [Test]

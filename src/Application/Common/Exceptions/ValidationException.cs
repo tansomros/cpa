@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace Cpa.Application.Common.Exceptions;
+namespace BigLion.CPA.Application.Common.Exceptions;
 
 public class ValidationException : Exception
 {

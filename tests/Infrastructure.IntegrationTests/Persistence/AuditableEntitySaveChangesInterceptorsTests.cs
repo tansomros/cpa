@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Domain.Entities;
 
 namespace BigLion.Infrastructure.IntegrationTests.Persistence;
 
@@ -14,18 +14,18 @@ public class AuditableEntitySaveChangesInterceptorsTests : BaseTestFixture
         var fixedTime = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero);
         Testing.DateTimeMock.Setup(m => m.Now).Returns(fixedTime);
 
-        var province = new Province("North", "50", "Chiang Mai", "Chiang Mai");
+        var pharmacyType = new PharmacyType("T50", "Type 50", 1);
 
         // Act
-        context.Provinces.Add(province);
+        context.PharmacyTypes.Add(pharmacyType);
         await context.SaveChangesAsync();
 
         // Assert
-        var savedProvince = await context.Provinces.FirstAsync(p => p.ProvinceId == "50");
-        savedProvince.CreatedOn.Should().Be(fixedTime);
-        savedProvince.LastModified.Should().Be(fixedTime);
-        savedProvince.IsActive.Should().BeTrue();
-        savedProvince.DeleteFlag.Should().BeFalse();
+        var saved = await context.PharmacyTypes.FirstAsync(p => p.Code == "T50");
+        saved.CreatedOn.Should().Be(fixedTime);
+        saved.LastModified.Should().Be(fixedTime);
+        saved.IsActive.Should().BeTrue();
+        saved.DeleteFlag.Should().BeFalse();
     }
 
     [Test]
@@ -38,21 +38,21 @@ public class AuditableEntitySaveChangesInterceptorsTests : BaseTestFixture
         
         Testing.DateTimeMock.Setup(m => m.Now).Returns(createdTime);
 
-        var province = new Province("North", "51", "Lamphun", "Lamphun");
-        context.Provinces.Add(province);
+        var pharmacyType = new PharmacyType("T51", "Type 51", 1);
+        context.PharmacyTypes.Add(pharmacyType);
         await context.SaveChangesAsync();
         context.ChangeTracker.Clear();
 
         // Act
         Testing.DateTimeMock.Setup(m => m.Now).Returns(updatedTime);
 
-        var existingProvince = await context.Provinces.FirstAsync(p => p.ProvinceId == "51");
-        existingProvince.Name = "Updated Lamphun";
+        var existing = await context.PharmacyTypes.FirstAsync(p => p.Code == "T51");
+        existing.Name = "Updated Type 51";
         await context.SaveChangesAsync();
 
         // Assert
-        var savedProvince = await context.Provinces.FirstAsync(p => p.ProvinceId == "51");
-        savedProvince.CreatedOn.Should().Be(createdTime);
-        savedProvince.LastModified.Should().Be(updatedTime);
+        var saved = await context.PharmacyTypes.FirstAsync(p => p.Code == "T51");
+        saved.CreatedOn.Should().Be(createdTime);
+        saved.LastModified.Should().Be(updatedTime);
     }
 }

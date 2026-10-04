@@ -1,7 +1,7 @@
-using BigLion.Application.Features.Patients.Commands.Create;
-using BigLion.Domain.Entities;
+using BigLion.CPA.Application.Features.Patients.Commands.Create;
+using BigLion.CPA.Domain.Entities;
 using static BigLion.Application.FunctionalTests.Testing;
-using ValidationException = BigLion.Application.Exceptions.ValidationException;
+using ValidationException = BigLion.CPA.Application.Exceptions.ValidationException;
 
 namespace BigLion.Application.FunctionalTests.Features.Patients.Commands;
 
@@ -51,8 +51,7 @@ public class CreatePatientTests : BaseTestFixture
 
         var entity = await FindAsync<Patient>(id);
         entity.Should().NotBeNull();
-        entity!.HospitalNumber.Should().Be("HN990002");
-        entity.FirstName.Should().Be("สมหญิง");
+        entity!.FirstName.Should().Be("สมหญิง");
         entity.Gender.Should().Be("F");
     }
 

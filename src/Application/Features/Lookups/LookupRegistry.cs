@@ -1,7 +1,7 @@
-using Cpa.Domain.Common;
-using Cpa.Domain.Enums;
+using BigLion.CPA.Domain.Common;
+using BigLion.CPA.Domain.Enums;
 
-namespace Cpa.Application.Features.Lookups;
+namespace BigLion.CPA.Application.Features.Lookups;
 
 public static class LookupRegistry
 {

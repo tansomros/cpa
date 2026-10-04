@@ -1,7 +1,7 @@
-using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Systems.Commands;
+namespace BigLion.CPA.Application.Features.Systems.Commands;
 public class BankDataInitializerCommand : IRequest<Unit> { }
 public class BankDataInitializerCommandHandler : IRequestHandler<BankDataInitializerCommand, Unit>
 {

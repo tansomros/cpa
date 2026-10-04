@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.ValueObjects;
+﻿namespace BigLion.CPA.Domain.ValueObjects;
 public class Ear
 {
     public static readonly int EarAbnormalSlight = 1;

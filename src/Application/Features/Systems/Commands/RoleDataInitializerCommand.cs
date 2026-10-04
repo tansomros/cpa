@@ -1,8 +1,8 @@
-﻿using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Common.Security;
+﻿using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
 
-namespace Cpa.Application.Features.Systems.Commands;
+namespace BigLion.CPA.Application.Features.Systems.Commands;
 [Authorize(Policy = CpaPolicies.AllowAnonymous)]
 public class RoleDataInitializerCommand : IRequest<Unit> { }
 public class RoleDataInitializerCommandHandler : IRequestHandler<RoleDataInitializerCommand, Unit>
@@ -32,7 +32,7 @@ public class RoleDataInitializerCommandHandler : IRequestHandler<RoleDataInitial
             new Role(1,"ร้านยา",true,1),
             new Role(2,"สิทธิ์ดูรายงาน",true,2),          
             new Role(3,"ผู้จัดการโครงการ",true,3),
-            new Role(4,"Admin",true,8),
+            new Role(8,"Admin",true,8),
             new Role(9,"ผู้ดูแลระบบ (Host)",true,9)
         };
 

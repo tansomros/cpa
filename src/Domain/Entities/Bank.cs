@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Cpa.Domain.Entities;
+namespace BigLion.CPA.Domain.Entities;
 
 public class Bank
 {

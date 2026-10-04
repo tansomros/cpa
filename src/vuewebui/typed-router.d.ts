@@ -35,7 +35,7 @@ declare module 'vue-router/auto-routes' {
     'contract-products-list': RouteRecordInfo<'contract-products-list', '/contract-products/list', Record<never, never>, Record<never, never>>,
     'contract-products-view-id': RouteRecordInfo<'contract-products-view-id', '/contract-products/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'contracts-create': RouteRecordInfo<'contracts-create', '/contracts/create', Record<never, never>, Record<never, never>>,
-    'contracts-list': RouteRecordInfo<'contracts-list', '/contracts/list', Record<never, never>, Record<never, never>>,
+    'pharmacies-list': RouteRecordInfo<'pharmacies-list', '/pharmacies/list', Record<never, never>, Record<never, never>>,
     'contracts-view-id': RouteRecordInfo<'contracts-view-id', '/contracts/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'contract-types-create': RouteRecordInfo<'contract-types-create', '/contract-types/create', Record<never, never>, Record<never, never>>,
     'contract-types-edit-id': RouteRecordInfo<'contract-types-edit-id', '/contract-types/edit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,

@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Cpa.Presentation.API.Routing;
+namespace BigLion.CPA.Presentation.API.Routing;
 
 public class SlugifyParameterTransformer : IOutboundParameterTransformer
 {

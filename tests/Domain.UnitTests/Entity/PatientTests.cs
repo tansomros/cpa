@@ -1,21 +1,21 @@
-﻿using FluentAssertions;
+﻿using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Domain.ValueObjects;
+using FluentAssertions;
 using NUnit.Framework;
-using BigLion.Domain.Entities;
-using BigLion.Domain.ValueObjects;
-namespace BigLion.Domain.UnitTests.Entity;
+
+namespace BigLion.CPA.Domain.UnitTests.Entity;
+
 public class PatientTests
 {
     [Test]
     public void CreatePatientObjectShouldBeOk()
     {
-        var item = new Patient("11111111", "นาย", "รักชาติ", "", "สุรนารี", Gender.Male, DateOnly.FromDateTime(Convert.ToDateTime("1982-01-01")))
+        var birthDate = DateOnly.FromDateTime(Convert.ToDateTime("1982-01-01"));
+        var item = new Patient("นาย", "รักชาติ", "", "สุรนารี", Gender.Male, birthDate)
         {
             NationId = null,
-            Nationality = "ไทย",
-            Religious = null,
             BloodGroup = null,
-            EmployeeId = null,           
-            Address = null,
+            AddressNo = null,
             SubDistrictId = null,
             DistrictId = null,
             ProvinceId = null,
@@ -25,23 +25,19 @@ public class PatientTests
         };
 
         item.Should().NotBeNull();
-        item.HospitalNumber.Should().Be("11111111");
         item.Prefix.Should().Be("นาย");
         item.FirstName.Should().Be("รักชาติ");
         item.LastName.Should().Be("สุรนารี");
         item.Gender.Should().Be(Gender.Male);
-        item.BirthDate.Should().Be(DateOnly.FromDateTime(Convert.ToDateTime("1982-01-01")));
+        item.BirthDate.Should().Be(birthDate);
         item.NationId.Should().BeNull();
-        item.Nationality.Should().Be("ไทย");
-        item.Religious.Should().BeNull();
         item.BloodGroup.Should().BeNull();
-        item.EmployeeId.Should().BeNull();
-        item.Address.Should().BeNull();
+        item.AddressNo.Should().BeNull();
         item.SubDistrictId.Should().BeNull();
         item.ProvinceId.Should().BeNull();
         item.ZipCode.Should().BeNull();
         item.TelephoneNumber.Should().BeNull();
         item.DrugAllergy.Should().BeNull();
-        item.IsActive.Should().Be(false);
+        item.IsActive.Should().BeFalse();
     }
 }

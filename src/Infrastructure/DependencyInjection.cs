@@ -1,16 +1,16 @@
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Identity.Interfaces;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Identity.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using IIdentityService = Cpa.Application.Identity.Interfaces.IIdentityService;
-using Cpa.Infrastructure.Identity;
-using Cpa.Infrastructure.Persistence.Interceptors;
-using Cpa.Infrastructure.Services;
-using Cpa.Infrastructure.Persistence;
+using IIdentityService = BigLion.CPA.Application.Identity.Interfaces.IIdentityService;
+using BigLion.CPA.Infrastructure.Identity;
+using BigLion.CPA.Infrastructure.Persistence.Interceptors;
+using BigLion.CPA.Infrastructure.Services;
+using BigLion.CPA.Infrastructure.Persistence;
 
-namespace Cpa.Infrastructure;
+namespace BigLion.CPA.Infrastructure;
 
 public static class DependencyInjection
 {

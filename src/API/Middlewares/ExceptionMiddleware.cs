@@ -1,10 +1,10 @@
 ﻿using System.Net;
-using Cpa.Application.Common.Exceptions;
+using BigLion.CPA.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-//using NotFoundException = Cpa.Application.Exceptions.NotFoundException;
-//using ValidationException = Cpa.Application.Exceptions.ValidationException;
+//using NotFoundException = BigLion.CPA.Application.Exceptions.NotFoundException;
+//using ValidationException = BigLion.CPA.Application.Exceptions.ValidationException;
 
-namespace Cpa.Presentation.API.Middlewares
+namespace BigLion.CPA.Presentation.API.Middlewares
 {
     public class ExceptionMiddleware
     {
@@ -58,6 +58,12 @@ namespace Cpa.Presentation.API.Middlewares
                         "Validation Error",
                         ex.Errors),
 
+                BigLion.CPA.Application.Exceptions.ValidationException ex =>
+                    CreateProblem(
+                        HttpStatusCode.BadRequest,
+                        "Validation Error",
+                        ex.Errors),
+
                 AuthenticationException ex =>
                     CreateProblem(
                         HttpStatusCode.Unauthorized,
@@ -69,6 +75,11 @@ namespace Cpa.Presentation.API.Middlewares
                         ex.Message),
 
                 NotFoundException ex =>
+                    CreateProblem(
+                        HttpStatusCode.NotFound,
+                        ex.Message),
+
+                BigLion.CPA.Application.Exceptions.NotFoundException ex =>
                     CreateProblem(
                         HttpStatusCode.NotFound,
                         ex.Message),

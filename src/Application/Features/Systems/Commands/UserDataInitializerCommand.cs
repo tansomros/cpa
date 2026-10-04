@@ -1,7 +1,7 @@
-using Cpa.Domain.Entities;
-using Cpa.Application.Common.Interfaces;
+using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Common.Interfaces;
 
-namespace Cpa.Application.Features.Systems.Commands;
+namespace BigLion.CPA.Application.Features.Systems.Commands;
 public class UserDataInitializerCommand : IRequest<Unit> { }
 public class UserDataInitializerCommandHandler : IRequestHandler<UserDataInitializerCommand, Unit>
 {
@@ -27,8 +27,8 @@ public class UserDataInitializerCommandHandler : IRequestHandler<UserDataInitial
 
         var User = new[]
         {           
-            new User("host","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","Host","ผู้ดูแลระบบ","",0,9),//4321
-            new User("admin","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","Administrator","Admin","",0,8), 
+            new User("host","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","Host","ผู้ดูแลระบบ","",null,9),//4321
+            new User("admin","AQAAAAEAACcQAAAAEDJirZQCGuiZ5HI0fDDQNNiCQBSAMXSpy/IHCPizqejnsuxEVe8AMswL16Uy3nDs1g==","Administrator","Admin","",null,8), 
         };
 
         await _context.Users.AddRangeAsync(User, cancellationToken);

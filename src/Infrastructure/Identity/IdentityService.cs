@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cpa.Application.Common.Exceptions;
-using Cpa.Application.Identity.Commands;
-using Cpa.Application.Identity.Interfaces;
+using BigLion.CPA.Application.Common.Exceptions;
+using BigLion.CPA.Application.Identity.Commands;
+using BigLion.CPA.Application.Identity.Interfaces;
 
-namespace Cpa.Infrastructure.Identity;
+namespace BigLion.CPA.Infrastructure.Identity;
 public sealed class IdentityService : IIdentityService
 {
     private readonly IUserRepository _userRepository;

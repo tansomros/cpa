@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cpa.Domain.Entities;
-using Cpa.Application.Identity.Interfaces;
+using BigLion.CPA.Domain.Entities;
+using BigLion.CPA.Application.Identity.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Cpa.Infrastructure.Persistence;
+using BigLion.CPA.Infrastructure.Persistence;
 
-namespace Cpa.Infrastructure.Identity;
+namespace BigLion.CPA.Infrastructure.Identity;
 #nullable enable
 public sealed class UserRepository : IUserRepository
 {

@@ -1,5 +1,5 @@
-﻿using Cpa.Application.Identity.Interfaces;
-namespace Cpa.Application.Identity.Commands;
+﻿using BigLion.CPA.Application.Identity.Interfaces;
+namespace BigLion.CPA.Application.Identity.Commands;
 public sealed class LoginCommandHandler
     : IRequestHandler<LoginCommand, LoginResponse>
 {

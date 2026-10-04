@@ -28,8 +28,10 @@ if(!certificateName) {
 
 const certFilePath = path.join(baseFolder, `${certificateName}.pem`)
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`)
+
 console.log(certFilePath)
 console.log(keyFilePath)
+
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
   if(!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {

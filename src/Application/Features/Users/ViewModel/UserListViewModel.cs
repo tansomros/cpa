@@ -1,4 +1,4 @@
-﻿namespace Cpa.Application.Features.Users.ViewModel;
+﻿namespace BigLion.CPA.Application.Features.Users.ViewModel;
 public class UserListViewModel
 {
     public ICollection<UserViewModel> Users { get; set; }

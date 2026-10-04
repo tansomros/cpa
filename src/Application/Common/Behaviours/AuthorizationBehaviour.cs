@@ -1,9 +1,10 @@
 using System.Reflection;
-using Cpa.Application.Exceptions;
-using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Common.Security;
+using BigLion.CPA.Application.Common.Exceptions;
+using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
 
-namespace Cpa.Application.Common.Behaviours;
+namespace BigLion.CPA.Application.Common.Behaviours;
 
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
@@ -17,6 +18,32 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var authorizeAttributes = request.GetType().GetCustomAttributes<AuthorizeAttribute>();
+        var permissionAttributes = request.GetType().GetCustomAttributes<RequirePermissionAttribute>().ToArray();
+
+        if (permissionAttributes.Length > 0)
+        {
+            if (string.IsNullOrEmpty(_currentUserService.Id))
+            {
+                throw new AuthenticationException("ไม่อนุญาตให้เข้าใช้งาน");
+            }
+
+            if (_currentUserService.HasAdminRole != true)
+            {
+                var granted = _currentUserService.Claims?
+                    .Where(claim => claim.Type == Permissions.ClaimType)
+                    .Select(claim => claim.Value)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase)
+                    ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var required in permissionAttributes)
+                {
+                    if (!granted.Contains(required.Permission))
+                    {
+                        throw new ForbiddenException("ไม่มีสิทธิ์ในการเข้าใช้งาน");
+                    }
+                }
+            }
+        }
 
         // No [Authorize] attributes — authorization not required
         if (!authorizeAttributes.Any())

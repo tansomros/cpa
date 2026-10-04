@@ -1,4 +1,4 @@
-﻿namespace Cpa.Application.Common.Security;
+﻿namespace BigLion.CPA.Application.Common.Security;
 public static class CpaRoles
 {
     public const string Host = "Host";

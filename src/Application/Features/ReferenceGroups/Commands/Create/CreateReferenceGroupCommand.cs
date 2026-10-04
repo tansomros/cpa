@@ -1,8 +1,8 @@
-﻿using Cpa.Application.Common.Interfaces;
-using Cpa.Domain.Entities;
+﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Domain.Entities;
 
 #pragma warning disable CS0618
-namespace Cpa.Application.Features.ReferenceGroups.Commands.Create;
+namespace BigLion.CPA.Application.Features.ReferenceGroups.Commands.Create;
 [Obsolete("ใช้ SmartEnum จาก Domain.Enums แทน — ดู LookupRegistry.cs")]
 public class CreateReferenceGroupCommand : IRequest<int>
 {

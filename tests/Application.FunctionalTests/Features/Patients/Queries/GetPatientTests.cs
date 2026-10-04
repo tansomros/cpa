@@ -1,4 +1,4 @@
-using BigLion.Application.Features.Patients.Queries.Get;
+using BigLion.CPA.Application.Features.Patients.Queries.Get;
 using BigLion.Application.FunctionalTests.Features._Shared;
 using static BigLion.Application.FunctionalTests.Testing;
 
@@ -26,6 +26,6 @@ public class GetPatientTests : BaseTestFixture
         RunAsDefaultUser();
 
         await FluentActions.Invoking(() => SendAsync(new GetPatientQuery { Id = 99999 }))
-            .Should().ThrowAsync<BigLion.Application.Exceptions.NotFoundException>();
+            .Should().ThrowAsync<BigLion.CPA.Application.Exceptions.NotFoundException>();
     }
 }

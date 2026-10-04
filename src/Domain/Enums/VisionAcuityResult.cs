@@ -1,6 +1,6 @@
-using Cpa.Domain.Common;
+using BigLion.CPA.Domain.Common;
 
-namespace Cpa.Domain.Enums;
+namespace BigLion.CPA.Domain.Enums;
 
 /// <summary>
 /// ระดับสายตา — แทนที่ ReferenceGroup "VA" (Id=7)

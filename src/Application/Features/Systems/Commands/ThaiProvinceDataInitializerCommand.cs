@@ -1,8 +1,8 @@
-﻿using Cpa.Application.Common.Interfaces;
-using Cpa.Application.Common.Security;
-using Cpa.Domain.Entities;
+﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Security;
+using BigLion.CPA.Domain.Entities;
 
-namespace Cpa.Application.Features.Systems.Commands;
+namespace BigLion.CPA.Application.Features.Systems.Commands;
 
 [Authorize(Policy = CpaPolicies.AllowAnonymous)]
 public class ThaiProvinceDataInitializerCommand : IRequest<Unit> { }

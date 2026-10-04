@@ -1,4 +1,4 @@
-﻿namespace Cpa.Domain.Entities;
+﻿namespace BigLion.CPA.Domain.Entities;
 /// <summary>
 /// [OBSOLETE] ค่าอ้างอิงของแต่ละกลุ่ม — ถูกแทนที่ด้วย SmartEnum ใน Domain.Enums แล้ว
 ///
