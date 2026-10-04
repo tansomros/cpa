@@ -8,6 +8,11 @@ public class Prefix
 {    
     public int Id { get; set; }
     public string Name { get; set; }
+    public Prefix(string name)
+    {
+        Name = name;
+    }
+
     public Prefix(int id, string name)
     {
         Id = id;

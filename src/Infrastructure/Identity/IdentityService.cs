@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BigLion.CPA.Application.Common.Exceptions;
-using BigLion.CPA.Application.Identity.Commands;
+using BigLion.CPA.Application.Features.Users.ViewModel;
 using BigLion.CPA.Application.Identity.Interfaces;
 
 namespace BigLion.CPA.Infrastructure.Identity;
@@ -24,7 +24,7 @@ public sealed class IdentityService : IIdentityService
         _jwtTokenService = jwtTokenService;
     }
 
-    public async Task<LoginResponse> LoginAsync(
+    public async Task<UserViewModel> LoginAsync(
         string username,
         string password,
         CancellationToken cancellationToken)
@@ -44,15 +44,21 @@ public sealed class IdentityService : IIdentityService
 
         var token = _jwtTokenService.GenerateToken(user);
 
-        return new LoginResponse
+        return new UserViewModel
         {
-            UserId = user.Id,
+            Id = user.Id,
             Username = user.Username,
             DisplayName = user.DisplayName,
-            PositinName = user.PositionName??"",
+            PositionName = user.PositionName,
+            LastLog = user.LastLog,
+            RoleId = user.RoleId,
             Role = user.Role?.Name ?? string.Empty,
             AccessToken = token,
-            ExpiresAt = DateTime.UtcNow.AddHours(2)
+            ExpiresAt = DateTime.UtcNow.AddHours(2),
+            DeleteFlag = user.DeleteFlag,
+            IsActive = user.IsActive,
+            CreatedOn = user.CreatedOn,
+            LastModified = user.LastModified
         };
     }
 }

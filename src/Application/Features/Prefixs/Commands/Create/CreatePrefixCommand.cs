@@ -27,8 +27,7 @@ public class CreatePrefixCommandHandler : IRequestHandler<CreatePrefixCommand, i
 
     public async Task<int> Handle(CreatePrefixCommand request, CancellationToken cancellationToken)
     {
-        var entity = new Entity(0, request.Name);
-        entity.Name = request.Name;
+        var entity = new Entity(request.Name);
         await _context.Prefixs.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
         return entity.Id;

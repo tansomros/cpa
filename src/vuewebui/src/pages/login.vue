@@ -38,7 +38,7 @@ const login = async () => {
       
       // Set userData for router guards
       const userData = {
-        id: data.userId,
+        id: data.id,
         username: data.username,
         displayName: data.displayName,
         role: data.role || 'admin',

@@ -1,14 +1,18 @@
 ﻿using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Common.Mappings;
+using BigLion.CPA.Application.Common.Models;
 using BigLion.CPA.Application.Features.Users.ViewModel;
 
 namespace BigLion.CPA.Application.Features.Users.Queries.Get;
 
-public record GetUserListQuery : IRequest<UserListViewModel>
+public record GetUserListQuery : IRequest<PaginatedList<UserViewModel>>
 {
-    public required string visitNumber { get; set; }
+    public int Page { get; init; } = 1;
+    public int Limit { get; init; } = 10;
+    public string? Search { get; init; }
 }
 
-public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, UserListViewModel>
+public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, PaginatedList<UserViewModel>>
 {
     private readonly IMapper _mapper;
     private readonly ICpaDatabaseContext _context;
@@ -19,14 +23,23 @@ public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, UserLis
         _mapper = mapper;
     }
 
-    public async Task<UserListViewModel> Handle(GetUserListQuery request, CancellationToken cancellationToken)
-    {     
+    public async Task<PaginatedList<UserViewModel>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
+    {
+        var query = _context.Users.AsNoTracking();
 
-        var Users = await _context.Users.AsNoTracking()            
-            .OrderByDescending(x => x.CreatedOn)
-            .ToListAsync(cancellationToken);
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim();
+            query = query.Where(x =>
+                x.Username.Contains(term)
+                || x.DisplayName.Contains(term)
+                || (x.PositionName != null && x.PositionName.Contains(term))
+                || (x.Email != null && x.Email.Contains(term)));
+        }
 
-        var UsersModel = _mapper.Map<List<UserViewModel>>(Users);
-        return new UserListViewModel { Users = UsersModel };
+        return await query
+            .OrderBy(x => x.Id)
+            .ProjectTo<UserViewModel>(_mapper.ConfigurationProvider)
+            .PaginatedListAsync(request.Page, request.Limit, cancellationToken);
     }
 }

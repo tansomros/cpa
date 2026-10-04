@@ -24,6 +24,7 @@ public class PrefixDataInitializerCommandHandler : IRequestHandler<PrefixDataIni
     {
         if (await _context.Prefixs.AnyAsync(cancellationToken))
         {
+            await SyncPrefixIdSequence(cancellationToken);
             return;
         }
 
@@ -38,5 +39,18 @@ public class PrefixDataInitializerCommandHandler : IRequestHandler<PrefixDataIni
 
         await _context.Prefixs.AddRangeAsync(Prefix, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+        await SyncPrefixIdSequence(cancellationToken);
+    }
+
+    private async Task SyncPrefixIdSequence(CancellationToken cancellationToken)
+    {
+        await _context.Database.ExecuteSqlRawAsync(
+            """
+            DO $$
+            BEGIN
+                PERFORM setval(pg_get_serial_sequence('"Prefixs"', 'Id'), COALESCE((SELECT MAX("Id") FROM "Prefixs"), 1));
+            END $$;
+            """,
+            cancellationToken);
     }     
 } 

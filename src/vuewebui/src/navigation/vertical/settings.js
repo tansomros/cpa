@@ -1,6 +1,6 @@
 export default [
   {
-    title: 'ตั้งค่าสัญญา',
+    title: 'ตั้งค่า',
     icon: { icon: 'tabler-settings' },
     children: [
       { title: 'ประเภทสัญญา' },

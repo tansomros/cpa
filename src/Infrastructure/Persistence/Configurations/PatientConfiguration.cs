@@ -11,6 +11,9 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.ToTable("Patients");
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.HospitalNumber).HasMaxLength(8);
+        builder.HasIndex(x => x.HospitalNumber);
+
         builder.Property(x => x.Prefix).IsRequired().HasMaxLength(50);
         builder.Property(x => x.FirstName).IsRequired().HasMaxLength(200);
         builder.Property(x => x.MiddleName).HasMaxLength(200);

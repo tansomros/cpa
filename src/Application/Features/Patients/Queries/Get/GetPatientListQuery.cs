@@ -17,6 +17,8 @@ public class GetPatientListQuery : IRequest<PaginatedList<PatientViewModel>>
     /// จำนวนของข้อมูลที่ต้องการเป็นเลขจำนวนเต็ม
     /// </summary>
     public int Limit { get; init; } = 10;
+
+    public string? Search { get; init; }
 }
 public class GetPatientListQueryHandler : IRequestHandler<GetPatientListQuery, PaginatedList<PatientViewModel>>
 {
@@ -31,9 +33,22 @@ public class GetPatientListQueryHandler : IRequestHandler<GetPatientListQuery, P
 
     public async Task<PaginatedList<PatientViewModel>> Handle(GetPatientListQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Patients
-            .AsNoTracking()
-            .OrderByDescending(x => x.CreatedOn)
+        var query = _context.Patients.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim();
+            query = query.Where(x =>
+                x.FirstName.Contains(term)
+                || x.LastName.Contains(term)
+                || x.Prefix.Contains(term)
+                || (x.HospitalNumber != null && x.HospitalNumber.Contains(term))
+                || (x.NationId != null && x.NationId.Contains(term))
+                || (x.TelephoneNumber != null && x.TelephoneNumber.Contains(term)));
+        }
+
+        return await query
+            .OrderByDescending(x => x.Id)
             .ProjectTo<PatientViewModel>(_mapper.ConfigurationProvider)
             .PaginatedListAsync(request.Page, request.Limit);
     }

@@ -4,6 +4,7 @@ public class GetUserListQueryValidator : AbstractValidator<GetUserListQuery>
 {
     public GetUserListQueryValidator()
     {
-        RuleFor(x => x.visitNumber).NotEmpty();
+        RuleFor(x => x.Page).GreaterThan(0);
+        RuleFor(x => x.Limit).InclusiveBetween(1, 200);
     }
 }

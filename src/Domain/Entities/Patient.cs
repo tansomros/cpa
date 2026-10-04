@@ -7,6 +7,11 @@ public class Patient : BaseEntity
 {
 
     /// <summary>
+    /// หมายเลข HN
+    /// </summary>
+    public string? HospitalNumber { get; set; }
+
+    /// <summary>
     /// คำนำหน้าชื่อไทย
     /// </summary>
     public string Prefix { get; set; }

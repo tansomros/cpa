@@ -4,6 +4,8 @@ export default [
     icon: { icon: 'tabler-database' },
     children: [
       { title: 'ข้อมูลร้านขายยา', to: 'pharmacies-list' },
+      { title: 'ผู้ใช้งาน', to: 'users-list' },
+      { title: 'ผู้รับบริการ', to: 'patients-list' },
       { title: 'ข้อมูลคำนำหน้าชื่อ', to: 'prefixs-list' },
       { title: 'ข้อมูลแผนก' },
       { title: 'อาคาร/ตึก' },

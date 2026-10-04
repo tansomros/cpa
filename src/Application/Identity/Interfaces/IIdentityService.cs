@@ -1,9 +1,9 @@
-﻿using BigLion.CPA.Application.Identity.Commands;
+﻿using BigLion.CPA.Application.Features.Users.ViewModel;
 
 namespace BigLion.CPA.Application.Identity.Interfaces;
 public interface IIdentityService
 {
-    Task<LoginResponse> LoginAsync(
+    Task<UserViewModel> LoginAsync(
         string username,
         string password,
         CancellationToken cancellationToken);

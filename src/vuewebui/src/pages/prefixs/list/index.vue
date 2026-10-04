@@ -1,10 +1,15 @@
 <script setup>
 import { requiredValidator } from '@/@core/utils/validators'
-import { computed, onMounted, ref } from 'vue'
+import { $api } from '@/utils/api'
+import { onMounted, ref } from 'vue'
 
 const searchQuery = ref('')
 const itemsPerPage = ref(10)
 const page = ref(1)
+const items = ref([])
+const totalItems = ref(0)
+const isLoading = ref(false)
+const errorMessage = ref('')
 const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
@@ -42,17 +47,48 @@ const headers = [
   },
 ]
 
-// Fetch prefixes
-const { data: listData, execute: fetchData } = await useApi(`/prefixes`, { method: 'GET' })
+const fetchItems = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
 
-const items = computed(() => listData.value?.items ?? listData.value ?? [])
+  const query = { page: page.value, limit: itemsPerPage.value }
+  if (searchQuery.value.trim())
+    query.search = searchQuery.value.trim()
 
-const filteredItems = computed(() => {
-  if (!searchQuery.value) return items.value
-  const q = searchQuery.value.toLowerCase()
-  
-  return items.value.filter(i => i.name?.toLowerCase().includes(q) || String(i.id).includes(q))
+  try {
+    const result = await $api('/prefixs', { method: 'GET', query })
+
+    items.value = result.items ?? []
+    totalItems.value = result.totalCount ?? 0
+  } catch {
+    items.value = []
+    totalItems.value = 0
+    errorMessage.value = 'โหลดรายการคำนำหน้าชื่อไม่สำเร็จ'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+let searchTimer
+
+watch(searchQuery, () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    if (page.value === 1)
+      fetchItems()
+    else
+      page.value = 1
+  }, 300)
 })
+
+watch(itemsPerPage, () => {
+  if (page.value === 1)
+    fetchItems()
+  else
+    page.value = 1
+})
+
+watch(page, fetchItems)
 
 // Delete logic
 const selectedItemToDelete = ref(null)
@@ -69,10 +105,10 @@ const cancelDeleteItem = () => {
 const deleteItem = async id => {
   try {
     progressDialogRef.value?.startProgress()
-    await $api(`/prefixes/${id}`, { method: 'DELETE' })
+    await $api(`/prefixs/${id}`, { method: 'DELETE' })
     progressDialogRef.value?.stopProgress()
     progressDialogRef.value?.showSuccess()
-    fetchData()
+    await fetchItems()
   } catch {
     progressDialogFailureDescription.value = { message: ['ไม่สามารถลบข้อมูลคำนำหน้าชื่อได้'] }
     progressDialogRef.value?.stopProgress()
@@ -173,7 +209,7 @@ const saveItem = async () => {
   isSaving.value = true
   try {
     if (isEditMode.value) {
-      await $api(`/prefixes/${selectedItem.value.id}`, {
+      await $api(`/prefixs/${selectedItem.value.id}`, {
         method: 'PUT',
         body: {
           id: selectedItem.value.id,
@@ -182,7 +218,7 @@ const saveItem = async () => {
       })
       highlightItem(selectedItem.value.id, 'edit')
     } else {
-      const response = await $api(`/prefixes`, {
+      const response = await $api('/prefixs', {
         method: 'POST',
         body: {
           name: editItemName.value,
@@ -194,7 +230,7 @@ const saveItem = async () => {
       }
     }
     isAddEditDialogVisible.value = false
-    fetchData()
+    await fetchItems()
   } catch (error) {
     console.error('Error saving prefix:', error)
     saveError.value = error.data?.detail || error.data?.title || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล'
@@ -223,6 +259,8 @@ const getRowProps = ({ item }) => {
 onMounted(() => {
   highlightedItems.value = loadHighlights()
 })
+
+fetchItems()
 </script>
 
 <template>
@@ -267,6 +305,15 @@ onMounted(() => {
         </div>
       </VCardText>
 
+      <VAlert
+        v-if="errorMessage"
+        type="error"
+        variant="tonal"
+        class="mx-6 mb-4"
+      >
+        {{ errorMessage }}
+      </VAlert>
+
       <VDivider />
 
       <!-- SECTION datatable -->
@@ -274,9 +321,10 @@ onMounted(() => {
         v-model:items-per-page="itemsPerPage"
         v-model:model-value="selectedRows"
         v-model:page="page"
-        :items="filteredItems"
+        :items="items"
         item-value="id"
-        :items-length="filteredItems.length"
+        :items-length="totalItems"
+        :loading="isLoading"
         :headers="headers"
         class="text-no-wrap"
         show-select
@@ -343,7 +391,7 @@ onMounted(() => {
           <TablePagination
             v-model:page="page"
             :items-per-page="itemsPerPage"
-            :total-items="filteredItems.length"
+            :total-items="totalItems"
           />
         </template>
       </VDataTableServer>

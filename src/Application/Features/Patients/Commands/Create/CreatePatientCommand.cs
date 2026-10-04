@@ -56,6 +56,7 @@ namespace BigLion.CPA.Application.Features.Patients.Commands.Create
                 request.Gender,
                 request.BirthDate)
             {
+                HospitalNumber = request.HospitalNumber,
                 BloodGroup = request.BloodGroup,
                 NationId = request.NationId, 
                 AddressNo = request.Address,     

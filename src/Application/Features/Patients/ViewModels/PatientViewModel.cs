@@ -51,7 +51,8 @@ namespace BigLion.CPA.Application.Features.Patients.ViewModels
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Patient, PatientViewModel>()
-                  .ForMember(d => d.FullName, opt => opt.MapFrom(s => $"{s.Prefix}{s.FirstName} {s.LastName}"));
+                  .ForMember(d => d.FullName, opt => opt.MapFrom(s => $"{s.Prefix}{s.FirstName} {s.LastName}"))
+                  .ForMember(d => d.Address, opt => opt.MapFrom(s => s.AddressNo));
                   //.ForSourceMember(s => s.Company, opt => opt.DoNotValidate());
         }
         //class DateResolver : IValueResolver<Patient, PatientViewModel, DateTimeOffset>

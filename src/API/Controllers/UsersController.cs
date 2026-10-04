@@ -62,7 +62,7 @@ public class UsersController : BaseController
     /// <summary>
     /// API Endpoint สำหรับดึงข้อมูล User จาก id
     /// </summary>
-    [HttpGet("visits/{visitNumber}", Name = "GetUser")]
+    [HttpGet("{id:int}", Name = "GetUser")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserViewModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     public async Task<ActionResult<UserViewModel>> GetUser(int id)
@@ -74,9 +74,9 @@ public class UsersController : BaseController
     /// API Endpoint สำหรับดึงข้อมูลรายการ User
     /// </summary>
     [HttpGet(Name = "GetUserList")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserListViewModel))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<UserViewModel>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-    public async Task<ActionResult<UserListViewModel>> GetUserList([FromQuery] GetUserListQuery query)
+    public async Task<ActionResult<PaginatedList<UserViewModel>>> GetUserList([FromQuery] GetUserListQuery query)
     {
         return Ok(await Mediator.Send(query));
     }
@@ -87,7 +87,7 @@ public class UsersController : BaseController
     /// </summary>
     [AllowAnonymous]
     [HttpPost("login", Name = "Login")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserViewModel))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
     {

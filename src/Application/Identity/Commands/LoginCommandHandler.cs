@@ -1,7 +1,8 @@
-﻿using BigLion.CPA.Application.Identity.Interfaces;
+﻿using BigLion.CPA.Application.Features.Users.ViewModel;
+using BigLion.CPA.Application.Identity.Interfaces;
 namespace BigLion.CPA.Application.Identity.Commands;
 public sealed class LoginCommandHandler
-    : IRequestHandler<LoginCommand, LoginResponse>
+    : IRequestHandler<LoginCommand, UserViewModel>
 {
     private readonly IIdentityService _identityService;
 
@@ -10,7 +11,7 @@ public sealed class LoginCommandHandler
         _identityService = identityService;
     }
 
-    public async Task<LoginResponse> Handle(
+    public async Task<UserViewModel> Handle(
         LoginCommand request,
         CancellationToken cancellationToken)
     {

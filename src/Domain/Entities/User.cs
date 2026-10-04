@@ -37,6 +37,25 @@ public class User : BaseEntity
         CreatedOn = DateTimeOffset.UtcNow;
     }
 
+    public void Update(
+        string username,
+        string displayName,
+        string? positionName,
+        string? email,
+        int? pharmacyId,
+        int roleId,
+        bool isActive)
+    {
+        Username = username;
+        DisplayName = displayName;
+        PositionName = positionName;
+        Email = email;
+        PharmacyId = pharmacyId;
+        RoleId = roleId;
+        IsActive = isActive;
+        LastModified = DateTimeOffset.UtcNow;
+    }
+
     public void ChangePassword(string passwordHash)
     {
         PasswordHash = passwordHash;
