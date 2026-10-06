@@ -34,7 +34,6 @@ public class PatientViewModel : IMapFrom<Patient>
     public string? CardId { get; set; }
 
     public string? Telephone { get; set; }
-    public string? Mobile { get; set; }
     public string? TimeContact { get; set; }
 
     public string? AddressType { get; set; }
@@ -47,7 +46,7 @@ public class PatientViewModel : IMapFrom<Patient>
     public string? ZipCode { get; set; }
 
     public string? MainClaim { get; set; }
-    public int? Status { get; set; }
+    public bool IsActive { get; set; }
     public string? Education { get; set; }
     public string? Occupation { get; set; }
 
@@ -75,6 +74,11 @@ public class PatientViewModel : IMapFrom<Patient>
     {
         profile.CreateMap<Patient, PatientViewModel>()
             .ForMember(d => d.FullName, opt => opt.MapFrom(s =>
-                ((s.ForeName ?? string.Empty) + " " + (s.Surname ?? string.Empty)).Trim()));
+                ((s.ForeName ?? string.Empty) + " " + (s.Surname ?? string.Empty)).Trim()))
+            .ForMember(d => d.DistrictId, opt => opt.MapFrom(s => s.SubDistrictId))
+            .ForMember(d => d.City, opt => opt.MapFrom(s => s.DistrictId))
+            .ForMember(d => d.ProvinceName, opt => opt.MapFrom(s => s.Province != null ? s.Province.Name : null))
+            .ForMember(d => d.Alcohol, opt => opt.MapFrom(s => s.Drinking))
+            .ForMember(d => d.AlcoholFQ, opt => opt.MapFrom(s => s.DrinkFrequency));
     }
 }

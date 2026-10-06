@@ -10,6 +10,7 @@ public class GetDistrictListQuery : IRequest<PaginatedList<DistrictViewModel>>
     public int Page { get; init; } = 1;
     public int Limit { get; init; } = 10;
     public string? Search { get; init; }
+    public string? ProvinceId { get; init; }
 }
 
 public class GetDistrictListQueryValidator : AbstractValidator<GetDistrictListQuery>
@@ -35,6 +36,9 @@ public class GetDistrictListQueryHandler : IRequestHandler<GetDistrictListQuery,
     public async Task<PaginatedList<DistrictViewModel>> Handle(GetDistrictListQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Districts.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(request.ProvinceId))
+            query = query.Where(x => x.ProvinceId == request.ProvinceId);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {

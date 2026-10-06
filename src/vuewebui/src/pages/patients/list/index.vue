@@ -2,6 +2,9 @@
 import { requiredValidator } from '@/@core/utils/validators'
 import { $api } from '@/utils/api'
 
+import moment from 'moment/min/moment-with-locales.js'
+moment.locale('th')
+
 const searchQuery = ref('')
 const itemsPerPage = ref(10)
 const page = ref(1)
@@ -29,6 +32,113 @@ const genderOptions = [
   { value: 'F', title: 'หญิง' },
 ]
 
+const provinces = ref([])
+const isProvincesLoading = ref(false)
+
+const loadProvinces = async () => {
+  if (provinces.value.length)
+    return
+
+  isProvincesLoading.value = true
+  try {
+    const result = await $api('/provinces', { method: 'GET', query: { page: 1, limit: 200 } })
+
+    provinces.value = (result.items ?? []).map(p => ({
+      value: p.id,
+      title: p.name,
+    }))
+  } catch {
+    provinces.value = []
+  } finally {
+    isProvincesLoading.value = false
+  }
+}
+
+const districts = ref([])
+const subDistricts = ref([])
+const isDistrictsLoading = ref(false)
+const isSubDistrictsLoading = ref(false)
+
+const loadDistricts = async provinceId => {
+  districts.value = []
+  if (!provinceId)
+    return
+
+  isDistrictsLoading.value = true
+  try {
+    const result = await $api('/districts', {
+      method: 'GET',
+      query: { page: 1, limit: 200, provinceId },
+    })
+
+    districts.value = (result.items ?? []).map(d => ({
+      value: d.id,
+      title: d.name,
+    }))
+  } catch {
+    districts.value = []
+  } finally {
+    isDistrictsLoading.value = false
+  }
+}
+
+const loadSubDistricts = async districtId => {
+  subDistricts.value = []
+  if (!districtId)
+    return
+
+  isSubDistrictsLoading.value = true
+  try {
+    const result = await $api('/sub-districts', {
+      method: 'GET',
+      query: { page: 1, limit: 200, districtId },
+    })
+
+    subDistricts.value = (result.items ?? []).map(s => ({
+      value: s.subDistrictId,
+      title: s.name,
+      zipCode: s.zipCode,
+    }))
+  } catch {
+    subDistricts.value = []
+  } finally {
+    isSubDistrictsLoading.value = false
+  }
+}
+
+const onProvinceChange = async provinceId => {
+  form.value.provinceId = provinceId
+  form.value.districtId = null
+  form.value.subDistrictId = null
+  subDistricts.value = []
+  await loadDistricts(provinceId)
+}
+
+const onDistrictChange = async districtId => {
+  form.value.districtId = districtId
+  form.value.subDistrictId = null
+  await loadSubDistricts(districtId)
+}
+
+const onSubDistrictChange = subDistrictId => {
+  form.value.subDistrictId = subDistrictId
+
+  const match = subDistricts.value.find(s => s.value === subDistrictId)
+  if (match?.zipCode && !form.value.zipCode)
+    form.value.zipCode = match.zipCode
+}
+
+const prepareAddressLookups = async () => {
+  districts.value = []
+  subDistricts.value = []
+
+  if (form.value.provinceId) {
+    await loadDistricts(form.value.provinceId)
+    if (form.value.districtId)
+      await loadSubDistricts(form.value.districtId)
+  }
+}
+
 const emptyForm = () => ({
   foreName: '',
   surname: '',
@@ -36,18 +146,16 @@ const emptyForm = () => ({
   birthDate: '',
   cardId: '',
   telephone: '',
-  mobile: '',
   timeContact: '',
   addressType: '',
   addressNo: '',
   road: '',
-  city: '',
-  provinceId: '',
-  provinceName: '',
-  districtId: '',
+  provinceId: null,
+  districtId: null,
+  subDistrictId: null,
   zipCode: '',
   mainClaim: '',
-  status: '',
+  isActive: true,
   education: '',
   occupation: '',
   isAllergy: false,
@@ -71,7 +179,7 @@ const headers = [
   { title: 'เพศ', key: 'gender' },
   { title: 'วันเกิด', key: 'birthDate' },
   { title: 'เลขบัตร', key: 'cardId' },
-  { title: 'มือถือ', key: 'mobile' },
+  { title: 'โทรศัพท์', key: 'telephone' },
   { title: 'จัดการ', key: 'actions', sortable: false },
 ]
 
@@ -174,18 +282,16 @@ const toForm = item => ({
   birthDate: item?.birthDate ? String(item.birthDate).slice(0, 10) : '',
   cardId: item?.cardId ?? '',
   telephone: item?.telephone ?? '',
-  mobile: item?.mobile ?? '',
   timeContact: item?.timeContact ?? '',
   addressType: item?.addressType ?? '',
   addressNo: item?.addressNo ?? '',
   road: item?.road ?? '',
-  city: item?.city ?? '',
-  provinceId: item?.provinceId ?? '',
-  provinceName: item?.provinceName ?? '',
-  districtId: item?.districtId ?? '',
+  provinceId: item?.provinceId || null,
+  districtId: item?.districtId || null,
+  subDistrictId: item?.city || null,
   zipCode: item?.zipCode ?? '',
   mainClaim: item?.mainClaim ?? '',
-  status: item?.status ?? '',
+  isActive: item?.isActive ?? true,
   education: item?.education ?? '',
   occupation: item?.occupation ?? '',
   isAllergy: item?.isAllergy ?? false,
@@ -201,18 +307,23 @@ const toForm = item => ({
   alcoholFQ: item?.alcoholFQ ?? '',
 })
 
-const openAddDialog = () => {
+const openAddDialog = async () => {
+  await loadProvinces()
   isEditMode.value = false
   selectedItem.value = null
   form.value = emptyForm()
+  districts.value = []
+  subDistricts.value = []
   saveError.value = ''
   isAddEditDialogVisible.value = true
 }
 
-const openEditDialog = item => {
+const openEditDialog = async item => {
+  await loadProvinces()
   isEditMode.value = true
   selectedItem.value = item
   form.value = toForm(item)
+  await prepareAddressLookups()
   saveError.value = ''
   isAddEditDialogVisible.value = true
 }
@@ -229,18 +340,16 @@ const buildBody = () => ({
   birthDate: form.value.birthDate || null,
   cardId: textOrNull(form.value.cardId),
   telephone: textOrNull(form.value.telephone),
-  mobile: textOrNull(form.value.mobile),
   timeContact: textOrNull(form.value.timeContact),
   addressType: textOrNull(form.value.addressType),
   addressNo: textOrNull(form.value.addressNo),
   road: textOrNull(form.value.road),
-  city: textOrNull(form.value.city),
   provinceId: textOrNull(form.value.provinceId),
-  provinceName: textOrNull(form.value.provinceName),
   districtId: textOrNull(form.value.districtId),
+  city: textOrNull(form.value.subDistrictId),
   zipCode: textOrNull(form.value.zipCode),
   mainClaim: textOrNull(form.value.mainClaim),
-  status: intOrNull(form.value.status),
+  isActive: form.value.isActive,
   education: textOrNull(form.value.education),
   occupation: textOrNull(form.value.occupation),
   isAllergy: form.value.isAllergy,
@@ -448,16 +557,14 @@ fetchItems()
                     clearable
                   />
                 </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
+                <VCol cols="12" md="4">
+                  <AppDateTimePicker
                     v-model="form.birthDate"
                     label="วันเกิด"
                     type="date"
+                    placeholder="เลือกวันที่"
                   />
-                </VCol>
+                </VCol>              
                 <VCol
                   cols="12"
                   md="4"
@@ -474,15 +581,6 @@ fetchItems()
                   <AppTextField
                     v-model="form.telephone"
                     label="โทรศัพท์"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
-                    v-model="form.mobile"
-                    label="มือถือ"
                   />
                 </VCol>
                 <VCol
@@ -521,40 +619,47 @@ fetchItems()
                     label="ถนน"
                   />
                 </VCol>
+
+              
                 <VCol
                   cols="12"
                   md="4"
                 >
-                  <AppTextField
-                    v-model="form.districtId"
-                    label="รหัสอำเภอ"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
-                    v-model="form.city"
-                    label="เมือง"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
+                  <AppSelect
                     v-model="form.provinceId"
-                    label="รหัสจังหวัด"
+                    :items="provinces"
+                    label="จังหวัด"
+                    clearable
+                    :loading="isProvincesLoading"
+                    @update:model-value="onProvinceChange"
                   />
                 </VCol>
                 <VCol
                   cols="12"
                   md="4"
                 >
-                  <AppTextField
-                    v-model="form.provinceName"
-                    label="จังหวัด"
+                  <AppSelect
+                    v-model="form.districtId"
+                    :items="districts"
+                    label="อำเภอ"
+                    clearable
+                    :loading="isDistrictsLoading"
+                    :disabled="!form.provinceId"
+                    @update:model-value="onDistrictChange"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppSelect
+                    v-model="form.subDistrictId"
+                    :items="subDistricts"
+                    label="ตำบล"
+                    clearable
+                    :loading="isSubDistrictsLoading"
+                    :disabled="!form.districtId"
+                    @update:model-value="onSubDistrictChange"
                   />
                 </VCol>
                 <VCol
@@ -575,16 +680,7 @@ fetchItems()
                     label="สิทธิหลัก"
                   />
                 </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
-                    v-model="form.status"
-                    label="สถานะ"
-                    type="number"
-                  />
-                </VCol>
+           
                 <VCol
                   cols="12"
                   md="4"
@@ -710,6 +806,16 @@ fetchItems()
                 </VCol>
                 <VCol
                   cols="12"
+                  md="4"
+                  class="d-flex align-center"
+                >
+                <VSwitch
+                    v-model="form.isActive"
+                    label="เปิดใช้งาน"
+                  />               
+                </VCol>
+                <VCol
+                  cols="12"
                   class="d-flex justify-center gap-4"
                 >
                   <VBtn
@@ -749,9 +855,9 @@ fetchItems()
               <VListItem title="วันเกิด" :subtitle="display(viewItem.birthDate)" />
               <VListItem title="เลขบัตร" :subtitle="display(viewItem.cardId)" />
               <VListItem title="โทรศัพท์" :subtitle="display(viewItem.telephone)" />
-              <VListItem title="มือถือ" :subtitle="display(viewItem.mobile)" />
               <VListItem title="ที่อยู่" :subtitle="display(viewItem.addressNo)" />
-              <VListItem title="จังหวัด" :subtitle="display(viewItem.provinceName)" />
+              <VListItem title="จังหวัด" :subtitle="display(viewItem.provinceName || viewItem.province?.name)" />
+              <VListItem title="ใช้งาน" :subtitle="viewItem.isActive ? 'ใช่' : 'ไม่'" />
               <VListItem title="แพ้ยา" :subtitle="display(viewItem.drugAllergy)" />
               <VListItem title="อาชีพ" :subtitle="display(viewItem.occupation)" />
             </VList>

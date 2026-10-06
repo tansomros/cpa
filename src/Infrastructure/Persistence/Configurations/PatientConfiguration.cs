@@ -18,17 +18,15 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(x => x.CardId).HasMaxLength(20);
         builder.HasIndex(x => x.CardId);
 
-        builder.Property(x => x.Telephone).HasMaxLength(50);
-        builder.Property(x => x.Mobile).HasMaxLength(50);
+        builder.Property(x => x.Telephone).HasMaxLength(50); 
         builder.Property(x => x.TimeContact).HasMaxLength(100);
 
         builder.Property(x => x.AddressType).HasMaxLength(50);
         builder.Property(x => x.AddressNo).HasMaxLength(500);
         builder.Property(x => x.Road).HasMaxLength(200);
-        builder.Property(x => x.DistrictId).HasMaxLength(10);
-        builder.Property(x => x.City).HasMaxLength(200);
-        builder.Property(x => x.ProvinceId).HasMaxLength(10);
-        builder.Property(x => x.ProvinceName).HasMaxLength(200);
+        builder.Property(x => x.SubDistrictId).HasMaxLength(10);
+        builder.Property(x => x.DistrictId).HasMaxLength(200);
+        builder.Property(x => x.ProvinceId).HasMaxLength(10); 
         builder.Property(x => x.ZipCode).HasMaxLength(10);
 
         builder.Property(x => x.MainClaim).HasMaxLength(200);
@@ -44,7 +42,7 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
 
         builder.HasOne(x => x.District)
             .WithMany()
-            .HasForeignKey(x => x.DistrictId)
+            .HasForeignKey(x => x.SubDistrictId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Ignore(x => x.SubDistrict);

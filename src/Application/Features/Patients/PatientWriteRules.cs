@@ -7,7 +7,6 @@ public interface IPatientWrite
     string? Gender { get; }
     string? CardId { get; }
     string? Telephone { get; }
-    string? Mobile { get; }
     string? TimeContact { get; }
     string? AddressType { get; }
     string? AddressNo { get; }
@@ -15,7 +14,6 @@ public interface IPatientWrite
     string? DistrictId { get; }
     string? City { get; }
     string? ProvinceId { get; }
-    string? ProvinceName { get; }
     string? ZipCode { get; }
     string? MainClaim { get; }
     string? Education { get; }
@@ -37,9 +35,6 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
         RuleFor(p => p.Telephone)
             .MaximumLength(50).WithMessage("เบอร์โทรศัพท์ต้องไม่เกิน 50 ตัวอักษร");
 
-        RuleFor(p => p.Mobile)
-            .MaximumLength(50).WithMessage("เบอร์มือถือต้องไม่เกิน 50 ตัวอักษร");
-
         RuleFor(p => p.TimeContact)
             .MaximumLength(100).WithMessage("เวลาที่ติดต่อได้ต้องไม่เกิน 100 ตัวอักษร");
 
@@ -54,9 +49,6 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
 
         RuleFor(p => p.City)
             .MaximumLength(200).WithMessage("เมืองต้องไม่เกิน 200 ตัวอักษร");
-
-        RuleFor(p => p.ProvinceName)
-            .MaximumLength(200).WithMessage("ชื่อจังหวัดต้องไม่เกิน 200 ตัวอักษร");
 
         RuleFor(p => p.ZipCode)
             .MaximumLength(10).WithMessage("รหัสไปรษณีย์ต้องไม่เกิน 10 ตัวอักษร");

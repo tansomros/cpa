@@ -10,6 +10,7 @@ public class GetSubDistrictListQuery : IRequest<PaginatedList<SubDistrictViewMod
     public int Page { get; init; } = 1;
     public int Limit { get; init; } = 10;
     public string? Search { get; init; }
+    public string? DistrictId { get; init; }
 }
 
 public class GetSubDistrictListQueryValidator : AbstractValidator<GetSubDistrictListQuery>
@@ -35,6 +36,9 @@ public class GetSubDistrictListQueryHandler : IRequestHandler<GetSubDistrictList
     public async Task<PaginatedList<SubDistrictViewModel>> Handle(GetSubDistrictListQuery request, CancellationToken cancellationToken)
     {
         var query = _context.SubDistricts.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(request.DistrictId))
+            query = query.Where(x => x.DistrictId == request.DistrictId);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {

@@ -43,8 +43,7 @@ public class GetPatientListQueryHandler : IRequestHandler<GetPatientListQuery, P
                 (x.ForeName != null && x.ForeName.Contains(term))
                 || (x.Surname != null && x.Surname.Contains(term))
                 || (x.CardId != null && x.CardId.Contains(term))
-                || (x.Telephone != null && x.Telephone.Contains(term))
-                || (x.Mobile != null && x.Mobile.Contains(term))
+                || (x.Telephone != null && x.Telephone.Contains(term))       
                 || (hasId && x.Id == id));
         }
 

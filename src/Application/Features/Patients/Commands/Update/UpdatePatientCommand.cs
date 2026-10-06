@@ -14,7 +14,6 @@ public record UpdatePatientCommand : IRequest<Unit>, IPatientWrite
     public string? CardId { get; set; }
 
     public string? Telephone { get; set; }
-    public string? Mobile { get; set; }
     public string? TimeContact { get; set; }
 
     public string? AddressType { get; set; }
@@ -23,11 +22,10 @@ public record UpdatePatientCommand : IRequest<Unit>, IPatientWrite
     public string? DistrictId { get; set; }
     public string? City { get; set; }
     public string? ProvinceId { get; set; }
-    public string? ProvinceName { get; set; }
     public string? ZipCode { get; set; }
 
     public string? MainClaim { get; set; }
-    public int? Status { get; set; }
+
     public string? Education { get; set; }
     public string? Occupation { get; set; }
 
@@ -44,6 +42,8 @@ public record UpdatePatientCommand : IRequest<Unit>, IPatientWrite
 
     public int? Alcohol { get; set; }
     public int? AlcoholFQ { get; set; }
+    public bool IsActive { get; set; }
+
 }
 
 public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
@@ -65,9 +65,8 @@ public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
             request.Surname,
             request.Gender,
             request.BirthDate,
-            null,
             request.CardId);
-        patient.UpdateContact(request.Telephone, request.Mobile, request.TimeContact);
+        patient.UpdateContact(request.Telephone, request.TimeContact);
         patient.UpdateAddress(
             request.AddressType,
             request.AddressNo,
@@ -75,9 +74,8 @@ public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
             request.DistrictId,
             request.City,
             request.ProvinceId,
-            request.ProvinceName,
             request.ZipCode);
-        patient.UpdateGeneralInformation(request.MainClaim, request.Status, request.Education, request.Occupation);
+        patient.UpdateGeneralInformation(request.MainClaim, request.IsActive, request.Education, request.Occupation);
         patient.UpdateAllergy(request.IsAllergy, request.DrugAllergy);
         patient.UpdateSmokingHistory(
             request.IsSmoke,
