@@ -22,16 +22,11 @@ public static class TestDataFactory
     public static async Task<int> CreateTestPatientAsync(int? companyId = null)
     {
         var patient = new Patient(
-            $"HN{NextId():D8}",
-            "นาย",
             "ทดสอบ",
-            "",
             "ระบบ",
+            null,
             Gender.Male,
-            DateOnly.FromDateTime(DateTime.Parse("1990-01-01")))
-        {            
-            Nationality = "ไทย",
-        };
+            DateOnly.FromDateTime(DateTime.Parse("1990-01-01")));
         await AddAsync(patient);
         return patient.Id;
     }

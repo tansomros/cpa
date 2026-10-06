@@ -1,23 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Application.Features.Patients;
 
-namespace BigLion.CPA.Application.Features.Patients.Commands.Update
+namespace BigLion.CPA.Application.Features.Patients.Commands.Update;
+
+public class UpdatePatientCommandValidator : AbstractValidator<UpdatePatientCommand>
 {
-    public class UpdatePatientCommandValidator : AbstractValidator<UpdatePatientCommand>
+    public UpdatePatientCommandValidator(ICpaDatabaseContext context)
     {
-        private readonly ICpaDatabaseContext _context;
-        public UpdatePatientCommandValidator(ICpaDatabaseContext context)
-        {
-            _context = context;
+        RuleFor(x => x.Id)
+            .GreaterThan(0).WithMessage("โปรดระบุ Id");
 
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id �������ö�繤����ҧ��").NotNull().WithMessage("�ô�к� Id");
-            RuleFor(x => x.HospitalNumber).NotEmpty().WithMessage("HN �������ö�繤����ҧ��").NotNull().WithMessage("�ô�к� HN");
-            RuleFor(p => p.FirstName).NotEmpty().WithMessage("���� �������ö�繤����ҧ��").NotNull().WithMessage("��س��кت���");
-            RuleFor(p => p.LastName).NotEmpty().WithMessage("���ʡ�� �������ö�繤����ҧ��").NotNull().WithMessage("��س��кع��ʡ��");
-        }
+        RuleFor(p => p.ForeName)
+            .NotEmpty().WithMessage("ชื่อต้องไม่ว่าง")
+            .MaximumLength(200).WithMessage("ชื่อต้องไม่เกิน 200 ตัวอักษร");
+
+        RuleFor(p => p.Surname)
+            .NotEmpty().WithMessage("นามสกุลต้องไม่ว่าง")
+            .MaximumLength(200).WithMessage("นามสกุลต้องไม่เกิน 200 ตัวอักษร");
+
+        RuleFor(p => p).SetValidator(new PatientWriteRules(context));
     }
 }

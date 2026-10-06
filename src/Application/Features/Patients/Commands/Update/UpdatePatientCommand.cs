@@ -1,41 +1,50 @@
 using BigLion.CPA.Application.Common.Interfaces;
 using BigLion.CPA.Application.Exceptions;
+using BigLion.CPA.Application.Features.Patients;
 
 namespace BigLion.CPA.Application.Features.Patients.Commands.Update;
 
-public record UpdatePatientCommand : IRequest<Unit>
+public record UpdatePatientCommand : IRequest<Unit>, IPatientWrite
 {
     public required int Id { get; set; }
-    public required string HospitalNumber { get; set; }
-    public required string Prefix { get; set; }
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
-    public required string MiddleName { get; set; }
-    public required string Gender { get; set; }
-    public DateOnly BirthDate { get; set; }
-    public string? NationId { get; set; }
-    public string? Nationality { get; set; }
-    public string? Religious { get; set; }
-    public string? BloodGroup { get; set; }
-    public string? EmployeeId { get; set; }
-    //public int? OrganizationId { get; set; }
-    public string? Address { get; set; }
-    public string? SubDistrictId { get; set; }
-    public string? DistrictId { get; set; }
-    public string? ProvinceId { get; set; }
-    public string? ZipCode { get; set; }
-    public string? TelephoneNumber { get; set; }
-    public string? DrugAllergy { get; set; }
-    public string? PrefixEnglish { get; set; }
-    public string? FirstNameEnglish { get; set; }
-    public string? LastNameEnglish { get; set; }
-    public string? MiddleNameEnglish { get; set; }
-    public string? NationalityEnglish { get; set; }
-    public string? ReligiousEnglish { get; set; }
-    public string? AddressEnglish { get; set; }
-    public string? ChronicDisease { get; set; }
-}
+    public string? ForeName { get; set; }
+    public string? Surname { get; set; }
+    public string? Gender { get; set; }
+    public DateOnly? BirthDate { get; set; }
+    public string? CardId { get; set; }
 
+    public string? Telephone { get; set; }
+    public string? Mobile { get; set; }
+    public string? TimeContact { get; set; }
+
+    public string? AddressType { get; set; }
+    public string? AddressNo { get; set; }
+    public string? Road { get; set; }
+    public string? DistrictId { get; set; }
+    public string? City { get; set; }
+    public string? ProvinceId { get; set; }
+    public string? ProvinceName { get; set; }
+    public string? ZipCode { get; set; }
+
+    public string? MainClaim { get; set; }
+    public int? Status { get; set; }
+    public string? Education { get; set; }
+    public string? Occupation { get; set; }
+
+    public bool? IsAllergy { get; set; }
+    public string? DrugAllergy { get; set; }
+
+    public bool? IsSmoke { get; set; }
+    public int? Smoke { get; set; }
+    public int? SmokeYear { get; set; }
+    public int? SmokeCigarette { get; set; }
+    public int? CigaretteType { get; set; }
+    public bool? SmokingQuit { get; set; }
+    public string? SmokingRemark { get; set; }
+
+    public int? Alcohol { get; set; }
+    public int? AlcoholFQ { get; set; }
+}
 
 public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
 {
@@ -48,33 +57,38 @@ public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
 
     public async Task<Unit> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
     {
-        //throw new NotImplementedException();
-        var patient = await _context.Patients.FirstOrDefaultAsync(b => b.Id.Equals(request.Id), cancellationToken);
-        if (patient == null)
-        {
-            throw new NotFoundException(nameof(Patients), request.Id);
-        }
-     
-        patient.HospitalNumber = request.HospitalNumber;
-        patient.Prefix = request.Prefix;
-        patient.FirstName = request.FirstName;
-        patient.MiddleName = request.MiddleName;
-        patient.LastName = request.LastName;
-        patient.Gender = request.Gender;
-        patient.BirthDate = request.BirthDate;
-        patient.BloodGroup = request.BloodGroup;
-        patient.NationId = request.NationId;
-        patient.AddressNo = request.Address;
-        patient.DistrictId = request.DistrictId;
-        patient.SubDistrictId = request.SubDistrictId;
-        patient.ProvinceId = request.ProvinceId;
-        patient.DrugAllergy = request.DrugAllergy;
-       
-        patient.TelephoneNumber = request.TelephoneNumber;     
-        patient.ZipCode = request.ZipCode;
-        patient.ChronicDisease = request.ChronicDisease;
+        var patient = await _context.Patients.FirstOrDefaultAsync(b => b.Id == request.Id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Patients), request.Id);
 
-        _context.Patients.Update(patient);
+        patient.UpdatePersonalInformation(
+            request.ForeName,
+            request.Surname,
+            request.Gender,
+            request.BirthDate,
+            null,
+            request.CardId);
+        patient.UpdateContact(request.Telephone, request.Mobile, request.TimeContact);
+        patient.UpdateAddress(
+            request.AddressType,
+            request.AddressNo,
+            request.Road,
+            request.DistrictId,
+            request.City,
+            request.ProvinceId,
+            request.ProvinceName,
+            request.ZipCode);
+        patient.UpdateGeneralInformation(request.MainClaim, request.Status, request.Education, request.Occupation);
+        patient.UpdateAllergy(request.IsAllergy, request.DrugAllergy);
+        patient.UpdateSmokingHistory(
+            request.IsSmoke,
+            request.Smoke,
+            request.SmokeYear,
+            request.SmokeCigarette,
+            request.CigaretteType,
+            request.SmokingQuit,
+            request.SmokingRemark);
+        patient.UpdateAlcoholHistory(request.Alcohol, request.AlcoholFQ);
+
         await _context.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }

@@ -1,145 +1,169 @@
 ﻿namespace BigLion.CPA.Domain.Entities;
 
 /// <summary>
-/// ข้อมูลผู้รับบริการ
+/// ข้อมูลผู้ป่วย/ผู้รับบริการ
 /// </summary>
 public class Patient : BaseEntity
 {
+    // Personal Information
+    public string? ForeName { get; private set; }
+    public string? Surname { get; private set; }
+    public string? Gender { get; private set; }
+    public DateOnly? BirthDate { get; private set; }
+    public string? CardId { get; private set; }
 
-    /// <summary>
-    /// หมายเลข HN
-    /// </summary>
-    public string? HospitalNumber { get; set; }
+    // Contact
+    public string? Telephone { get; private set; }
+    public string? Mobile { get; private set; }
+    public string? TimeContact { get; private set; }
 
-    /// <summary>
-    /// คำนำหน้าชื่อไทย
-    /// </summary>
-    public string Prefix { get; set; }
+    // Address
+    public string? AddressType { get; private set; }
+    public string? AddressNo { get; private set; }
+    public string? Road { get; private set; }
+    public string? DistrictId { get; private set; }
+    public string? City { get; private set; }
+    public string? ProvinceId { get; private set; }
+    public string? ProvinceName { get; private set; }
+    public string? ZipCode { get; private set; }
 
-    /// <summary>
-    /// ชื่อไทย
-    /// </summary>
-    public string FirstName { get; set; }
+    // General Information
+    public string? MainClaim { get; private set; }
+    public int? Status { get; private set; }
+    public string? Education { get; private set; }
+    public string? Occupation { get; private set; }
 
-    /// <summary>
-    /// นามสกุลไทย
-    /// </summary>
-    public string LastName { get; set; }
+    // Allergy
+    public bool? IsAllergy { get; private set; }
+    public string? DrugAllergy { get; private set; }
 
-    /// <summary>
-    /// ชื่อกลาง
-    /// </summary>
-    public string? MiddleName { get; set; }
+    // Smoking
+    public bool? IsSmoke { get; private set; }
+    public int? Smoke { get; private set; }
+    public int? SmokeYear { get; private set; }
+    public int? SmokeCigarette { get; private set; }
+    public int? CigaretteType { get; private set; }
+    public bool? SmokingQuit { get; private set; }
+    public string? SmokingRemark { get; private set; }
 
-    /// <summary>
-    /// เพศ
-    /// </summary>
-    public string Gender { get; set; }
+    // Alcohol
+    public int? Alcohol { get; private set; }
+    public int? AlcoholFQ { get; private set; }
 
-    /// <summary>
-    /// วันเกิด
-    /// </summary>
-    public DateOnly BirthDate { get; set; }
-
-    /// <summary>
-    /// เลขบัตรประชาชนสำหรับคนไทย เป็นเลข 13 หลัก / passport สำหรับชาวต่างชาติ
-    /// </summary>
-    public string? NationId { get; set; }
-
-
-    /// <summary>
-    /// หมู่เลือด ABO
-    /// </summary>
-    public string? BloodGroup { get; set; }
-
-
-    /// <summary>
-    /// ที่อยู่ : บ้านเลขที่ หมู่ ถนน ซอย อาคาร ให้รวมอยู่ในฟิลด์นี้
-    /// </summary>
-    public string? AddressNo { get; set; }
-
-    /// <summary>
-    /// แขวง/ตำบล
-    /// </summary>
-    public string? SubDistrictId { get; set; }
-
-    /// <summary>
-    /// เขต/อำเภอ
-    /// </summary>
-    public string? DistrictId { get; set; }
-
-    /// <summary>
-    /// จังหวัด
-    /// </summary>
-    public string? ProvinceId { get; set; }
-
-    /// <summary>
-    /// รหัสไปรษณีย์
-    /// </summary>
-    public string? ZipCode { get; set; }
-
-    /// <summary>
-    /// เบอร์โทร
-    /// </summary>
-    public string? TelephoneNumber { get; set; }
-
-    /// <summary>
-    /// แพ้ยา
-    /// </summary>
-    public string? DrugAllergy { get; set; }
-
-    /// <summary>
-    /// โรคประจำตัว
-    /// </summary>
-    public string? ChronicDisease { get; set; }
-
-    /// <summary>
-    /// สิทธิการรักษาหลัก
-    /// </summary>
-    public string? MainClaim { get; set; }
-
-    /// <summary>
-    /// การศึกษา
-    /// </summary>
-    public string? Education { get; set; }
-
-    /// <summary>
-    /// อาชีพ
-    /// </summary>
-    public string? Occupation { get; set; }
-
-    /// <summary>
-    /// สูบบุหรี่
-    /// </summary>
-    public bool? IsSmoke { get; set; }
-
-    /// <summary>
-    /// รายละเอียดอื่นๆเกี่ยวกับการสูบบุหรี่
-    /// </summary>
-    public string? SmokeRemark { get; set; }
-
-    public bool? IsDrink { get; set; }
-    public string? DrinkRemark {  get; set; }
 
     // Navigation properties
     public virtual Province? Province { get; set; }
     public virtual District? District { get; set; }
     public virtual SubDistrict? SubDistrict { get; set; }
 
-   
-    public Patient(
-        string prefix,
-        string firstName,
-        string middleName,
-        string lastName,
-        string gender,
-        DateOnly birthDate)
+    private Patient()
     {
-        Prefix = prefix;
-        FirstName = firstName;
-        MiddleName = middleName;
-        LastName = lastName;
+        // Required by EF Core
+    }
+
+    public Patient(
+        string? foreName,
+        string? surname,
+        string? cardId,
+        string? gender = null,
+        DateOnly? birthDate = null)
+    {
+        ForeName = foreName;
+        Surname = surname;
+        CardId = cardId;
         Gender = gender;
         BirthDate = birthDate;
     }
-}
+
+    public void UpdatePersonalInformation(
+        string? foreName,
+        string? surname,
+        string? gender,
+        DateOnly? birthDate,
+        int? ages,
+        string? cardId)
+    {
+        ForeName = foreName;
+        Surname = surname;
+        Gender = gender;
+        BirthDate = birthDate;        
+        CardId = cardId;
+    }
+
+    public void UpdateContact(
+        string? telephone,
+        string? mobile,
+        string? timeContact)
+    {
+        Telephone = telephone;
+        Mobile = mobile;
+        TimeContact = timeContact;
+    }
+
+    public void UpdateAddress(
+        string? addressType,
+        string? addressNo,
+        string? road,
+        string? districtId,
+        string? city,
+        string? provinceId,
+        string? provinceName,
+        string? zipCode)
+    {
+        AddressType = addressType;
+        AddressNo = addressNo;
+        Road = road;
+        DistrictId = districtId;
+        City = city;
+        ProvinceId = provinceId;
+        ProvinceName = provinceName;
+        ZipCode = zipCode;
+    }
+
+    public void UpdateGeneralInformation(
+        string? mainClaim,
+        int? status,
+        string? education,
+        string? occupation)
+    {
+        MainClaim = mainClaim;
+        Status = status;
+        Education = education;
+        Occupation = occupation;
+    }
+
+
+    public void UpdateAllergy(
+        bool? isAllergy,
+        string? drugAllergy)
+    {
+        IsAllergy = isAllergy;
+        DrugAllergy = drugAllergy;
+    }
+
+    public void UpdateSmokingHistory(
+        bool? isSmoke,
+        int? smoke,
+        int? smokeYear,
+        int? smokeCigarette,
+        int? cigaretteType,
+        bool? smokingQuit,
+        string? smokingRemark)
+    {
+        IsSmoke = isSmoke;
+        Smoke = smoke;
+        SmokeYear = smokeYear;
+        SmokeCigarette = smokeCigarette;
+        CigaretteType = cigaretteType;
+        SmokingQuit = smokingQuit;
+        SmokingRemark = smokingRemark;
+    }
+
+    public void UpdateAlcoholHistory(
+        int? alcohol,
+        int? alcoholFQ)
+    {
+        Alcohol = alcohol;
+        AlcoholFQ = alcoholFQ;
+    }
+} 

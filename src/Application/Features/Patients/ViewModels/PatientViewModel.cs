@@ -2,66 +2,79 @@ using System.Text.Json.Serialization;
 using BigLion.CPA.Application.Common.Interfaces;
 using BigLion.CPA.Application.Features.Districts.ViewModels;
 using BigLion.CPA.Application.Features.Provinces.ViewModels;
-using BigLion.CPA.Application.Features.SubDistricts.ViewModels;
 using BigLion.CPA.Domain.Entities;
 
-namespace BigLion.CPA.Application.Features.Patients.ViewModels
-{
-    public class PatientViewModel : IMapFrom<Patient>
-    {
-        public int Id { get; set; }
-        public string? HospitalNumber { get; set; }
-        public string? Prefix { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? MiddleName { get; set; }
-        public string? FullName { get; set; }
-        public string? Gender { get; set; }
-        public DateOnly BirthDate { get; set; }
-        public string? NationId { get; set; }
-        public string? Nationality { get; set; }
-        public string? Religious { get; set; }
-        public string? BloodGroup { get; set; }
-        public string? EmployeeId { get; set; }
-        //public int? CompanyId { get; set; }
-        //public virtual Company? Company { get; set; }
-        public string? Address { get; set; }
-        public string? SubDistrictId { get; set; }
-        public string? DistrictId { get; set; }
-        public string? ProvinceId { get; set; }
-        public string? ZipCode { get; set; }
-        public string? TelephoneNumber { get; set; }
-        public string? DrugAllergy { get; set; }
-        public string? ChronicDisease { get; set; }
-        public string? PrefixEnglish { get; set; }
-        public string? FirstNameEnglish { get; set; }
-        public string? LastNameEnglish { get; set; }
-        public string? MiddleNameEnglish { get; set; }
-        public string? NationalityEnglish { get; set; }
-        public string? ReligiousEnglish { get; set; }
-        public string? AddressEnglish { get; set; }
+namespace BigLion.CPA.Application.Features.Patients.ViewModels;
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public ProvinceViewModel? Province { get; set; } = null;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public DistrictViewModel? District { get; set; } = null;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public SubDistrictViewModel? SubDistrict { get; set; } = null;
-         
-        public void Mapping(Profile profile)
+public class PatientViewModel : IMapFrom<Patient>
+{
+    public int Id { get; set; }   
+    public string? ForeName { get; set; }
+    public string? Surname { get; set; }
+    public string? FullName { get; set; }
+    public string? Gender { get; set; }
+    public DateOnly? BirthDate { get; set; }
+    public int? Age
+    {
+        get
         {
-            profile.CreateMap<Patient, PatientViewModel>()
-                  .ForMember(d => d.FullName, opt => opt.MapFrom(s => $"{s.Prefix}{s.FirstName} {s.LastName}"))
-                  .ForMember(d => d.Address, opt => opt.MapFrom(s => s.AddressNo));
-                  //.ForSourceMember(s => s.Company, opt => opt.DoNotValidate());
+            if (BirthDate is null)
+                return null;
+
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            var age = today.Year - BirthDate.Value.Year;
+
+            if (BirthDate.Value > today.AddYears(-age))
+                age--;
+
+            return age;
         }
-        //class DateResolver : IValueResolver<Patient, PatientViewModel, DateTimeOffset>
-        //{
-        //    public DateTimeOffset Resolve(Patient patient, PatientViewModel destination, DateTimeOffset destMember,ResolutionContext context)
-        //    {
-        //        DateTime dateTimeUtc = patient.BirthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
-        //        return new DateTimeOffset(dateTimeUtc);                
-        //    }
-        //}
+    }
+    public string? CardId { get; set; }
+
+    public string? Telephone { get; set; }
+    public string? Mobile { get; set; }
+    public string? TimeContact { get; set; }
+
+    public string? AddressType { get; set; }
+    public string? AddressNo { get; set; }
+    public string? Road { get; set; }
+    public string? DistrictId { get; set; }
+    public string? City { get; set; }
+    public string? ProvinceId { get; set; }
+    public string? ProvinceName { get; set; }
+    public string? ZipCode { get; set; }
+
+    public string? MainClaim { get; set; }
+    public int? Status { get; set; }
+    public string? Education { get; set; }
+    public string? Occupation { get; set; }
+
+    public bool? IsAllergy { get; set; }
+    public string? DrugAllergy { get; set; }
+
+    public bool? IsSmoke { get; set; }
+    public int? Smoke { get; set; }
+    public int? SmokeYear { get; set; }
+    public int? SmokeCigarette { get; set; }
+    public int? CigaretteType { get; set; }
+    public bool? SmokingQuit { get; set; }
+    public string? SmokingRemark { get; set; }
+
+    public int? Alcohol { get; set; }
+    public int? AlcoholFQ { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ProvinceViewModel? Province { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DistrictViewModel? District { get; set; }
+
+    public void Mapping(Profile profile)
+    {
+        profile.CreateMap<Patient, PatientViewModel>()
+            .ForMember(d => d.FullName, opt => opt.MapFrom(s =>
+                ((s.ForeName ?? string.Empty) + " " + (s.Surname ?? string.Empty)).Trim()));
     }
 }

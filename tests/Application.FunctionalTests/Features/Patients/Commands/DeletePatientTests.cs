@@ -7,7 +7,6 @@ namespace BigLion.Application.FunctionalTests.Features.Patients.Commands;
 
 public class DeletePatientTests : BaseTestFixture
 {
-    /// ทดสอบ: ลบผู้ป่วยที่มีอยู่ ควรลบออกจากฐานข้อมูลสำเร็จ
     [Test]
     public async Task Delete_ExistingPatient_ShouldRemoveFromDatabase()
     {
@@ -15,11 +14,8 @@ public class DeletePatientTests : BaseTestFixture
 
         var id = await SendAsync(new CreatePatientCommand
         {
-            HospitalNumber = "HNDEL001",
-            Prefix = "นาย",
-            FirstName = "จะลบ",
-            MiddleName = "",
-            LastName = "ทดสอบ",
+            ForeName = "จะลบ",
+            Surname = "ทดสอบ",
             Gender = "M",
             BirthDate = DateOnly.FromDateTime(DateTime.Parse("1990-01-01"))
         });
@@ -30,7 +26,6 @@ public class DeletePatientTests : BaseTestFixture
         deleted.Should().BeNull();
     }
 
-    /// ทดสอบ: ลบผู้ป่วยที่ไม่มีในระบบ ควร throw NotFoundException
     [Test]
     public async Task Delete_NonExisting_ShouldThrowNotFoundException()
     {

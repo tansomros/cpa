@@ -1,7 +1,6 @@
 <script setup>
 import { requiredValidator } from '@/@core/utils/validators'
 import { $api } from '@/utils/api'
-import { onMounted, ref } from 'vue'
 
 const searchQuery = ref('')
 const itemsPerPage = ref(10)
@@ -10,7 +9,6 @@ const items = ref([])
 const totalItems = ref(0)
 const isLoading = ref(false)
 const errorMessage = ref('')
-const prefixes = ref([])
 
 const isConfirmProgressDialogVisible = ref(false)
 const progressDialogRef = ref(null)
@@ -27,44 +25,54 @@ const saveError = ref('')
 const selectedItem = ref(null)
 
 const genderOptions = [
-  { value: 'ชาย', title: 'ชาย' },
-  { value: 'หญิง', title: 'หญิง' },
+  { value: 'M', title: 'ชาย' },
+  { value: 'F', title: 'หญิง' },
 ]
 
-const bloodGroupOptions = ['A', 'B', 'AB', 'O'].map(value => ({ value, title: value }))
-
 const emptyForm = () => ({
-  hospitalNumber: '',
-  prefix: null,
-  firstName: '',
-  middleName: '',
-  lastName: '',
+  foreName: '',
+  surname: '',
   gender: null,
   birthDate: '',
-  nationId: '',
-  bloodGroup: null,
-  telephoneNumber: '',
-  address: '',
+  cardId: '',
+  telephone: '',
+  mobile: '',
+  timeContact: '',
+  addressType: '',
+  addressNo: '',
+  road: '',
+  city: '',
+  provinceId: '',
+  provinceName: '',
+  districtId: '',
   zipCode: '',
+  mainClaim: '',
+  status: '',
+  education: '',
+  occupation: '',
+  isAllergy: false,
   drugAllergy: '',
-  chronicDisease: '',
+  isSmoke: false,
+  smoke: '',
+  smokeYear: '',
+  smokeCigarette: '',
+  cigaretteType: '',
+  smokingQuit: false,
+  smokingRemark: '',
+  alcohol: '',
+  alcoholFQ: '',
 })
 
 const form = ref(emptyForm())
 
 const headers = [
-  { title: 'HN', key: 'hospitalNumber' },
+  { title: 'รหัส', key: 'id' },
   { title: 'ชื่อ-สกุล', key: 'fullName' },
   { title: 'เพศ', key: 'gender' },
   { title: 'วันเกิด', key: 'birthDate' },
-  { title: 'เลขบัตรประชาชน', key: 'nationId' },
-  { title: 'เบอร์โทร', key: 'telephoneNumber' },
+  { title: 'เลขบัตร', key: 'cardId' },
+  { title: 'มือถือ', key: 'mobile' },
   { title: 'จัดการ', key: 'actions', sortable: false },
-]
-
-const hospitalNumberRules = [
-  requiredValidator,
-  v => !v || v.length <= 8 || 'HN ต้องไม่เกิน 8 ตัวอักษร',
 ]
 
 const describeError = (error, fallback) => {
@@ -75,10 +83,22 @@ const describeError = (error, fallback) => {
   return error?.data?.detail || error?.data?.title || fallback
 }
 
-const fetchPrefixes = async () => {
-  const result = await $api('/prefixs', { method: 'GET', query: { page: 1, limit: 200 } })
+const textOrNull = value => {
+  if (value === null || value === undefined)
+    return null
 
-  prefixes.value = (result.items ?? []).map(item => ({ value: item.name, title: item.name }))
+  const text = String(value).trim()
+
+  return text === '' ? null : text
+}
+
+const intOrNull = value => {
+  if (value === '' || value === null || value === undefined)
+    return null
+
+  const number = Number(value)
+
+  return Number.isFinite(number) ? number : null
 }
 
 const fetchItems = async () => {
@@ -148,20 +168,37 @@ const deleteItem = async id => {
 }
 
 const toForm = item => ({
-  hospitalNumber: item?.hospitalNumber ?? '',
-  prefix: item?.prefix ?? null,
-  firstName: item?.firstName ?? '',
-  middleName: item?.middleName ?? '',
-  lastName: item?.lastName ?? '',
+  foreName: item?.foreName ?? '',
+  surname: item?.surname ?? '',
   gender: item?.gender ?? null,
   birthDate: item?.birthDate ? String(item.birthDate).slice(0, 10) : '',
-  nationId: item?.nationId ?? '',
-  bloodGroup: item?.bloodGroup ?? null,
-  telephoneNumber: item?.telephoneNumber ?? '',
-  address: item?.address ?? '',
+  cardId: item?.cardId ?? '',
+  telephone: item?.telephone ?? '',
+  mobile: item?.mobile ?? '',
+  timeContact: item?.timeContact ?? '',
+  addressType: item?.addressType ?? '',
+  addressNo: item?.addressNo ?? '',
+  road: item?.road ?? '',
+  city: item?.city ?? '',
+  provinceId: item?.provinceId ?? '',
+  provinceName: item?.provinceName ?? '',
+  districtId: item?.districtId ?? '',
   zipCode: item?.zipCode ?? '',
+  mainClaim: item?.mainClaim ?? '',
+  status: item?.status ?? '',
+  education: item?.education ?? '',
+  occupation: item?.occupation ?? '',
+  isAllergy: item?.isAllergy ?? false,
   drugAllergy: item?.drugAllergy ?? '',
-  chronicDisease: item?.chronicDisease ?? '',
+  isSmoke: item?.isSmoke ?? false,
+  smoke: item?.smoke ?? '',
+  smokeYear: item?.smokeYear ?? '',
+  smokeCigarette: item?.smokeCigarette ?? '',
+  cigaretteType: item?.cigaretteType ?? '',
+  smokingQuit: item?.smokingQuit ?? false,
+  smokingRemark: item?.smokingRemark ?? '',
+  alcohol: item?.alcohol ?? '',
+  alcoholFQ: item?.alcoholFQ ?? '',
 })
 
 const openAddDialog = () => {
@@ -185,6 +222,40 @@ const openViewDialog = item => {
   isViewDialogVisible.value = true
 }
 
+const buildBody = () => ({
+  foreName: textOrNull(form.value.foreName),
+  surname: textOrNull(form.value.surname),
+  gender: form.value.gender || null,
+  birthDate: form.value.birthDate || null,
+  cardId: textOrNull(form.value.cardId),
+  telephone: textOrNull(form.value.telephone),
+  mobile: textOrNull(form.value.mobile),
+  timeContact: textOrNull(form.value.timeContact),
+  addressType: textOrNull(form.value.addressType),
+  addressNo: textOrNull(form.value.addressNo),
+  road: textOrNull(form.value.road),
+  city: textOrNull(form.value.city),
+  provinceId: textOrNull(form.value.provinceId),
+  provinceName: textOrNull(form.value.provinceName),
+  districtId: textOrNull(form.value.districtId),
+  zipCode: textOrNull(form.value.zipCode),
+  mainClaim: textOrNull(form.value.mainClaim),
+  status: intOrNull(form.value.status),
+  education: textOrNull(form.value.education),
+  occupation: textOrNull(form.value.occupation),
+  isAllergy: form.value.isAllergy,
+  drugAllergy: textOrNull(form.value.drugAllergy),
+  isSmoke: form.value.isSmoke,
+  smoke: intOrNull(form.value.smoke),
+  smokeYear: intOrNull(form.value.smokeYear),
+  smokeCigarette: intOrNull(form.value.smokeCigarette),
+  cigaretteType: intOrNull(form.value.cigaretteType),
+  smokingQuit: form.value.smokingQuit,
+  smokingRemark: textOrNull(form.value.smokingRemark),
+  alcohol: intOrNull(form.value.alcohol),
+  alcoholFQ: intOrNull(form.value.alcoholFQ),
+})
+
 const saveItem = async () => {
   const validation = await refForm.value?.validate()
   if (!validation?.valid)
@@ -193,32 +264,18 @@ const saveItem = async () => {
   isSaving.value = true
   saveError.value = ''
 
-  const body = {
-    hospitalNumber: form.value.hospitalNumber.trim(),
-    prefix: form.value.prefix,
-    firstName: form.value.firstName.trim(),
-    middleName: form.value.middleName.trim(),
-    lastName: form.value.lastName.trim(),
-    gender: form.value.gender,
-    birthDate: form.value.birthDate,
-    nationId: form.value.nationId.trim() || null,
-    bloodGroup: form.value.bloodGroup || null,
-    telephoneNumber: form.value.telephoneNumber.trim() || null,
-    address: form.value.address.trim() || null,
-    zipCode: form.value.zipCode.trim() || null,
-    drugAllergy: form.value.drugAllergy.trim() || null,
-    chronicDisease: form.value.chronicDisease.trim() || null,
-  }
-
   try {
     if (isEditMode.value) {
       await $api(`/patients/${selectedItem.value.id}`, {
         method: 'PUT',
-        body: { id: selectedItem.value.id, ...body },
+        body: { id: selectedItem.value.id, ...buildBody() },
       })
     }
     else {
-      await $api('/patients', { method: 'POST', body })
+      await $api('/patients', {
+        method: 'POST',
+        body: buildBody(),
+      })
     }
 
     isAddEditDialogVisible.value = false
@@ -230,7 +287,8 @@ const saveItem = async () => {
   }
 }
 
-onMounted(fetchPrefixes)
+const display = value => (value === null || value === undefined || value === '' ? '-' : String(value))
+
 fetchItems()
 </script>
 
@@ -335,7 +393,7 @@ fetchItems()
 
       <VDialog
         v-model="isAddEditDialogVisible"
-        max-width="900"
+        max-width="980"
       >
         <VCard class="pa-2 pa-sm-8">
           <DialogCloseBtn @click="isAddEditDialogVisible = false" />
@@ -364,19 +422,18 @@ fetchItems()
                   md="4"
                 >
                   <AppTextField
-                    v-model="form.hospitalNumber"
-                    label="HN"
-                    :rules="hospitalNumberRules"
+                    v-model="form.foreName"
+                    label="ชื่อ"
+                    :rules="[requiredValidator]"
                   />
                 </VCol>
                 <VCol
                   cols="12"
                   md="4"
                 >
-                  <AppSelect
-                    v-model="form.prefix"
-                    :items="prefixes"
-                    label="คำนำหน้าชื่อ"
+                  <AppTextField
+                    v-model="form.surname"
+                    label="นามสกุล"
                     :rules="[requiredValidator]"
                   />
                 </VCol>
@@ -388,36 +445,7 @@ fetchItems()
                     v-model="form.gender"
                     :items="genderOptions"
                     label="เพศ"
-                    :rules="[requiredValidator]"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
-                    v-model="form.firstName"
-                    label="ชื่อ"
-                    :rules="[requiredValidator]"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
-                    v-model="form.middleName"
-                    label="ชื่อกลาง"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="4"
-                >
-                  <AppTextField
-                    v-model="form.lastName"
-                    label="นามสกุล"
-                    :rules="[requiredValidator]"
+                    clearable
                   />
                 </VCol>
                 <VCol
@@ -428,7 +456,6 @@ fetchItems()
                     v-model="form.birthDate"
                     label="วันเกิด"
                     type="date"
-                    :rules="[requiredValidator]"
                   />
                 </VCol>
                 <VCol
@@ -436,43 +463,153 @@ fetchItems()
                   md="4"
                 >
                   <AppTextField
-                    v-model="form.nationId"
-                    label="เลขบัตรประชาชน"
+                    v-model="form.cardId"
+                    label="เลขบัตร"
                   />
                 </VCol>
                 <VCol
                   cols="12"
                   md="4"
                 >
-                  <AppSelect
-                    v-model="form.bloodGroup"
-                    :items="bloodGroupOptions"
-                    label="หมู่เลือด"
-                    clearable
+                  <AppTextField
+                    v-model="form.telephone"
+                    label="โทรศัพท์"
                   />
                 </VCol>
                 <VCol
                   cols="12"
-                  md="6"
+                  md="4"
                 >
                   <AppTextField
-                    v-model="form.telephoneNumber"
-                    label="เบอร์โทร"
+                    v-model="form.mobile"
+                    label="มือถือ"
                   />
                 </VCol>
                 <VCol
                   cols="12"
-                  md="6"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.timeContact"
+                    label="เวลาที่ติดต่อได้"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.addressType"
+                    label="ประเภทที่อยู่"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="8"
+                >
+                  <AppTextField
+                    v-model="form.addressNo"
+                    label="ที่อยู่"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.road"
+                    label="ถนน"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.districtId"
+                    label="รหัสอำเภอ"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.city"
+                    label="เมือง"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.provinceId"
+                    label="รหัสจังหวัด"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.provinceName"
+                    label="จังหวัด"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
                 >
                   <AppTextField
                     v-model="form.zipCode"
                     label="รหัสไปรษณีย์"
                   />
                 </VCol>
-                <VCol cols="12">
+                <VCol
+                  cols="12"
+                  md="4"
+                >
                   <AppTextField
-                    v-model="form.address"
-                    label="ที่อยู่"
+                    v-model="form.mainClaim"
+                    label="สิทธิหลัก"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.status"
+                    label="สถานะ"
+                    type="number"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.education"
+                    label="การศึกษา"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.occupation"
+                    label="อาชีพ"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                >
+                  <VCheckbox
+                    v-model="form.isAllergy"
+                    label="มีประวัติแพ้"
                   />
                 </VCol>
                 <VCol
@@ -486,11 +623,89 @@ fetchItems()
                 </VCol>
                 <VCol
                   cols="12"
+                  md="3"
+                >
+                  <VCheckbox
+                    v-model="form.isSmoke"
+                    label="สูบบุหรี่"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="3"
+                >
+                  <VCheckbox
+                    v-model="form.smokingQuit"
+                    label="เลิกบุหรี่แล้ว"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="3"
+                >
+                  <AppTextField
+                    v-model="form.smoke"
+                    label="การสูบ"
+                    type="number"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="3"
+                >
+                  <AppTextField
+                    v-model="form.smokeYear"
+                    label="จำนวนปีที่สูบ"
+                    type="number"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.smokeCigarette"
+                    label="จำนวนมวน"
+                    type="number"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.cigaretteType"
+                    label="ชนิดบุหรี่"
+                    type="number"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="4"
+                >
+                  <AppTextField
+                    v-model="form.smokingRemark"
+                    label="หมายเหตุการสูบ"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
                   md="6"
                 >
                   <AppTextField
-                    v-model="form.chronicDisease"
-                    label="โรคประจำตัว"
+                    v-model="form.alcohol"
+                    label="แอลกอฮอล์"
+                    type="number"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                >
+                  <AppTextField
+                    v-model="form.alcoholFQ"
+                    label="ความถี่แอลกอฮอล์"
+                    type="number"
                   />
                 </VCol>
                 <VCol
@@ -528,16 +743,17 @@ fetchItems()
               รายละเอียดผู้รับบริการ
             </h4>
             <VList v-if="viewItem">
-              <VListItem title="HN" :subtitle="viewItem.hospitalNumber || '-'" />
-              <VListItem title="ชื่อ-สกุล" :subtitle="viewItem.fullName || '-'" />
-              <VListItem title="เพศ" :subtitle="viewItem.gender || '-'" />
-              <VListItem title="วันเกิด" :subtitle="viewItem.birthDate || '-'" />
-              <VListItem title="เลขบัตรประชาชน" :subtitle="viewItem.nationId || '-'" />
-              <VListItem title="หมู่เลือด" :subtitle="viewItem.bloodGroup || '-'" />
-              <VListItem title="เบอร์โทร" :subtitle="viewItem.telephoneNumber || '-'" />
-              <VListItem title="ที่อยู่" :subtitle="viewItem.address || '-'" />
-              <VListItem title="แพ้ยา" :subtitle="viewItem.drugAllergy || '-'" />
-              <VListItem title="โรคประจำตัว" :subtitle="viewItem.chronicDisease || '-'" />
+              <VListItem title="รหัส" :subtitle="display(viewItem.id)" />
+              <VListItem title="ชื่อ-สกุล" :subtitle="display(viewItem.fullName)" />
+              <VListItem title="เพศ" :subtitle="display(viewItem.gender)" />
+              <VListItem title="วันเกิด" :subtitle="display(viewItem.birthDate)" />
+              <VListItem title="เลขบัตร" :subtitle="display(viewItem.cardId)" />
+              <VListItem title="โทรศัพท์" :subtitle="display(viewItem.telephone)" />
+              <VListItem title="มือถือ" :subtitle="display(viewItem.mobile)" />
+              <VListItem title="ที่อยู่" :subtitle="display(viewItem.addressNo)" />
+              <VListItem title="จังหวัด" :subtitle="display(viewItem.provinceName)" />
+              <VListItem title="แพ้ยา" :subtitle="display(viewItem.drugAllergy)" />
+              <VListItem title="อาชีพ" :subtitle="display(viewItem.occupation)" />
             </VList>
             <div class="d-flex justify-center mt-6">
               <VBtn

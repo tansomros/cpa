@@ -7,7 +7,6 @@ namespace BigLion.Application.FunctionalTests.Features.Patients.Commands;
 
 public class CreatePatientTests : BaseTestFixture
 {
-    /// ทดสอบ: สร้างผู้ป่วยใหม่ด้วยข้อมูลที่ถูกต้อง ควรคืนค่า Id ที่มากกว่า 0
     [Test]
     public async Task Create_WithValidData_ShouldReturnPositiveId()
     {
@@ -15,21 +14,17 @@ public class CreatePatientTests : BaseTestFixture
 
         var command = new CreatePatientCommand
         {
-            HospitalNumber = "HN990001",
-            Prefix = "นาย",
-            FirstName = "สมชาย",
-            MiddleName = "",
-            LastName = "ใจดี",
+            ForeName = "สมชาย",
+            Surname = "ใจดี",
             Gender = "M",
             BirthDate = DateOnly.FromDateTime(DateTime.Parse("1985-06-15")),
-            Nationality = "ไทย"
+            CardId = "1103700990001"
         };
 
         var result = await SendAsync(command);
         result.Should().BeGreaterThan(0);
     }
 
-    /// ทดสอบ: สร้างผู้ป่วยแล้วตรวจสอบว่าข้อมูลถูกบันทึกอย่างถูกต้อง
     [Test]
     public async Task Create_WithValidData_ShouldPersistEntity()
     {
@@ -37,67 +32,43 @@ public class CreatePatientTests : BaseTestFixture
 
         var command = new CreatePatientCommand
         {
-            HospitalNumber = "HN990002",
-            Prefix = "นาง",
-            FirstName = "สมหญิง",
-            MiddleName = "",
-            LastName = "ใจดี",
+            ForeName = "สมหญิง",
+            Surname = "ใจดี",
             Gender = "F",
             BirthDate = DateOnly.FromDateTime(DateTime.Parse("1990-03-20")),
-            TelephoneNumber = "0891234567"
+            Mobile = "0891234567",
+            DrugAllergy = "Penicillin",
+            IsAllergy = true
         };
 
         var id = await SendAsync(command);
 
         var entity = await FindAsync<Patient>(id);
         entity.Should().NotBeNull();
-        entity!.FirstName.Should().Be("สมหญิง");
+        entity!.Id.Should().Be(id);
+        entity.ForeName.Should().Be("สมหญิง");
         entity.Gender.Should().Be("F");
+        entity.Mobile.Should().Be("0891234567");
+        entity.IsAllergy.Should().BeTrue();
+        entity.DrugAllergy.Should().Be("Penicillin");
     }
 
-    /// ทดสอบ: สร้างผู้ป่วยโดยไม่ระบุ HospitalNumber ควร throw ValidationException
     [Test]
-    public async Task Create_WithEmptyHospitalNumber_ShouldThrowValidationException()
+    public async Task Create_WithEmptyForeName_ShouldThrowValidationException()
     {
         RunAsDefaultUser();
 
         var command = new CreatePatientCommand
         {
-            HospitalNumber = "",
-            Prefix = "นาย",
-            FirstName = "ทดสอบ",
-            MiddleName = "",
-            LastName = "ระบบ",
+            ForeName = "",
+            Surname = "ระบบ",
             Gender = "M",
             BirthDate = DateOnly.FromDateTime(DateTime.Now)
         };
 
         var act = () => SendAsync(command);
         (await act.Should().ThrowAsync<ValidationException>())
-            .Which.Errors.Should().ContainKey("HospitalNumber")
-            .WhoseValue.Should().Contain("HN ต้องไม่ว่าง");
-    }
-
-    /// ทดสอบ: สร้างผู้ป่วยโดยไม่ระบุชื่อ ควร throw ValidationException
-    [Test]
-    public async Task Create_WithEmptyFirstName_ShouldThrowValidationException()
-    {
-        RunAsDefaultUser();
-
-        var command = new CreatePatientCommand
-        {
-            HospitalNumber = "HN990003",
-            Prefix = "นาย",
-            FirstName = "",
-            MiddleName = "",
-            LastName = "ระบบ",
-            Gender = "M",
-            BirthDate = DateOnly.FromDateTime(DateTime.Now)
-        };
-
-        var act = () => SendAsync(command);
-        (await act.Should().ThrowAsync<ValidationException>())
-            .Which.Errors.Should().ContainKey("FirstName")
-            .WhoseValue.Should().Contain("FirstName ไม่สามารถเป็นค่าว่างได้");
+            .Which.Errors.Should().ContainKey("ForeName")
+            .WhoseValue.Should().Contain("ชื่อต้องไม่ว่าง");
     }
 }

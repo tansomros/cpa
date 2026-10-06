@@ -38,13 +38,14 @@ public class GetPatientListQueryHandler : IRequestHandler<GetPatientListQuery, P
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             var term = request.Search.Trim();
+            var hasId = int.TryParse(term, out var id);
             query = query.Where(x =>
-                x.FirstName.Contains(term)
-                || x.LastName.Contains(term)
-                || x.Prefix.Contains(term)
-                || (x.HospitalNumber != null && x.HospitalNumber.Contains(term))
-                || (x.NationId != null && x.NationId.Contains(term))
-                || (x.TelephoneNumber != null && x.TelephoneNumber.Contains(term)));
+                (x.ForeName != null && x.ForeName.Contains(term))
+                || (x.Surname != null && x.Surname.Contains(term))
+                || (x.CardId != null && x.CardId.Contains(term))
+                || (x.Telephone != null && x.Telephone.Contains(term))
+                || (x.Mobile != null && x.Mobile.Contains(term))
+                || (hasId && x.Id == id));
         }
 
         return await query

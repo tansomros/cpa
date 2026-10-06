@@ -27,6 +27,14 @@ public class PatientsController : BaseController
         return Ok(await Mediator.Send(new GetPatientQuery { Id = id }));
     }
 
+    [HttpGet("by-card/{cardId}", Name = "GetPatientByCardId")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PatientViewModel))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+    public async Task<ActionResult<PatientViewModel>> GetByCardId(string cardId)
+    {
+        return Ok(await Mediator.Send(new GetPatientByCardIdQuery { CardId = cardId }));
+    }
+
     [HttpGet(Name = "GetPatientList")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<PatientViewModel>))]
     public async Task<ActionResult<PaginatedList<PatientViewModel>>> List([FromQuery] GetPatientListQuery query)
