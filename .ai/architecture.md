@@ -2,15 +2,15 @@
 
 ## What this system is
 
-CPA Thai Project is the foundation of a small web application for Community pharmacy Association (Thailand) (สมาคมเภสัชกรรมชุมชน (ประเทศไทย)). Current scope: master data (ระบบตั้งค่าข้อมูลพื้นฐาน) and pharmacy management (ระบบบริหารข้อมูลร้านยา). Planned scope: the full — see [domain.md](domain.md) and [roadmap.md](roadmap.md).
+CPA Thai Project is the foundation of a small web application for Community pharmacy Association (Thailand) (สมาคมเภสัชกรรมชุมชน (ประเทศไทย)). Current scope: master data (ระบบตั้งค่าข้อมูลพื้นฐาน) and pharmacy management (ระบบบริหารข้อมูลร้านยา). Planned scope: pharmacy services — patients, MTM (medication therapy management) services, and lab results — see [domain.md](domain.md).
 
-This is infrastructure a pharmacy depends on operationally. Data accuracy, consistency, and traceability are the top design priority — see the "Non-negotiable" section of [roadmap.md](roadmap.md) before making any change that touches money, quantity, or approval state.
+This is infrastructure a pharmacy depends on operationally. Data accuracy, consistency, and traceability are the top design priority — read [coding-rules.md](coding-rules.md) (money ledger, concurrency, state-transition rules) before making any change that touches money or approval/status state.
 
 ## Stack
 
 - **Backend**: C# / .NET 10, ASP.NET Core Web API, EF Core 10 + Npgsql (PostgreSQL), MediatR 14 (CQRS), FluentValidation, AutoMapper, Swashbuckle/NSwag (OpenAPI).
 - **Frontend**: Vue 3 (Composition API, `<script setup>`, JavaScript not TypeScript), Vuetify 3 (Vuexy admin template), Pinia, vue-router 4 via file-based routing (`unplugin-vue-router`), CASL for permission-based UI.
-- **Auth**: Internal provider.
+- **Auth**: Internal provider — the API issues its own JWT; there is no external identity provider. Login (`POST /users/login` → `LoginCommand` → `IdentityService.LoginAsync` in `src/Infrastructure/Identity/IdentityService.cs`) loads the user by username together with its `Role`, verifies the password against `Users.PasswordHash` with ASP.NET Core `PasswordHasher<User>` (wrapped by `src/Infrastructure/Identity/PasswordHasher.cs`), then `JwtTokenService` creates an HMAC-SHA256 token carrying `sub` (user id), `unique_name`, `name`, `jti`, and one role claim (`Role.Name`). `Program.cs` validates incoming tokens with `AddJwtBearer` (issuer, audience, lifetime, and signing key from the `Jwt` settings section). `src/API/Middlewares/DevAuthenticationMiddleware.cs` exists to create a fake development user (role `Admin` by default), but `Program.cs` does not register it yet (`UseDevAuthentication()` is never called), so today it does not run.
 - **Solution layout**: `CPA.sln` / `.slnx`, central package management (`Directory.Packages.props`), `src/Domain`, `src/Application`, `src/Infrastructure`, `src/API`, `src/vuewebui` (frontend), `tests/*`.
 
 ## Clean Architecture layering
@@ -56,10 +56,10 @@ The feature folder is usually the plural name (`Banks`, `Patients`). A few names
 - **Dual key**: every entity has an internal `int Id` (joins/FKs, never exposed) and a `Guid ExternalId` (UUIDv7, the only identifier exposed via API routes/DTOs).
 - **Audit fields**: `CreatedBy`, `LastModifiedBy`, `CreatedOn`, `LastModified`, `IsActive`, `IsDelete` on every entity via `EntityBase`, set automatically by `AuditableEntitySaveChangesInterceptors` — handlers should never set these manually.
 - **Optimistic concurrency**: every entity carries the Postgres `xmin` system column as a shadow-property concurrency token (via `ConfigureEntityBase<T>()`, no extra column needed) — a stale write throws `DbUpdateConcurrencyException` rather than silently overwriting.
-- **Permissions**: `module.action` codes (`Permission`) granted to a role name (`RolePermission`) — role name matches the claim issued by the external IdP, so there's no local Role/User table. Checked via `[RequirePermission("module.action")]` on a Command/Query, enforced by `AuthorizationBehaviour`; `HasAdminRole` bypasses the check. Currently rolled out to the Vendors feature only — see roadmap Phase 2.
+- **Users and roles**: users are local. `User` (`src/Domain/Entities/User.cs`, table `Users`) holds `PasswordHash` and a single `RoleId` → `Role` (`src/Domain/Entities/Role.cs`, table `Roles`). The roles are seeded by `RoleDataInitializerCommand` (5 roles: 1 ร้านยา, 2 สิทธิ์ดูรายงาน, 3 ผู้จัดการโครงการ, 8 Admin, 9 ผู้ดูแลระบบ (Host)). A `UserRoles` join entity (`src/Domain/Entities/UserRoles.cs`, key `RoleID` + `UserID`, managed through `UserRoleAssignments`) also exists, but login and authorization do not read it — the token's role comes from `User.RoleId` only.
+- **Permissions**: `module.action` codes declared as constants in `src/Application/Common/Security/Permissions.cs` (today only `pharmacies.view`, `pharmacies.create`, `pharmacies.update`), put on a Command/Query with `[RequirePermission(...)]` and enforced by `AuthorizationBehaviour`: the user must be authenticated, a user whose role **name** is `Admin` (`HasAdminRole`) passes every check, and anyone else needs a `permission` claim with that exact code. There is no `RolePermission` entity/table yet, and nothing issues `permission` claims (the JWT carries only the role), so right now only `Admin` users pass a `[RequirePermission]` check — mapping roles to permissions is still to be designed. Currently rolled out to the Pharmacy feature only.
 - **Audit trail**: every insert/update/delete on an `EntityBase`-derived entity is recorded to the append-only `AuditLog` table (entity name, `ExternalId`, action, property-level `{old,new}` diff, actor, timestamp) by `AuditableEntitySaveChangesInterceptors` — this is in addition to, not instead of, the `CreatedBy`/`LastModifiedBy` fields, which only ever show the *latest* change.
-- **Money/quantity fields are never mutated in place** — see the ledger pattern in [coding-rules.md](coding-rules.md) and the "Non-negotiable" section of [roadmap.md](roadmap.md).
-- **Item/Catalog**: a single `Item` entity with an `ItemCategory` discriminator and a JSONB `Attributes` column for category-specific fields (e.g. drug registration number), instead of one class per category — new item categories are a data change, not a schema migration.
+- **Money balances are never mutated in place** — see the ledger pattern in [coding-rules.md](coding-rules.md).
 
 ## Frontend architecture (target — see roadmap Phase 3)
 
@@ -85,4 +85,4 @@ The feature folder is usually the plural name (`Banks`, `Patients`). A few names
 | Frontend composables | `src/vuewebui/src/composables/` |
 | Frontend API client | `src/vuewebui/src/utils/api.js` (target: generated client, see roadmap Phase 3) |
 
-See also: [coding-rules.md](coding-rules.md), [ai-agent-guide.md](ai-agent-guide.md), [domain.md](domain.md), [known-issues.md](known-issues.md), [roadmap.md](roadmap.md).
+See also: [coding-rules.md](coding-rules.md), [ai-agent-guide.md](ai-agent-guide.md), [domain.md](domain.md), [known-issues.md](known-issues.md).

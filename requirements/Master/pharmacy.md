@@ -21,7 +21,7 @@
 - CRUD ข้อมูลร้านขายยาพื้นฐาน (สร้าง/แก้ไข/ดู/ค้นหารายการ) ตามฟิลด์ใน `Pharmacy`
 - เลือกกลุ่มร้านยา (`PharmacyGroup`) และประเภทร้านยา (`PharmacyType`) จากข้อมูลตั้งต้นที่มีอยู่แล้ว
 - เลือกจังหวัด / อำเภอ / ตำบล จากข้อมูลที่อยู่ที่มีอยู่แล้ว
-- ผูกสิทธิ์การเข้าถึงแบบ permission (`pharmacies.*`) — ยังไม่มีในระบบ ต้องสร้างใหม่
+- ผูกสิทธิ์การเข้าถึงแบบ permission (`pharmacies.*`) — permission code มีในโค้ดแล้ว (ดูข้อ 8)
 - ปิดการใช้งานร้านยาผ่าน `IsActive` / `DeleteFlag` ของ `BaseEntity` (soft delete) ไม่ลบแถวทิ้ง
 
 ### สิ่งที่ไม่รวมในรอบนี้ (Out of scope)
@@ -95,18 +95,20 @@
 - ไม่ลบร้านยาทิ้ง ใช้ `IsActive` / `DeleteFlag` ตาม `BaseEntity`
 - รหัสร้านยาซ้ำได้หรือไม่ และรูปแบบอีเมล/เบอร์โทร/รหัสไปรษณีย์ — ไม่แน่ใจ ต้องคุยกับทีมก่อน โค้ดปัจจุบันยังไม่ตรวจ
 
-## 7. ผลกระทบต่อเงิน/จำนวนคงเหลือ (Money & Quantity Impact)
+## 7. ผลกระทบต่อยอดเงินคงเหลือ (Money Impact)
 
-- [ ] ใช่ แตะเงิน/จำนวนคงเหลือ
-- [x] ไม่แตะเงิน/จำนวนคงเหลือ — ร้านขายยาเป็นข้อมูลอ้างอิง (master data) ฟิลด์บัญชีธนาคารถูกคอมเมนต์ออกจาก entity แล้ว ไม่มีฟิลด์เงินหรือจำนวนคงเหลือ
+- [ ] ใช่ แตะยอดเงิน
+- [x] ไม่แตะยอดเงิน — ร้านขายยาเป็นข้อมูลอ้างอิง (master data) ฟิลด์บัญชีธนาคารถูกคอมเมนต์ออกจาก entity แล้ว ไม่มีฟิลด์เงินหรือยอดเงินคงเหลือ
 
 ## 8. สิทธิ์การเข้าถึง (Permissions)
 
-ยังไม่มี permission ของร้านยาในระบบ ต้องสร้างใหม่ตามแบบ `vendors.*`:
+permission ของร้านยามีในโค้ดแล้ว ตามรูปแบบ `module.action` (ดู [coding-rules.md](../../.ai/coding-rules.md)) — ประกาศเป็นค่าคงที่ใน `src/Application/Common/Security/Permissions.cs` (`Permissions.Pharmacies`) และใส่ไว้ที่ Command/Query ของร้านยาด้วย `[RequirePermission]` (การลบใช้ `pharmacies.update`):
 
 - `pharmacies.view` — ดูรายการ/รายละเอียดร้านขายยา
 - `pharmacies.create` — สร้างร้านขายยาใหม่
 - `pharmacies.update` — แก้ไขข้อมูลร้านขายยา
+
+ข้อควรรู้: ตอนนี้ยังไม่มีส่วนไหนออก claim `permission` ให้ผู้ใช้ (JWT มีแค่ role) และยังไม่มีตารางผูก role กับ permission — ผู้ใช้ที่ไม่ใช่ role `Admin` จึงยังถูกปฏิเสธทุก action ข้างบน การกำหนดว่า role ไหนได้ permission ไหน ไม่แน่ใจ — ต้องคุยกับทีมก่อน
 
 ## 9. หน้าจอที่เกี่ยวข้อง (UI / Frontend)
 
@@ -162,11 +164,10 @@
 - ข้อมูลที่เกี่ยวข้อง: `src/Domain/Entities/PharmacyGroup.cs`, `src/Domain/Entities/PharmacyType.cs`, `src/Domain/Entities/Pharmacist.cs`, `src/Domain/Entities/User.cs`
 - ข้อมูลตั้งต้น: `src/Application/Features/Systems/Commands/PharmacyGroupDataInitializerCommand.cs`, `PharmacyTypeDataInitializerCommand.cs`
 - คำศัพท์: [.ai/domain.md](../../.ai/domain.md)
-- แบบฟอร์มที่กรอกแล้ว: [requirements/Procurement/vendor.md](../Procurement/vendor.md)
 
 ## 14. บันทึกเพิ่มเติมสำหรับ AI (ไม่บังคับ)
 
-- ทำโครง CRUD, permission และหน้า `list` / `create` / `edit` / `view` ตามแบบ Vendor
+- ทำโครง CRUD, permission และหน้า `list` / `create` / `edit` / `view` ตามโครงสร้าง feature มาตรฐานใน [.ai/architecture.md](../../.ai/architecture.md)
 - ฟิลด์บัญชีธนาคารที่ถูกคอมเมนต์ใน `Pharmacy.cs` ห้ามนำกลับมาในรอบนี้
 - ใน entity ตอนนี้ `PharmacyGroupId` และ `PharmacyTypeId` เป็น `string?` แต่คีย์ของ `PharmacyGroup` / `PharmacyType` เป็น `int` ของ `BaseEntity` — migration จึงเกิด shadow FK `PharmacyGroupId1` และ `PharmacyTypeId1` ก่อน implement ให้จัดความสัมพันธ์นี้ให้ชี้ไปที่คีย์จริงของกลุ่มและประเภท อย่าเพิ่มคอลัมน์ FK ซ้ำอีกชุด
 - `Province` / `District` / `SubDistrict` ใช้ `string Id` อยู่แล้ว สัมพันธ์กับ `ProvinceId` / `DistrictId` / `SubDistrictId` ได้ตรง

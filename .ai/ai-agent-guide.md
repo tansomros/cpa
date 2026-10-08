@@ -11,7 +11,7 @@ Read this before making any change. It tells you where things go and what not to
 | Add a new command (create/update/delete) | `src/Application/Features/{Feature}/Commands/Create`, `Commands/Update`, or `Commands/Delete` — `{Verb}{Noun}Command.cs` (Command + Handler together) and `{Verb}{Noun}CommandValidator.cs` (Validator, its own file). The folder name is only `Create`, `Update`, or `Delete` |
 | Add a new query | `src/Application/Features/{Feature}/Queries/Get/` — both the single query and the list query. `{Get}{Noun}Query.cs` and `{Get}{Noun}ListQuery.cs` (Query + Handler), plus a validator file when the query is validated |
 | Add EF mapping for an entity | `src/Infrastructure/Persistence/Configurations/{Entity}Configuration.cs`, register the `DbSet<T>` in `CpaDatabaseContext` and `ICpaDatabaseContext` |
-| Add a migration | From `src/Infrastructure`: `dotnet ef migrations add {Name} --startup-project ../API` |
+| Add a migration | Teerapol creates and removes migrations himself (from `src/Infrastructure`: `dotnet ef migrations add {Name} --startup-project ../API`). AI agents must not create, delete, or commit migration files, or run migrations against `cpathai`, without approval — see [dev-workflow.md](dev-workflow.md) ส่วนที่ 6 |
 | Add an API endpoint | Add an action to the matching `src/API/Controllers/{Feature}Controller.cs` (or create one) — the action should only call `Mediator.Send(...)` |
 | Add a frontend page for a feature | `src/vuewebui/src/pages/{feature}/{create,edit,view,list}/` — dedicated routes, not a dialog; use the schema-driven scaffold once it exists (roadmap Phase 3) |
 | Add a shared frontend composable | `src/vuewebui/src/composables/` |
@@ -22,16 +22,16 @@ Read this before making any change. It tells you where things go and what not to
 - MUST put a new command in `Features/{Feature}/Commands/Create`, `Update`, or `Delete`, and a new query in `Features/{Feature}/Queries/Get`. The namespace must match that folder (`BigLion.CPA.Application.Features.{Feature}.Commands.Create` or `...Queries.Get`). Do not add a `{Context}` segment or an entity suffix to those folders.
 - MUST give every new entity a `Guid ExternalId` and use it (never the internal `Id`) in any API route, request/response DTO, or frontend URL.
 - MUST use `Ardalis.GuardClauses` (or an equivalent explicit check) to enforce entity invariants in the constructor/behavior methods — don't rely on FluentValidation alone.
-- MUST model any running balance or on-hand quantity (budget, stock) as derived from an append-only ledger table — never a single field that gets directly incremented/decremented. This is not optional for this project; see the "Non-negotiable" section of [roadmap.md](roadmap.md).
+- MUST model any running money balance (an amount of money remaining or outstanding) as derived from an append-only ledger table — never a single field that gets directly incremented/decremented (don't overwrite a money balance in place). This rule is about money only, and it is not optional for this project; see [coding-rules.md](coding-rules.md).
 - MUST add a concurrency token to any new mutable entity.
 - MUST wrap a multi-aggregate write (touches more than one entity type in one logical operation) in a single database transaction.
 - MUST write a handler-level unit test and a functional test for any change touching money, quantity, or approval/workflow state before considering the work done.
 - MUST keep controllers thin — no business logic, no direct DbContext access in `src/API`.
-- MUST update [known-issues.md](known-issues.md) and [roadmap.md](roadmap.md) after completing a unit of work from the roadmap, so they reflect reality, not just intent.
+- MUST update [known-issues.md](known-issues.md) after completing a unit of work, so it reflects reality, not just intent.
 
 ## MUST NOT
 
-- MUST NOT copy an existing feature's files and hand-edit field names as the way to start a new feature — this is exactly how the codebase ended up with the `ContractProducts`/`ContractItems` namespace mismatch and the `/Venders` typo (see [known-issues.md](known-issues.md)). Use the scaffolding template instead (below).
+- MUST NOT copy an existing feature's files and hand-edit field names as the way to start a new feature — copy-and-rename is how partial renames creep in (a namespace that no longer matches its folder, a typo'd route). Use the scaffolding template instead (below).
 - MUST NOT give a domain entity property a bare public setter if an invalid value would break a business rule — gate the mutation through a validated method.
 - MUST NOT put business logic in a controller, in a Vue page's inline script beyond simple UI state, or directly in a MediatR pipeline behaviour — it belongs in the domain entity or the handler.
 - MUST NOT add a new `Roles`/`Policies` constant — use the `module.action` permission convention.
@@ -64,12 +64,11 @@ The template still emits a `BoundedContext` namespace segment and a folder named
 
 The primary templates are `biglion-templates` above. The generic upstream `ca-usecase` template is only an optional fallback for anything outside this project's own conventions:
 ```
-dotnet new ca-usecase --name CreateVendor --feature-name Vendors --usecase-type command --return-type Guid
+dotnet new ca-usecase --name CreatePatient --feature-name Patients --usecase-type command --return-type int
 ```
 (If not installed: `dotnet new install Clean.Architecture.Solution.Template::9.0.10`.)
 
 ## Before you start any change
 
 1. Read [known-issues.md](known-issues.md) — is what you're about to touch already a tracked, open issue? Don't fix it twice or in a conflicting way.
-2. Read [roadmap.md](roadmap.md) — which phase is this change part of? Does it depend on something not yet done?
-3. Check [domain.md](domain.md) if the change touches procurement/contract/item vocabulary — use the established terms, don't invent new ones.
+2. Check [domain.md](domain.md) if the change touches pharmacy/patient/MTM vocabulary — use the established terms, don't invent new ones.
