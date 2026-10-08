@@ -21,6 +21,8 @@ public interface IPatientWrite
     string? Education { get; }
     string? Occupation { get; }
     string? DrugAllergy { get; }
+    string? Smoke { get; }
+    string? CigaretteType { get; }
     string? SmokingRemark { get; }
     string? Alcohol { get; }
     int? AlcoholFQ { get; }
@@ -85,6 +87,23 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
 
         RuleFor(p => p.SmokingRemark)
             .MaximumLength(2000).WithMessage("หมายเหตุการสูบบุหรี่ต้องไม่เกิน 2000 ตัวอักษร");
+
+        // Lookup codes must match a SmartEnum value exactly (case-sensitive), so the
+        // database only ever holds the canonical codes served by /Options.
+        RuleFor(p => p.Smoke)
+            .Must(code => SmokingValue.All.Any(x => string.Equals(x.Value, code, StringComparison.Ordinal)))
+            .WithMessage("รหัสการสูบบุหรี่ไม่ถูกต้อง")
+            .When(p => p.Smoke is not null);
+
+        RuleFor(p => p.CigaretteType)
+            .Must(code => CigaretteTypeValue.All.Any(x => string.Equals(x.Value, code, StringComparison.Ordinal)))
+            .WithMessage("รหัสชนิดบุหรี่ไม่ถูกต้อง")
+            .When(p => p.CigaretteType is not null);
+
+        RuleFor(p => p.Alcohol)
+            .Must(code => DrinkingValue.All.Any(x => string.Equals(x.Value, code, StringComparison.Ordinal)))
+            .WithMessage("รหัสการดื่มไม่ถูกต้อง")
+            .When(p => p.Alcohol is not null);
 
         // Drink frequency (days per week) is only checked when it is kept, i.e. for
         // Occasional or Regular drinkers. For other statuses the Domain clears it,
