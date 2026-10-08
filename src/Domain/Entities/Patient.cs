@@ -87,7 +87,7 @@ public class Patient : BaseEntity
     /// <summary>
     /// ความถี่ในการดื่ม ครั้ง/สัปดาห์
     /// </summary>
-    public string? DrinkFrequency { get; private set; }
+    public int? DrinkFrequency { get; private set; }
 
     // Navigation properties
     public virtual Province? Province { get; set; }
@@ -192,7 +192,7 @@ public class Patient : BaseEntity
 
     public void UpdateAlcoholHistory(
         string? alcohol,
-        string? alcoholFQ)
+        int? alcoholFQ)
     {
         Drinking = alcohol;
         DrinkFrequency = alcoholFQ;

@@ -32,7 +32,7 @@ public class PatientTests
         item.UpdateGeneralInformation("สิทธิหลัก", true, "ปริญญาตรี", "พนักงาน");
         item.UpdateAllergy(true, "Penicillin");
         item.UpdateSmokingHistory(true, "Regular", 10, 5, "Manufactured", false, "สูบทุกวัน");
-        item.UpdateAlcoholHistory("Occasional", "Weekly");
+        item.UpdateAlcoholHistory("Occasional", 3);
 
         item.ForeName.Should().Be("สมชาย");
         item.Surname.Should().Be("ใจดี");
@@ -50,6 +50,6 @@ public class PatientTests
         item.IsSmoke.Should().BeTrue();
         item.SmokingRemark.Should().Be("สูบทุกวัน");
         item.Drinking.Should().Be("Occasional");
-        item.DrinkFrequency.Should().Be("Weekly");
+        item.DrinkFrequency.Should().Be(3);
     }
 }

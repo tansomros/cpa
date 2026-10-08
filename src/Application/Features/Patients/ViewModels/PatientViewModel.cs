@@ -62,7 +62,7 @@ public class PatientViewModel : IMapFrom<Patient>
     public string? SmokingRemark { get; set; }
 
     public string? Alcohol { get; set; }
-    public string? AlcoholFQ { get; set; }
+    public int? AlcoholFQ { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ProvinceViewModel? Province { get; set; }

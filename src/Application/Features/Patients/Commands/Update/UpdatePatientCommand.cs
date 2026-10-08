@@ -41,7 +41,7 @@ public record UpdatePatientCommand : IRequest<Unit>, IPatientWrite
     public string? SmokingRemark { get; set; }
 
     public string? Alcohol { get; set; }
-    public string? AlcoholFQ { get; set; }
+    public int? AlcoholFQ { get; set; }
     public bool IsActive { get; set; }
 
 }

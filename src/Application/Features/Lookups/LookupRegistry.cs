@@ -11,7 +11,6 @@ public static class LookupRegistry
             ["smoking"] = lang => Map(SmokingValue.All, lang),
             ["cigarette-type"] = lang => Map(CigaretteTypeValue.All, lang),
             ["drinking"] = lang => Map(DrinkingValue.All, lang),
-            ["drink-frequency"] = lang => Map(DrinkFrequencyValue.All, lang),
         };
 
     public static List<string> Categories => _lookups.Keys.ToList();

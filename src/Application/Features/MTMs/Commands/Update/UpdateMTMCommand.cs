@@ -22,7 +22,7 @@ public class UpdateMTMCommand : IRequest<Unit>
     public int? SmokeCigarette { get; set; }
     public string? CigaretteType { get; set; }
     public string? Alcohol { get; set; }
-    public string? AlcoholFQ { get; set; }
+    public int? AlcoholFQ { get; set; }
     public int? HospitalType { get; set; }
     public string? HospitalName { get; set; }
     public int? Status { get; set; }

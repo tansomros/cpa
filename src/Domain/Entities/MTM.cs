@@ -34,7 +34,7 @@ public class MTM
 
     public string? Alcohol { get; set; }
 
-    public string? AlcoholFQ { get; set; }
+    public int? AlcoholFQ { get; set; }
 
     public int? HospitalType { get; set; }
 
