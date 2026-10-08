@@ -7,19 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Entities\ReferenceGroup.cs" />
-    <Compile Remove="Entities\ReferenceValue.cs" />
-    <Compile Remove="Enums\AbiResult.cs" />
-    <Compile Remove="Enums\BmdResult.cs" />
-    <Compile Remove="Enums\BodyResult.cs" />
-    <Compile Remove="Enums\CheckupStatus.cs" />
-    <Compile Remove="Enums\EyeResult.cs" />
-    <Compile Remove="Enums\HandGripResult.cs" />
-    <Compile Remove="Enums\HearingLossLevel.cs" />
-    <Compile Remove="Enums\QualitativeResult.cs" />
     <Compile Remove="Enums\Role.cs" />
-    <Compile Remove="Enums\VisionAcuityResult.cs" />
-    <Compile Remove="Enums\XrayResult.cs" />
   </ItemGroup>
 
   <ItemGroup>
