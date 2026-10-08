@@ -35,6 +35,12 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(x => x.DrugAllergy).HasMaxLength(2000);
         builder.Property(x => x.SmokingRemark).HasMaxLength(2000);
 
+        // SmartEnum codes (SmokingValue, CigaretteTypeValue, DrinkingValue, DrinkFrequencyValue)
+        builder.Property(x => x.Smoke).HasMaxLength(20);
+        builder.Property(x => x.CigaretteType).HasMaxLength(20);
+        builder.Property(x => x.Drinking).HasMaxLength(20);
+        builder.Property(x => x.DrinkFrequency).HasMaxLength(20);
+
         builder.HasOne(x => x.Province)
             .WithMany()
             .HasForeignKey(x => x.ProvinceId)

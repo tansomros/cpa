@@ -33,15 +33,15 @@ public record UpdatePatientCommand : IRequest<Unit>, IPatientWrite
     public string? DrugAllergy { get; set; }
 
     public bool? IsSmoke { get; set; }
-    public int? Smoke { get; set; }
+    public string? Smoke { get; set; }
     public int? SmokeYear { get; set; }
     public int? SmokeCigarette { get; set; }
-    public int? CigaretteType { get; set; }
+    public string? CigaretteType { get; set; }
     public bool? SmokingQuit { get; set; }
     public string? SmokingRemark { get; set; }
 
-    public int? Alcohol { get; set; }
-    public int? AlcoholFQ { get; set; }
+    public string? Alcohol { get; set; }
+    public string? AlcoholFQ { get; set; }
     public bool IsActive { get; set; }
 
 }

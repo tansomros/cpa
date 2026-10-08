@@ -24,17 +24,17 @@ public class MTM
 
     public int? PersonID { get; set; }
 
-    public int? Smoke { get; set; }
+    public string? Smoke { get; set; }
 
     public int? SmokeYear { get; set; }
 
     public int? SmokeCigarette { get; set; }
 
-    public int? CigaretteType { get; set; }
+    public string? CigaretteType { get; set; }
 
-    public int? Alcohol { get; set; }
+    public string? Alcohol { get; set; }
 
-    public int? AlcoholFQ { get; set; }
+    public string? AlcoholFQ { get; set; }
 
     public int? HospitalType { get; set; }
 

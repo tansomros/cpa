@@ -60,7 +60,7 @@ public class Patient : BaseEntity
     /// <summary>
     /// การสูบบุหรี่
     /// </summary>
-    public int? Smoke { get; private set; }
+    public string? Smoke { get; private set; }
     /// <summary>
     /// จำนวนปี
     /// </summary>
@@ -72,7 +72,7 @@ public class Patient : BaseEntity
     /// <summary>
     /// ชนิดของบุหรี่ที่สูบ
     /// </summary>
-    public int? CigaretteType { get; private set; }
+    public string? CigaretteType { get; private set; }
     /// <summary>
     /// อยากจะลดหรือเลิกสูบบุหรี่หรือไม่
     /// </summary>
@@ -83,11 +83,11 @@ public class Patient : BaseEntity
     /// <summary>
     /// การดิ่มเครื่องดื่มแอลกอฮอล์
     /// </summary>
-    public int? Drinking { get; private set; }
+    public string? Drinking { get; private set; }
     /// <summary>
     /// ความถี่ในการดื่ม ครั้ง/สัปดาห์
     /// </summary>
-    public int? DrinkFrequency { get; private set; }
+    public string? DrinkFrequency { get; private set; }
 
     // Navigation properties
     public virtual Province? Province { get; set; }
@@ -174,10 +174,10 @@ public class Patient : BaseEntity
 
     public void UpdateSmokingHistory(
         bool? isSmoke,
-        int? smoke,
+        string? smoke,
         int? smokeYear,
         int? smokeCigarette,
-        int? cigaretteType,
+        string? cigaretteType,
         bool? smokingQuit,
         string? smokingRemark)
     {
@@ -191,8 +191,8 @@ public class Patient : BaseEntity
     }
 
     public void UpdateAlcoholHistory(
-        int? alcohol,
-        int? alcoholFQ)
+        string? alcohol,
+        string? alcoholFQ)
     {
         Drinking = alcohol;
         DrinkFrequency = alcoholFQ;
