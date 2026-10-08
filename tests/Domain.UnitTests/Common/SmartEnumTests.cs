@@ -12,10 +12,10 @@ public class SmartEnumTests
 {
     private sealed class SampleStatus : SmartEnum<SampleStatus>
     {
-        public static readonly SampleStatus Second = new("second", "2", "Second item", 2);
-        public static readonly SampleStatus First = new("first", "1", "First item", 1);
+        public static readonly SampleStatus Second = new("second", "Second item", 2);
+        public static readonly SampleStatus First = new("first", "First item", 1);
 
-        private SampleStatus(string value, string code, string name, int sort) : base(value, code, name, sort) { }
+        private SampleStatus(string value, string name, int sort) : base(value, name, sort) { }
     }
 
     [Test]
