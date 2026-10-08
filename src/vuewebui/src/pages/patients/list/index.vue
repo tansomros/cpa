@@ -1,6 +1,7 @@
 <script setup>
 import { requiredValidator } from '@/@core/utils/validators'
 import { $api } from '@/utils/api'
+import { useLookupStore } from '@/stores/useLookupStore'
 import { createThaiDatePickerConfig, formatThaiDate, startOfToday, THAI_DATE_PLACEHOLDER, yearsAgo } from '@/utils/thaiDate'
 
 import moment from 'moment/min/moment-with-locales.js'
@@ -47,7 +48,11 @@ const genderOptions = [
 ]
 
 // Smoking and drinking dropdowns come from the SmartEnum lookups at /options/{category}
-// (see LookupRegistry). Each option is { value: code, title: Thai display name }.
+// (see LookupRegistry), loaded through the shared lookup store so other pages reuse its cache.
+// Each option is { value: code, title: Thai display name }.
+const lookupStore = useLookupStore()
+const lifestyleCategories = ['smoking', 'cigarette-type', 'drinking']
+
 const lifestyleOptions = ref({
   'smoking': [],
   'cigarette-type': [],
@@ -55,26 +60,22 @@ const lifestyleOptions = ref({
 })
 
 const isLifestyleOptionsLoading = ref(false)
+const lifestyleOptionsError = ref('')
 
 const loadLifestyleOptions = async () => {
-  const missing = Object.keys(lifestyleOptions.value).filter(category => !lifestyleOptions.value[category].length)
-  if (!missing.length)
-    return
-
   isLifestyleOptionsLoading.value = true
+  lifestyleOptionsError.value = ''
   try {
-    await Promise.all(missing.map(async category => {
-      try {
-        const result = await $api(`/options/${category}`, { method: 'GET' })
+    const results = await Promise.all(lifestyleCategories.map(category => lookupStore.getOptions(category)))
 
-        lifestyleOptions.value[category] = (result ?? []).map(o => ({
-          value: o.value,
-          title: o.displayName,
-        }))
-      } catch {
-        lifestyleOptions.value[category] = []
-      }
-    }))
+    lifestyleCategories.forEach((category, index) => {
+      lifestyleOptions.value[category] = (results[index] ?? []).map(o => ({
+        value: o.value,
+        title: o.displayName,
+      }))
+    })
+  } catch {
+    lifestyleOptionsError.value = 'โหลดตัวเลือกการสูบบุหรี่และการดื่มไม่สำเร็จ กรุณาลองใหม่'
   } finally {
     isLifestyleOptionsLoading.value = false
   }
@@ -219,6 +220,33 @@ const emptyForm = () => ({
 })
 
 const form = ref(emptyForm())
+
+// Cross-field helpers for the Patient form (ADR-013: the API and Domain hold the real rules).
+// Cigarette type, smoking years and cigarettes per day only apply to Regular or Quit smokers,
+// "wants to cut down or quit" only to Regular smokers, and drink frequency (days per week, 0-7)
+// only to Occasional or Regular drinkers. Hidden fields are cleared when the status changes.
+const SMOKED_CODES = ['Regular', 'Quit']
+const DRINKING_CODES = ['Regular', 'Occasional']
+const MAX_DRINK_DAYS_PER_WEEK = 7
+
+const hasSmoked = computed(() => SMOKED_CODES.includes(form.value.smoke))
+const isRegularSmoker = computed(() => form.value.smoke === 'Regular')
+const keepsDrinkFrequency = computed(() => DRINKING_CODES.includes(form.value.alcohol))
+
+const onSmokeChange = value => {
+  if (!SMOKED_CODES.includes(value)) {
+    form.value.smokeYear = ''
+    form.value.smokeCigarette = ''
+    form.value.cigaretteType = null
+  }
+  if (value !== 'Regular')
+    form.value.smokingQuit = false
+}
+
+const onAlcoholChange = value => {
+  if (!DRINKING_CODES.includes(value))
+    form.value.alcoholFQ = ''
+}
 
 const headers = [
   { title: 'รหัส', key: 'id' },
@@ -577,6 +605,17 @@ fetchItems()
                   </VAlert>
                 </VCol>
                 <VCol
+                  v-if="lifestyleOptionsError"
+                  cols="12"
+                >
+                  <VAlert
+                    type="warning"
+                    variant="tonal"
+                  >
+                    {{ lifestyleOptionsError }}
+                  </VAlert>
+                </VCol>
+                <VCol
                   cols="12"
                   md="4"
                 >
@@ -772,24 +811,17 @@ fetchItems()
                   cols="12"
                   md="3"
                 >
-                  <VCheckbox
-                    v-model="form.smokingQuit"
-                    label="เลิกบุหรี่แล้ว"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="3"
-                >
                   <AppSelect
                     v-model="form.smoke"
                     :items="lifestyleOptions['smoking']"
                     label="การสูบ"
                     clearable
                     :loading="isLifestyleOptionsLoading"
+                    @update:model-value="onSmokeChange"
                   />
                 </VCol>
                 <VCol
+                  v-if="hasSmoked"
                   cols="12"
                   md="3"
                 >
@@ -800,6 +832,7 @@ fetchItems()
                   />
                 </VCol>
                 <VCol
+                  v-if="hasSmoked"
                   cols="12"
                   md="4"
                 >
@@ -810,6 +843,7 @@ fetchItems()
                   />
                 </VCol>
                 <VCol
+                  v-if="hasSmoked"
                   cols="12"
                   md="4"
                 >
@@ -819,6 +853,16 @@ fetchItems()
                     label="ชนิดบุหรี่"
                     clearable
                     :loading="isLifestyleOptionsLoading"
+                  />
+                </VCol>
+                <VCol
+                  v-if="isRegularSmoker"
+                  cols="12"
+                  md="4"
+                >
+                  <VCheckbox
+                    v-model="form.smokingQuit"
+                    label="อยากลดหรือเลิกสูบบุหรี่"
                   />
                 </VCol>
                 <VCol
@@ -840,9 +884,11 @@ fetchItems()
                     label="แอลกอฮอล์"
                     clearable
                     :loading="isLifestyleOptionsLoading"
+                    @update:model-value="onAlcoholChange"
                   />
                 </VCol>
                 <VCol
+                  v-if="keepsDrinkFrequency"
                   cols="12"
                   md="6"
                 >
@@ -851,7 +897,8 @@ fetchItems()
                     label="ความถี่แอลกอฮอล์"
                     type="number"
                     min="0"
-                    suffix="ครั้ง/สัปดาห์"
+                    :max="MAX_DRINK_DAYS_PER_WEEK"
+                    suffix="วัน/สัปดาห์"
                   />
                 </VCol>
                 <VCol

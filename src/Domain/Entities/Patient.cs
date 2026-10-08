@@ -1,4 +1,6 @@
-﻿namespace BigLion.CPA.Domain.Entities;
+﻿using BigLion.CPA.Domain.Enums;
+
+namespace BigLion.CPA.Domain.Entities;
 
 /// <summary>
 /// ข้อมูลผู้ป่วย/ผู้รับบริการ
@@ -82,7 +84,7 @@ public class Patient : BaseEntity
     /// </summary>
     public string? Drinking { get; private set; }
     /// <summary>
-    /// ความถี่ในการดื่ม ครั้ง/สัปดาห์
+    /// ความถี่ในการดื่ม วัน/สัปดาห์
     /// </summary>
     public int? DrinkFrequency { get; private set; }
 
@@ -169,6 +171,11 @@ public class Patient : BaseEntity
         DrugAllergy = drugAllergy;
     }
 
+    // Cross-field rules live here so every caller gets the same result:
+    // - cigarette type, smoking years and cigarettes per day are kept only for Regular or Quit smokers;
+    // - SmokingQuit ("wants to cut down or quit") is kept only for Regular smokers;
+    // - drink frequency (days per week) is kept only for Occasional or Regular drinkers.
+    // Any other status (including empty) clears those fields to null.
     public void UpdateSmokingHistory(
         string? smoke,
         int? smokeYear,
@@ -176,12 +183,15 @@ public class Patient : BaseEntity
         string? cigaretteType,
         bool? smokingQuit,
         string? smokingRemark)
-    {     
+    {
+        var status = ParseCode<SmokingValue>(smoke);
+        var hasSmoked = status == SmokingValue.Regular || status == SmokingValue.Quit;
+
         Smoke = smoke;
-        SmokeYear = smokeYear;
-        SmokeCigarette = smokeCigarette;
-        CigaretteType = cigaretteType;
-        SmokingQuit = smokingQuit;
+        SmokeYear = hasSmoked ? smokeYear : null;
+        SmokeCigarette = hasSmoked ? smokeCigarette : null;
+        CigaretteType = hasSmoked ? cigaretteType : null;
+        SmokingQuit = status == SmokingValue.Regular ? smokingQuit : null;
         SmokingRemark = smokingRemark;
     }
 
@@ -189,7 +199,13 @@ public class Patient : BaseEntity
         string? alcohol,
         int? alcoholFQ)
     {
+        var status = ParseCode<DrinkingValue>(alcohol);
+        var drinks = status == DrinkingValue.Occasional || status == DrinkingValue.Regular;
+
         Drinking = alcohol;
-        DrinkFrequency = alcoholFQ;
+        DrinkFrequency = drinks ? alcoholFQ : null;
     }
+
+    private static T? ParseCode<T>(string? code) where T : SmartEnum<T>
+        => code is not null && SmartEnum<T>.TryFromValue(code, out var value) ? value : null;
 } 
