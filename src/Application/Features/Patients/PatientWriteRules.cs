@@ -5,6 +5,7 @@ namespace BigLion.CPA.Application.Features.Patients;
 public interface IPatientWrite
 {
     string? Gender { get; }
+    DateOnly? BirthDate { get; }
     string? CardId { get; }
     string? Telephone { get; }
     string? TimeContact { get; }
@@ -24,8 +25,19 @@ public interface IPatientWrite
 
 internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
 {
-    public PatientWriteRules(ICpaDatabaseContext context)
+    /// <summary>Oldest allowed birth date is today minus this many years.</summary>
+    public const int MaxAgeYears = 120;
+
+    public PatientWriteRules(ICpaDatabaseContext context, TimeProvider timeProvider)
     {
+        // BirthDate is optional; when given it must be between (today - 120 years) and today.
+        // "Today" comes from TimeProvider so the rule can be tested with a fixed date.
+        RuleFor(p => p.BirthDate)
+            .Must(birthDate => birthDate!.Value <= Today(timeProvider))
+            .WithMessage("วันเกิดต้องไม่เกินวันที่ปัจจุบัน")
+            .Must(birthDate => birthDate!.Value >= Today(timeProvider).AddYears(-MaxAgeYears))
+            .WithMessage("วันเกิดต้องไม่เกิน 120 ปีนับจากวันนี้")
+            .When(p => p.BirthDate.HasValue);
         RuleFor(p => p.Gender)
             .MaximumLength(20).WithMessage("เพศต้องไม่เกิน 20 ตัวอักษร");
 
@@ -90,4 +102,7 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
             .When(p => !string.IsNullOrWhiteSpace(p.DistrictId) && !string.IsNullOrWhiteSpace(p.ProvinceId))
             .WithMessage("อำเภอไม่อยู่ภายใต้จังหวัดที่เลือก");
     }
+
+    private static DateOnly Today(TimeProvider timeProvider) =>
+        DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime);
 }

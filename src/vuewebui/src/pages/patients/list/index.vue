@@ -1,6 +1,7 @@
 <script setup>
 import { requiredValidator } from '@/@core/utils/validators'
 import { $api } from '@/utils/api'
+import { createThaiDatePickerConfig, formatThaiDate, startOfToday, THAI_DATE_PLACEHOLDER, yearsAgo } from '@/utils/thaiDate'
 
 import moment from 'moment/min/moment-with-locales.js'
 moment.locale('th')
@@ -26,6 +27,19 @@ const refForm = ref()
 const isSaving = ref(false)
 const saveError = ref('')
 const selectedItem = ref(null)
+
+// Birthday: shown and typed as B.E. dd/mm/yyyy, kept in the form and sent to the API
+// as C.E. "yyyy-MM-dd" (null when empty). Allowed range: today back to 120 years ago.
+const BIRTH_DATE_MAX_AGE_YEARS = 120
+const birthDateError = ref('')
+
+const birthDatePickerConfig = createThaiDatePickerConfig({
+  minDate: yearsAgo(BIRTH_DATE_MAX_AGE_YEARS),
+  maxDate: startOfToday(),
+  onError: message => {
+    birthDateError.value = message
+  },
+})
 
 const genderOptions = [
   { value: 'M', title: 'ชาย' },
@@ -315,6 +329,7 @@ const openAddDialog = async () => {
   districts.value = []
   subDistricts.value = []
   saveError.value = ''
+  birthDateError.value = ''
   isAddEditDialogVisible.value = true
 }
 
@@ -325,6 +340,7 @@ const openEditDialog = async item => {
   form.value = toForm(item)
   await prepareAddressLookups()
   saveError.value = ''
+  birthDateError.value = ''
   isAddEditDialogVisible.value = true
 }
 
@@ -367,7 +383,7 @@ const buildBody = () => ({
 
 const saveItem = async () => {
   const validation = await refForm.value?.validate()
-  if (!validation?.valid)
+  if (!validation?.valid || birthDateError.value)
     return
 
   isSaving.value = true
@@ -461,6 +477,9 @@ fetchItems()
         :headers="headers"
         class="text-no-wrap"
       >
+        <template #item.birthDate="{ item }">
+          {{ display(formatThaiDate(item.birthDate)) }}
+        </template>
         <template #item.actions="{ item }">
           <IconBtn @click="openViewDialog(item)">
             <VIcon icon="tabler-eye" />
@@ -561,10 +580,11 @@ fetchItems()
                   <AppDateTimePicker
                     v-model="form.birthDate"
                     label="วันเกิด"
-                    type="date"
-                    placeholder="เลือกวันที่"
-                  />
-                </VCol>              
+                    :placeholder="THAI_DATE_PLACEHOLDER"
+                    :config="birthDatePickerConfig"
+                    :error-messages="birthDateError"
+                    clearable
+                  />                </VCol>              
                 <VCol
                   cols="12"
                   md="4"
@@ -852,7 +872,7 @@ fetchItems()
               <VListItem title="รหัส" :subtitle="display(viewItem.id)" />
               <VListItem title="ชื่อ-สกุล" :subtitle="display(viewItem.fullName)" />
               <VListItem title="เพศ" :subtitle="display(viewItem.gender)" />
-              <VListItem title="วันเกิด" :subtitle="display(viewItem.birthDate)" />
+              <VListItem title="วันเกิด" :subtitle="display(formatThaiDate(viewItem.birthDate))" />
               <VListItem title="เลขบัตร" :subtitle="display(viewItem.cardId)" />
               <VListItem title="โทรศัพท์" :subtitle="display(viewItem.telephone)" />
               <VListItem title="ที่อยู่" :subtitle="display(viewItem.addressNo)" />
