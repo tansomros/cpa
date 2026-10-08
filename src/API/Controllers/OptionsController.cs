@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Kondongpu.Application.Features.Lookups;
+using BigLion.CPA.Application.Features.Lookups;
 
-namespace Kondongpu.Presentation.API.Controllers;
+namespace BigLion.CPA.Presentation.API.Controllers;
 
 /// <summary>
 /// กลุ่ม API Endpoint สำหรับจัดการข้อมูลตัวเลือกพื้นฐาน (Options/Lookups)

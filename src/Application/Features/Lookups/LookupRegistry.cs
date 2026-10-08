@@ -1,4 +1,5 @@
 using BigLion.CPA.Domain.Common;
+using BigLion.CPA.Domain.Enums;
 
 namespace BigLion.CPA.Application.Features.Lookups;
 
@@ -7,7 +8,10 @@ public static class LookupRegistry
     private static readonly Dictionary<string, Func<string?, List<LookupOptionDto>>> _lookups =
         new(StringComparer.OrdinalIgnoreCase)
         {
-            // Register CPA lookups here, e.g. ["smoking-statuses"] = lang => Map(SmokingStatus.All, lang),
+            ["smoking"] = lang => Map(SmokingValue.All, lang),
+            ["cigarette-type"] = lang => Map(CigaretteTypeValue.All, lang),
+            ["drinking"] = lang => Map(DrinkingValue.All, lang),
+            ["drink-frequency"] = lang => Map(DrinkFrequencyValue.All, lang),
         };
 
     public static List<string> Categories => _lookups.Keys.ToList();
