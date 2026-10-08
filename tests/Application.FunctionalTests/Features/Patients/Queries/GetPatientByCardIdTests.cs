@@ -17,7 +17,7 @@ public class GetPatientByCardIdTests : BaseTestFixture
             ForeName = "ค้นหาด้วยบัตร",
             Surname = "ทดสอบ",
             Gender = Gender.Male,
-            BirthDate = DateOnly.FromDateTime(DateTime.Parse("1990-01-01")),
+            BirthDate = new DateOnly(1990, 1, 1),
             CardId = "1103700880001"
         });
 
