@@ -62,11 +62,11 @@ The template still emits a `BoundedContext` namespace segment and a folder named
 
 `--returnType` has no safe default for `biglion-query` (it's required) — a default embedding the literal word "Examples" would collide with the `--featureName` substitution and silently produce a wrong class name. `biglion-command` defaults `--returnType` to `int` since that default contains no substitutable tokens.
 
-The generic upstream template is still available as a fallback for anything outside this project's own conventions:
+The primary templates are `biglion-templates` above. The generic upstream `ca-usecase` template is only an optional fallback for anything outside this project's own conventions:
 ```
 dotnet new ca-usecase --name CreateVendor --feature-name Vendors --usecase-type command --return-type Guid
 ```
-(If not installed: `dotnet new install Clean.Architecture.Solution.Template::9.0.10`, per `README.md`.)
+(If not installed: `dotnet new install Clean.Architecture.Solution.Template::9.0.10`.)
 
 ## Before you start any change
 
