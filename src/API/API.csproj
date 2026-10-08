@@ -44,30 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\AudiogramsController.cs" />
-    <Compile Remove="Controllers\BodyCompositionsController.cs" />
-    <Compile Remove="Controllers\CareprovidersController.cs" />
-    <Compile Remove="Controllers\CheckupClassesController.cs" />
-    <Compile Remove="Controllers\CheckupGroupController.cs" />
-    <Compile Remove="Controllers\CheckupItemController.cs" />
-    <Compile Remove="Controllers\CheckupTypesController.cs" />
-    <Compile Remove="Controllers\CheckupsController.cs" />
-    <Compile Remove="Controllers\CustomCommandController.cs" />
-    <Compile Remove="Controllers\DentalsController.cs" />
-    <Compile Remove="Controllers\HearingController.cs" />
-    <Compile Remove="Controllers\HearingHertzController.cs" />
-    <Compile Remove="Controllers\LabsController.cs" />
-    <Compile Remove="Controllers\LungsController.cs" />
     <Compile Remove="Controllers\OptionsController.cs" />
-    <Compile Remove="Controllers\PhysicalExaminationsController.cs" />
-    <Compile Remove="Controllers\RecommendationTemplatesController.cs" />
-    <Compile Remove="Controllers\RecommendationsController.cs" />
-    <Compile Remove="Controllers\ReferenceGroupController.cs" />
-    <Compile Remove="Controllers\ReferenceValueController.cs" />
-    <Compile Remove="Controllers\ReportTemplateController.cs" />
-    <Compile Remove="Controllers\ReportsController.cs" />
-    <Compile Remove="Controllers\SpecialTestController.cs" />
-    <Compile Remove="Controllers\VisionsController.cs" />
   </ItemGroup>
 
 </Project>

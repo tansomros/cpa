@@ -42,7 +42,6 @@ declare module 'vue-router/auto-routes' {
     'contract-types-list': RouteRecordInfo<'contract-types-list', '/contract-types/list', Record<never, never>, Record<never, never>>,
     'contract-types-view-id': RouteRecordInfo<'contract-types-view-id', '/contract-types/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'dashboards': RouteRecordInfo<'dashboards', '/dashboards', Record<never, never>, Record<never, never>>,
-    'dashboards-test': RouteRecordInfo<'dashboards-test', '/dashboards/test', Record<never, never>, Record<never, never>>,
     'departments-edit-id': RouteRecordInfo<'departments-edit-id', '/departments/edit/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'departments-list': RouteRecordInfo<'departments-list', '/departments/list', Record<never, never>, Record<never, never>>,
     'departments-view-id': RouteRecordInfo<'departments-view-id', '/departments/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,

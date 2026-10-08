@@ -9,7 +9,7 @@ export const useLookupStore = defineStore('lookup', {
   actions: {
     /**
      * Fetches and caches lookup options for a given category.
-     * @param {string} category - e.g. 'exam-results', 'checkup-statuses'
+     * @param {string} category - e.g. 'smoking-statuses'
      * @param {string|null} lang - optional language code e.g. 'en', 'th'
      * @returns {Promise<Array<{value: string, displayName: string}>>}
      */

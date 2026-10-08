@@ -5,7 +5,6 @@ using BigLion.CPA.Domain.Entities;
 using BigLion.CPA.Infrastructure.Persistence.Interceptors;
 using ServiceRecord = BigLion.CPA.Domain.Entities.Services;
 
-#pragma warning disable CS0618 // ReferenceGroup/ReferenceValue ยังคง DbSet ไว้ แต่ถูกแทนที่ด้วย SmartEnum แล้ว
 namespace BigLion.CPA.Infrastructure.Persistence
 {
     public class CpaDatabaseContext : DbContext, ICpaDatabaseContext
@@ -61,8 +60,6 @@ namespace BigLion.CPA.Infrastructure.Persistence
         public DbSet<MTMRefer> MTMRefers => Set<MTMRefer>();
         public DbSet<Dispense> Dispenses => Set<Dispense>();
 
-        //public DbSet<ReferenceGroup> ReferenceGroups => Set<ReferenceGroup>();
-        //public DbSet<ReferenceValue> ReferenceValues => Set<ReferenceValue>();
 
 
         public CpaDatabaseContext(
