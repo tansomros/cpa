@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BigLion.CPA.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CpaDatabaseContext))]
-    [Migration("20261006153409_InitialCreate")]
+    [Migration("20261008143544_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
