@@ -15,6 +15,7 @@ PostgreSQL
 * C#
 * ASP.NET Core
 * EF Core + Npgsql
+* Dapper (ยังไม่ได้ติดตั้ง จะเพิ่มเข้ามาตาม [ADR-006](docs/adr/ADR-006-orm-strategy.md) เมื่อเริ่มทำงานค้นหา รายงาน และ dashboard)
 * PostgreSQL
 * Swagger
 * Vue 3
@@ -57,21 +58,19 @@ PostgreSQL
 
 ## เครื่องมือสร้างโค้ด Code Scaffolding
 
-### โค้ดสำหรับสร้าง Command
-    ```
-    $ src\Application\Features> dotnet new ca-usecase --name Create --feature-name Patients --usecase-type command --return-type int
-    ```
-### โค้ดสำหรับสร้าง Query
-    ```
-    $ src\Application> dotnet new ca-usecase -n GetPatients -fn Patients -ut query -rt PatientsVm
-    ```
-### หากเกิดปัญหาในการสร้าง code
-    If you encounter the error *"No templates or subcommands found matching: 'ca-usecase'."*, install the template and try again:
+โปรเจกต์มี template ของตัวเองอยู่ที่ `templates/biglion-templates` ให้ติดตั้งครั้งเดียวต่อเครื่อง โดยรันจากโฟลเดอร์ solution
 
-    ```
-    $> dotnet new install Clean.Architecture.Solution.Template::9.0.10
-    ```
+    $ solution> dotnet new install ./templates/biglion-templates
 
+template นี้สร้างเฉพาะ Command หรือ Query พร้อม Validator และ Handler ส่วน EF configuration และ action ใน Controller ต้องเขียนเอง ไฟล์จะถูกสร้างในโฟลเดอร์ปัจจุบัน จึงต้อง `cd` เข้าโฟลเดอร์ปลายทางก่อน เช่น
+
+    $ src\Application\Features\Patients\Commands> dotnet new biglion-command -n CreatePatient --featureName Patients --boundedContext Patients --returnType int
+
+สำหรับ Query ใช้ `biglion-query` และต้องใส่ `--returnType` เองทุกครั้ง เพราะไม่มีค่าเริ่มต้น
+
+ข้อควรระวัง: ไฟล์ที่ได้จะอยู่ในโฟลเดอร์ชื่อเดียวกับ `-n` (เช่น `CreatePatient`) และ namespace ยังมีคำว่า `BoundedContext` ติดมา หลังสร้างเสร็จต้องย้ายไฟล์เข้า `Commands/Create`, `Commands/Update`, `Commands/Delete` หรือ `Queries/Get` แล้วแก้ namespace เป็น `BigLion.CPA.Application.Features.{Feature}.Commands.Create` (หรือ `.Update`, `.Delete`, `.Queries.Get`) ให้ตรงโฟลเดอร์
+
+รายละเอียดเพิ่มเติมดูที่ [.ai/ai-agent-guide.md](.ai/ai-agent-guide.md)
 
 ## การ Migration Database (Code First) ออกแบบ Entity Class แล้วนำไปสร้างเป็น Database
 
