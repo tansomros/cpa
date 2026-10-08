@@ -14,7 +14,7 @@ public interface IPatientWrite
     string? AddressNo { get; }
     string? Road { get; }
     string? DistrictId { get; }
-    string? City { get; }
+    string? SubDistrictId { get; }
     string? ProvinceId { get; }
     string? ZipCode { get; }
     string? MainClaim { get; }
@@ -66,9 +66,6 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
 
         RuleFor(p => p.Road)
             .MaximumLength(200).WithMessage("ถนนต้องไม่เกิน 200 ตัวอักษร");
-
-        RuleFor(p => p.City)
-            .MaximumLength(200).WithMessage("เมืองต้องไม่เกิน 200 ตัวอักษร");
 
         RuleFor(p => p.ZipCode)
             .MaximumLength(10).WithMessage("รหัสไปรษณีย์ต้องไม่เกิน 10 ตัวอักษร");
@@ -140,6 +137,22 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
             })
             .When(p => !string.IsNullOrWhiteSpace(p.DistrictId) && !string.IsNullOrWhiteSpace(p.ProvinceId))
             .WithMessage("อำเภอไม่อยู่ภายใต้จังหวัดที่เลือก");
+
+        RuleFor(p => p.SubDistrictId)
+            .MaximumLength(10).WithMessage("รหัสตำบลต้องไม่เกิน 10 ตัวอักษร")
+            .MustAsync((id, cancellationToken) => context.SubDistricts.AsNoTracking().AnyAsync(x => x.SubDistrictId == id, cancellationToken))
+            .When(p => !string.IsNullOrWhiteSpace(p.SubDistrictId))
+            .WithMessage("ไม่พบตำบลที่เลือก");
+
+        RuleFor(p => p.SubDistrictId)
+            .MustAsync(async (command, subDistrictId, cancellationToken) =>
+            {
+                var subDistrict = await context.SubDistricts.AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.SubDistrictId == subDistrictId, cancellationToken);
+                return subDistrict == null || subDistrict.DistrictId == command.DistrictId;
+            })
+            .When(p => !string.IsNullOrWhiteSpace(p.SubDistrictId) && !string.IsNullOrWhiteSpace(p.DistrictId))
+            .WithMessage("ตำบลไม่อยู่ภายใต้อำเภอที่เลือก");
     }
 
     private static bool IsDrinking(string? code, DrinkingValue status)

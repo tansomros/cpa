@@ -19,7 +19,7 @@ public class CreatePatientCommand : IRequest<int>, IPatientWrite
     public string? AddressNo { get; set; }
     public string? Road { get; set; }
     public string? DistrictId { get; set; }
-    public string? City { get; set; }
+    public string? SubDistrictId { get; set; }
     public string? ProvinceId { get; set; }
     public string? ZipCode { get; set; }
 
@@ -67,7 +67,7 @@ public class CreatePatientCommmandHandler : IRequestHandler<CreatePatientCommand
             request.AddressNo,
             request.Road,
             request.DistrictId,
-            request.City,
+            request.SubDistrictId,
             request.ProvinceId,
             request.ZipCode);
         patient.UpdateGeneralInformation(request.MainClaim, request.IsActive, request.Education, request.Occupation);

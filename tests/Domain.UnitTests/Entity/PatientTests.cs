@@ -28,7 +28,7 @@ public class PatientTests
 
         item.UpdatePersonalInformation("สมชาย", "ใจดี", "M", new DateOnly(1982, 1, 1), "1103700000001");
         item.UpdateContact("021111111", "09:00-17:00");
-        item.UpdateAddress("บ้าน", "99/1", "สุขุมวิท", "1001", "คลองเตย", "10", "10110");
+        item.UpdateAddress("บ้าน", "99/1", "สุขุมวิท", "1001", "100101", "10", "10110");
         item.UpdateGeneralInformation("สิทธิหลัก", true, "ปริญญาตรี", "พนักงาน");
         item.UpdateAllergy(true, "Penicillin");
         item.UpdateSmokingHistory("Regular", 10, 5, "Manufactured", false, "สูบทุกวัน");
@@ -40,8 +40,8 @@ public class PatientTests
         item.Telephone.Should().Be("021111111");
         item.TimeContact.Should().Be("09:00-17:00");
         item.AddressNo.Should().Be("99/1");
-        item.SubDistrictId.Should().Be("1001");
-        item.DistrictId.Should().Be("คลองเตย");
+        item.DistrictId.Should().Be("1001");
+        item.SubDistrictId.Should().Be("100101");
         item.ProvinceId.Should().Be("10");
         item.MainClaim.Should().Be("สิทธิหลัก");
         item.Education.Should().Be("ปริญญาตรี");

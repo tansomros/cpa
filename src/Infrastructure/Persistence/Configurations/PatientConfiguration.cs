@@ -25,7 +25,7 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(x => x.AddressNo).HasMaxLength(500);
         builder.Property(x => x.Road).HasMaxLength(200);
         builder.Property(x => x.SubDistrictId).HasMaxLength(10);
-        builder.Property(x => x.DistrictId).HasMaxLength(200);
+        builder.Property(x => x.DistrictId).HasMaxLength(10);
         builder.Property(x => x.ProvinceId).HasMaxLength(10); 
         builder.Property(x => x.ZipCode).HasMaxLength(10);
 
@@ -47,10 +47,14 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
 
         builder.HasOne(x => x.District)
             .WithMany()
-            .HasForeignKey(x => x.SubDistrictId)
+            .HasForeignKey(x => x.DistrictId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Ignore(x => x.SubDistrict);
+        builder.HasOne(x => x.SubDistrict)
+            .WithMany()
+            .HasForeignKey(x => x.SubDistrictId)
+            .HasPrincipalKey(s => s.SubDistrictId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.IsAllergy)
     .HasColumnName("isAllergy")

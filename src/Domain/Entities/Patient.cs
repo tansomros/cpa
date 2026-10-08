@@ -137,15 +137,15 @@ public class Patient : BaseEntity
         string? addressNo,
         string? road,
         string? districtId,
-        string? city,
+        string? subDistrictId,
         string? provinceId,
         string? zipCode)
     {
         AddressType = addressType;
         AddressNo = addressNo;
         Road = road;
-        SubDistrictId = districtId;
-        DistrictId = city;
+        DistrictId = districtId;
+        SubDistrictId = subDistrictId;
         ProvinceId = provinceId;
         ZipCode = zipCode;
     }
