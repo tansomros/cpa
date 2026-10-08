@@ -139,12 +139,14 @@ template นี้สร้างเฉพาะ Command หรือ Query พ�
 
 ## ขั้นตอนเข้าร่วมพัฒนา
 
-    1. source code อยู่ที่ https://github.com/tansomros/cpa (branch หลักคือ master) ให้วางโปรเจกต์ไว้ที่ D:\PROJECT\CPA
-    2. สร้าง branch ใหม่ที่แตกออกจาก master โดยตั้งชื่อตาม docs/git.md เช่น feat/patient-birthdate หรือ fix/flatpickr-dependency
-    3. พัฒนาคุณสมบัติส่วนที่เกี่ยวข้อง
-    4. commit การเปลี่ยนแปลง โดยที่หากเป็นการเปลี่ยนแปลงที่เกี่ยวข้องกับหลายไฟล์สามารถรวมกลุ่มเป็น commit เดียวกันได้ แต่ควรแยกส่วนให้ย่อยที่สุดหากทำได้
-    5. การตั้งข้อความ commit พยายามให้สื่อความหมายถึงสิ่งที่เปลี่ยนแปลงและชัดเจนและเข้าใจง่ายเป็นภาษาไทย หรือภาษาอังกฤษ
-    6. push เข้า branch ที่ remote เพื่อเก็บไว้บน git server (เฉพาะ branch ตัวเองเท่านั้น) **ห้าม push เข้า branch อื่นโดยตรงเด็ดขาด
+    1. ทำงานใน local folder D:\PROJECT\CPA เท่านั้น (ทุกเครื่องใช้ path เดียวกัน) branch หลักคือ master
+    2. ห้าม push ขึ้น GitHub และไม่ใช้บริการ cloud ใดๆ กับ source code นี้ ทุกอย่างทำใน local repo
+    3. สร้าง local branch ใหม่ที่แตกออกจาก master โดยตั้งชื่อตาม docs/git.md เช่น feat/patient-birthdate หรือ fix/flatpickr-dependency
+    4. working tree ใน D:\PROJECT\CPA ใช้ร่วมกันหลายคน ใครจะสลับ branch (checkout/switch) ต้องแจ้งทีมก่อนทุกครั้ง เพราะจะกระทบงานที่คนอื่นทำค้างไว้
+    5. พัฒนาคุณสมบัติส่วนที่เกี่ยวข้อง
+    6. ตอน stage ให้ระบุไฟล์ทีละ path เสมอ (git add <path>) ห้ามใช้ git add -A, git add . หรือ git commit -a เพราะจะดึงไฟล์ migration ที่คุณ Teerapol ยังไม่ commit ติดไปด้วย
+    7. commit การเปลี่ยนแปลง โดยที่หากเป็นการเปลี่ยนแปลงที่เกี่ยวข้องกับหลายไฟล์สามารถรวมกลุ่มเป็น commit เดียวกันได้ แต่ควรแยกส่วนให้ย่อยที่สุดหากทำได้
+    8. การตั้งข้อความ commit พยายามให้สื่อความหมายถึงสิ่งที่เปลี่ยนแปลงและชัดเจนและเข้าใจง่ายเป็นภาษาไทย หรือภาษาอังกฤษ
 
 ## ก่อนการรวม source code เข้ากับ Branch หลัก
 
@@ -153,21 +155,16 @@ template นี้สร้างเฉพาะ Command หรือ Query พ�
     3. การไม่เขียน tests สำหรับทดสอบ code ที่ตัวเองเขียนขึ้น เป็นการทำงานที่ไม่มีคุณภาพมีผลกระทบกับผู้ใช้งานอย่างสูง และสร้างความวิตกกังวลให้กับทีมเป็นอย่างมากในตอน Production
     4. การเขียน tests แม้จะไม่ได้การรันตีว่า Production จะไม่มี BUG 100% แต่ก็สามารถป้องกัน error บางอย่างที่ไม่ควรเกิดขึ้นและสามารถตรวจพบในระหว่างพัฒนาได้เลย ดีกว่าไปเจอที่ Production 
 
-## การรวม source code (Pull Request)
+## การรวม source code เข้า master
 
-    1. commit สิ่งที่เปลี่ยนแปลง และที่ต้องการ stage ให้เรียบร้อย ทั้งที่ modified และ unstaged
-    2. หากต้องการรวม source code ที่อยู่ใน branch ของตนเองเข้ากับ branch หลักที่แตกออกมา ให้สลับ branch ไปยัง branch ที่ต้องการรวมแล้ว fetch->pull ลงมาหากมี update ก่อนเสมอ
-    3. สลับ branch กลับไปยัง branch ตัวเอง แล้วให้คลิกขวาที่ branch ที่ต้องการรวมแล้วเลือก rebase
-    4. หากมี conflict ให้ resolve conflict โดยใช้ DiffMerge และปรึกษาทีม
-    5. เมื่อ resolve conflict เสร็จแล้วหรือไม่มี conflict ให้ Push ขึ้น branch ตัวเอง
-    6. ไปสร้าง Pull Request ใน https://github.com/tansomros/cpa
-    7. เลือก branch ต้นทาง และ ปลายทางให้ถูกต้อง
-    8. กำหนดผู้รับผิดชอบ (ไม่ต้องกำหนดหากเป็น branch ตัวเอง) และใส่ข้อความอธิบายเกี่ยวกับการขอรวมในครั้งนี้ให้สั้นกระชับเข้าใจง่าย
-    9. บันทึกการขอ Merge หาเป็น branch ตัวเอง ก็ merge เองได้เลย
-    10. ผู้ที่ถูก assign หรือ branch ปลายทางจะดำเนินการ pull code ลงมา review และ test ก่อนที่จะ accept merge request หรือ reject merge request
-    11. หากรวมแล้วเป็นอันเสร็จสิ้น
-    12. pull version ใหม่ลงมา แล้วแตก branch ใหม่เพื่อพัฒนาต่อจากนั้น
-    13. ทำตามขั้นตอนแรกวนไป
+    1. commit งานใน branch ของตัวเองให้ครบ โดย stage ทีละไฟล์ตามข้อ 6 ของขั้นตอนเข้าร่วมพัฒนา
+    2. build solution ให้ผ่าน (dotnet build CPA.sln) และรันเทสให้ผ่านครบทั้ง 4 โปรเจกต์ (Domain.UnitTests, Application.UnitTests, Application.FunctionalTests, Infrastructure.IntegrationTests) ถ้าแก้หน้าเว็บด้วย ต้อง lint และ build ของ src/vuewebui ผ่านด้วย
+    3. ถ้า master มี commit ใหม่ระหว่างที่ทำงาน ให้ rebase หรือ merge master เข้า branch ตัวเองใน local ก่อน (การสลับ branch ต้องแจ้งทีมก่อนตามข้อ 4 ของขั้นตอนเข้าร่วมพัฒนา) หากมี conflict ให้ resolve โดยใช้ DiffMerge และปรึกษาทีม
+    4. แจ้ง Tech Lead ให้ review โดยบอกชื่อ branch Tech Lead จะดู diff เทียบกับ master ใน local repo และ test ก่อน
+    5. merge เข้า master ได้หลังจากคุณ Teerapol อนุมัติแล้วเท่านั้น
+    6. ห้าม push branch ใดๆ รวมถึง master ขึ้น GitHub
+    7. หลัง merge แล้ว แตก branch ใหม่จาก master ล่าสุดเพื่อพัฒนาต่อ
+    8. ทำตามขั้นตอนแรกวนไป
 
 ## Architecture Checklist ก่อน Merge ทุก Feature เช่น
 
