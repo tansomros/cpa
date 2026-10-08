@@ -53,10 +53,7 @@ public class Patient : BaseEntity
     public string? DrugAllergy { get; private set; }
 
     // Smoking
-    /// <summary>
-    /// สูบบุหรี่หรือไม่
-    /// </summary>
-    public bool? IsSmoke { get; private set; }
+ 
     /// <summary>
     /// การสูบบุหรี่
     /// </summary>
@@ -180,8 +177,7 @@ public class Patient : BaseEntity
         string? cigaretteType,
         bool? smokingQuit,
         string? smokingRemark)
-    {
-        IsSmoke = isSmoke;
+    {     
         Smoke = smoke;
         SmokeYear = smokeYear;
         SmokeCigarette = smokeCigarette;

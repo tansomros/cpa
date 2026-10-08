@@ -24,18 +24,6 @@ public class MTM
 
     public int? PersonID { get; set; }
 
-    public string? Smoke { get; set; }
-
-    public int? SmokeYear { get; set; }
-
-    public int? SmokeCigarette { get; set; }
-
-    public string? CigaretteType { get; set; }
-
-    public string? Alcohol { get; set; }
-
-    public int? AlcoholFQ { get; set; }
-
     public int? HospitalType { get; set; }
 
     public string? HospitalName { get; set; }
