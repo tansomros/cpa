@@ -133,6 +133,12 @@ ADR ที่เกี่ยวข้อง : ADR-013 (Validation), ADR-014 (YAG
 * constructor ของ `SmokingValue` และ `DrinkingValue` ตั้งชื่อ parameter ตัวที่สองว่า `abnormalFlag` (ชื่อที่ติดมาจากระบบ Checkup) แต่ค่าที่ส่งเข้าไปคือ `Code` ของ base class
 * entity `MTM` มีช่องชื่อคล้ายกันที่ยังเป็น `int?` ดูข้อเสนอในข้อ 6 ของหัวข้อ "รายละเอียดที่รอยืนยัน"
 
+**งานที่ Teerapol กำลังแก้ (ยังไม่ commit)**
+
+* ลบ `Code` ออกจาก `SmartEnum.cs` แต่ `tests/Domain.UnitTests/Common/SmartEnumTests.cs` บรรทัด 18 ยังเรียก `base(value, code, name, sort)` 4 ตัว Domain.UnitTests จึง build ไม่ผ่านจนกว่าจะแก้เป็น `base(value, name, sort)` และเอาค่า Code ออกจาก test (QA รับไปแก้)
+* `DrinkingValue` ยังให้ `Occasional` และ `Regular` ใช้ `Sort` = 2 ทั้งคู่ `Regular` ควรเป็น 3
+* `SmokingValue` ยังใช้ `Value` = `Yes` (ชื่อ field เปลี่ยนเป็น `Regular` แล้ว)
+
 ---
 
 ## รายละเอียดที่รอยืนยัน
