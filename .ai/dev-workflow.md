@@ -3,7 +3,7 @@
 คู่มือฉบับนี้เขียนขึ้นสำหรับ**คนในทีม** โดยเฉพาะคนที่เพิ่งเข้าร่วมพัฒนาโปรเจกต์นี้ — สถาปัตยกรรมที่ใช้คืออะไรและทำไมถึงใช้, ติดตั้งเครื่องมืออะไรบ้าง, รันโปรเจกต์ยังไง, เทสยังไง, build ยังไง, migrate database ยังไง, และสร้างโค้ดใหม่ (scaffold) ยังไง เรียงเป็นขั้นตอนตั้งแต่เครื่องเปล่าจนรันโปรเจกต์ได้
 
 > เอกสารสำหรับ AI agent (เช่น Claude Code) ดูที่ [prompt-templates.md](prompt-templates.md) แทน
-> ส่วนเรื่อง **deploy ขึ้น server จริง** ดูที่ [`deploy/README.md`](../deploy/README.md) — เอกสารฉบับนี้พูดถึงแค่การพัฒนาในเครื่องตัวเอง (local development)
+> ส่วนเรื่อง **deploy ขึ้น server จริง** ยังไม่มีเอกสาร (ยังไม่ได้เขียน) — เอกสารฉบับนี้พูดถึงแค่การพัฒนาในเครื่องตัวเอง (local development)
 
 ---
 
@@ -258,7 +258,7 @@ npm install -g pnpm
 
 **คืออะไร:** โปรแกรมรัน container บนเครื่อง — แพ็กแอปพร้อม dependency ทั้งหมดไว้ใน container เดียว รันที่ไหนก็ได้ผลเหมือนกัน
 
-**ทำไมโปรเจกต์นี้ถึงมีให้ใช้ (แม้จะไม่ใช้ตอนพัฒนาประจำวัน):** งานพัฒนา/เทสประจำวันไม่ต้องใช้ Docker (ดูข้อ 1.7) แต่โปรเจกต์มีสคริปต์ `deploy/deploy.local.sh` ที่ใช้ Docker รันทั้งระบบ (API + UI + Postgres + Traefik) จำลองสภาพแวดล้อม production บนเครื่องตัวเอง มีประโยชน์เวลาต้องการทดสอบว่า build จริงทำงานถูกต้องก่อน deploy หรือเดโมให้คนอื่นดูโดยไม่ต้องอธิบายวิธี setup ยาว ๆ (ดู [`deploy/README.md`](../deploy/README.md))
+**ทำไมโปรเจกต์นี้ถึงมีให้ใช้ (แม้จะไม่ใช้ตอนพัฒนาประจำวัน):** งานพัฒนา/เทสประจำวันไม่ต้องใช้ Docker (ดูข้อ 1.7) ส่วนสคริปต์และเอกสาร deploy (เช่น การรันทั้งระบบด้วย Docker เพื่อจำลองสภาพแวดล้อม production) ยังไม่มีในโปรเจกต์ — ยังไม่ได้เขียน
 
 **ติดตั้ง:** ดาวน์โหลดจาก [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
 
@@ -543,7 +543,7 @@ tests/
 
 ## ส่วนที่ 11 — CI/CD และ Deploy
 
-ยังไม่มี CI/CD อัตโนมัติ ส่วนการ deploy ขึ้น server จริงมีสคริปต์พร้อมใช้แล้วที่ `deploy/` (Docker + Traefik + Let's Encrypt ทั้งแบบรันในเครื่องตัวเองและขึ้น server จริง) — อ่านรายละเอียดที่ [`deploy/README.md`](../deploy/README.md)
+ยังไม่มี CI/CD อัตโนมัติ และยังไม่มีสคริปต์หรือเอกสารการ deploy ขึ้น server จริงในโปรเจกต์ (ยังไม่ได้เขียน)
 
 ---
 
@@ -559,7 +559,7 @@ tests/
 | Address already in use / port ชนกัน (7114, 5046, 5173) | มีโปรเซสเดิมค้างอยู่ (เช่นรัน `dotnet run` ซ้อนสองรอบ, terminal เก่ายังไม่ได้ปิด) — ปิด process เดิมก่อน หรือหา process ที่จับ port นั้นอยู่แล้ว kill ทิ้ง |
 | `dotnet ef` ฟ้องว่าไม่รู้จักคำสั่ง | ยังไม่ได้ติดตั้ง dotnet-ef global tool — ดูข้อ 1.4 |
 | build/run ผ่านปกติตอนใช้ `dotnet run` แต่พอรัน DLL ที่ build ไว้ตรง ๆ (`dotnet path/to/API.dll`) กลับ error "Please config identity authority" | `dotnet run` ใช้ profile จาก `launchSettings.json` ซึ่งตั้ง `ASPNETCORE_ENVIRONMENT=Development` ให้อัตโนมัติ แต่รัน DLL ตรง ๆ จะ default เป็น `Production` แทน ซึ่งต้องการค่า `Identity:Authority` ที่ไม่ได้ตั้งไว้ในเครื่อง dev — ให้ตั้ง `ASPNETCORE_ENVIRONMENT=Development` เองก่อนรัน หรือใช้ `dotnet run`/VS Code debug config (ข้อ 3.1) แทน |
-| ไฟล์ที่แก้บน Windows แล้ว diff ใน Git ขึ้นทั้งไฟล์ทั้งที่แก้แค่บรรทัดเดียว | ปัญหา line ending (CRLF บน Windows vs LF ที่ repo ใช้) — เช็คว่า `git config core.autocrlf` ตั้งเป็น `true` (Windows) หรือ `input` (macOS/Linux) ไว้แล้วหรือยัง; ไฟล์ `.gitattributes` ของ repo กำหนดไว้ส่วนหนึ่งแล้วแต่บาง editor (โดยเฉพาะ shell script ที่รันบน macOS/Linux เช่นสคริปต์ใน `deploy/`) ยังต้องระวังเรื่องนี้อยู่ |
+| ไฟล์ที่แก้บน Windows แล้ว diff ใน Git ขึ้นทั้งไฟล์ทั้งที่แก้แค่บรรทัดเดียว | ปัญหา line ending (CRLF บน Windows vs LF ที่ repo ใช้) — เช็คว่า `git config core.autocrlf` ตั้งเป็น `true` (Windows) หรือ `input` (macOS/Linux) ไว้แล้วหรือยัง; ไฟล์ `.gitattributes` ของ repo กำหนดไว้ส่วนหนึ่งแล้วแต่บาง editor (โดยเฉพาะ shell script ที่รันบน macOS/Linux) ยังต้องระวังเรื่องนี้อยู่ |
 | ไม่แน่ใจว่าเปิด `cpa.sln` หรือ `.slnx` ใน Visual Studio | ทั้งสองไฟล์เปิดโปรเจกต์เดียวกัน — `.slnx` เป็นฟอร์แมตใหม่ (XML แทน text format เดิม) ของ Visual Studio ใช้ตัวไหนก็ได้ แต่คำสั่ง `dotnet build`/`dotnet test` ในคู่มือนี้อ้างอิง `.sln` เป็นหลัก |
 
 หาไม่เจอในตารางนี้ ให้เช็ค [known-issues.md](known-issues.md) ก่อนว่าเคยมีคนเจอปัญหาเดียวกันมาก่อนหรือเปล่า แล้วค่อยถามทีม

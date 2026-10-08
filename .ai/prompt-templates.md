@@ -133,7 +133,7 @@ Cover:
   a date ordering rule is violated) — one test case per invariant, not one
   giant test.
 
-File: tests/Domain.UnitTests/Entities/{EntityName}Tests.cs, following the
+File: tests/Domain.UnitTests/Entity/{EntityName}Tests.cs, following the
 existing test files in that folder for style (NUnit, FluentAssertions).
 Run `dotnet test tests/Domain.UnitTests/` and confirm they pass before
 reporting done.
