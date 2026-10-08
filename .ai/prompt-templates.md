@@ -22,7 +22,7 @@ Before making any change:
    it in full before doing anything else — it's the primary spec (goal,
    scope, fields, business rules, acceptance criteria, test cases) written
    by the team in Thai. Treat its "Out of scope" section as a hard
-   boundary, and its "Money & Quantity Impact" answer as authoritative on
+   boundary, and its "Money Impact" answer as authoritative on
    whether the ledger rule below applies.
 
 Non-negotiable (see .ai/coding-rules.md) — this system holds real pharmacy,

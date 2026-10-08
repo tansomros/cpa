@@ -23,7 +23,7 @@ You have no ability to listen to a live meeting yourself (no microphone/audio-ca
 1. Determine the feature name and bounded context. Classify the context using the context folder list in [`requirements/README.md`](../requirements/README.md) (`Master`/`Patient`/`MTM`/`LabResults`/`Settings`/`Security`). If it's genuinely ambiguous or spans multiple contexts, ask the team — don't guess (this mirrors what `requirements/README.md` already tells a human writer to do in the same situation).
 2. Extract everything the discussion actually covered into the exact 14 sections of [`_template.md`](../requirements/_template.md). Do not invent a different structure, add sections, or reorder them.
 3. Only write what was actually said. Where the discussion left something unresolved, write `ไม่แน่ใจ — ต้องคุยกับทีมก่อน` in that section (the exact phrase `requirements/README.md` already tells human writers to use for the same situation) — do not fabricate plausible-sounding content to fill a gap.
-4. **§7 "Money & Quantity Impact" must always get a real answer, never a guess.** The template itself says this must never be skipped. If the discussion didn't clearly settle whether the feature touches money (and therefore a ledger), ask the team directly before writing the file — this field decides whether the Non-negotiable ledger rule applies downstream, so guessing wrong here corrupts every later stage.
+4. **§7 "Money Impact" must always get a real answer, never a guess.** The template itself says this must never be skipped. If the discussion didn't clearly settle whether the feature touches money (and therefore a ledger), ask the team directly before writing the file — this field decides whether the Non-negotiable ledger rule applies downstream, so guessing wrong here corrupts every later stage.
 5. Cross-check any Thai business term used against [domain.md](domain.md). If a term isn't defined there, add a definition under §3 (Domain terms) and tell the team `domain.md` may need a matching entry — don't silently invent a new term that later code will use inconsistently.
 6. **Always write the status field as `ร่าง` (draft). Never write `พร้อมพัฒนา` or any later status.** This is the pipeline's main human checkpoint — see the ownership table in §5.
 7. File path and naming follow `requirements/README.md` exactly: `requirements/{Context}/{feature-name-in-english-kebab-case}.md`, no numeric prefix.
@@ -96,6 +96,6 @@ This is the safety boundary of the whole pipeline. Get this wrong and the pipeli
 - Never write or change a requirement's status to `พร้อมพัฒนา` — that transition is exclusively a human decision.
 - Never skip a stage's verification command, or report a stage as done without having actually run it.
 - Never proceed to the next stage on top of a failing verification.
-- Never guess §7 (Money & Quantity Impact) when it wasn't clearly settled in the discussion — ask instead.
+- Never guess §7 (Money Impact) when it wasn't clearly settled in the discussion — ask instead.
 - Never run `git commit`/`git push` as part of this workflow.
 - Never build a command/query/page that the requirement's §2 (Out of scope) excludes, even if it seems like an obvious next step — scope comes from the requirement file, not from what would be convenient to add while already in the code.
