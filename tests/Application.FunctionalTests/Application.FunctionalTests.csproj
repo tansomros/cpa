@@ -7,12 +7,8 @@
 
     <ItemGroup>
       <None Remove="appsettings.json" />
-      <Compile Remove="Features\ReferenceGroups\**" />
-      <Compile Remove="Features\ReferenceValues\**" />
-      <Compile Remove="Features\Addresses\**" />
       <Compile Remove="Features\Systems\**" />
       <Compile Remove="Features\_Shared\TestDataFactory.cs" />
-      <Compile Remove="Features\Patients\Queries\GetPatientByHospitalNumberTests.cs" />
       <Compile Remove="Features\Patients\Queries\GetPatientTests.cs" />
       <Compile Remove="Features\Patients\Queries\GetPatientListTests.cs" />
     </ItemGroup>

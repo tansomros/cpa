@@ -100,41 +100,6 @@ public class DataInitializerTests : BaseTestFixture
     }
 
     /// <summary>
-    /// [OBSOLETE] ทดสอบ: สั่ง Seed ข้อมูลกลุ่มอ้างอิง — ถูกแทนที่ด้วย SmartEnum แล้ว ดู LookupRegistry.cs
-    /// </summary>
-    [Test]
-    [Obsolete("ReferenceGroup ถูกแทนที่ด้วย SmartEnum ใน Domain.Enums แล้ว")]
-    public async Task ReferenceGroupInitializer_ShouldSeedData()
-    {
-        RunAsDefaultUser();
-
-#pragma warning disable CS0618 // Obsolete
-        await SendAsync(new ReferenceGroupDataInitializerCommand());
-#pragma warning restore CS0618
-
-        var count = await CountAsync<ReferenceGroup>();
-        count.Should().BeGreaterThan(0);
-    }
-
-    /// <summary>
-    /// [OBSOLETE] ทดสอบ: สั่ง Seed ข้อมูลค่าอ้างอิง — ถูกแทนที่ด้วย SmartEnum แล้ว ดู LookupRegistry.cs
-    /// </summary>
-    [Test]
-    [Obsolete("ReferenceValue ถูกแทนที่ด้วย SmartEnum ใน Domain.Enums แล้ว")]
-    public async Task ReferenceValueInitializer_ShouldSeedData()
-    {
-        RunAsDefaultUser();
-
-#pragma warning disable CS0618 // Obsolete
-        await SendAsync(new ReferenceGroupDataInitializerCommand());
-        await SendAsync(new ReferenceValueDataInitializerCommand());
-#pragma warning restore CS0618
-
-        var count = await CountAsync<ReferenceValue>();
-        count.Should().BeGreaterThan(0);
-    }
-
-    /// <summary>
     /// ทดสอบ: สั่ง Seed ข้อมูลคำแนะนำ ควร Seed ข้อมูลเริ่มต้นเข้าไปในฐานข้อมูล
     /// </summary>
     [Test]
@@ -159,20 +124,6 @@ public class DataInitializerTests : BaseTestFixture
         await SendAsync(new ThaiProvinceDataInitializerCommand());
 
         var count = await CountAsync<Province>();
-        count.Should().BeGreaterThan(0);
-    }
-
-    /// <summary>
-    /// ทดสอบ: สั่ง Seed ข้อมูลเทมเพลตคำแนะนำ ควร Seed ข้อมูลเริ่มต้นเข้าไปในฐานข้อมูล
-    /// </summary>
-    [Test]
-    public async Task RecommendationTemplateInitializer_ShouldSeedData()
-    {
-        RunAsDefaultUser();
-
-        await SendAsync(new RecommendationTemplateInitializerCommand());
-
-        var count = await CountAsync<RecommendationTemplate>();
         count.Should().BeGreaterThan(0);
     }
 }

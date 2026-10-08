@@ -94,39 +94,6 @@ public static class TestDataFactory
         return checkup.Id;
     }
 
-    public static async Task<int> CreateTestReferenceGroupAsync(
-        string? code = null,
-        string descriptions = "กลุ่มอ้างอิงทดสอบ")
-    {
-        var id = NextId();
-        code ??= $"RG{id:D3}";
-        var group = new ReferenceGroup(code, descriptions, 1);
-        await AddAsync(group);
-        return group.Id;
-    }
-
-    public static async Task<int> CreateTestReferenceValueAsync(
-        int referenceGroupId,
-        string? valueCode = null,
-        string descriptions = "ค่าอ้างอิงทดสอบ")
-    {
-        var id = NextId();
-        valueCode ??= $"RV{id:D3}";
-        var value = new ReferenceValue(valueCode, descriptions, referenceGroupId, 1);
-        await AddAsync(value);
-        return value.Id;
-    }
-
-    public static async Task<int> CreateTestAudiogramAsync(
-        int checkupId,
-        int checkupItemId,
-        string visitNumber = "VN00000001")
-    {
-        var audiogram = new Audiogram(checkupId, visitNumber, checkupItemId, "ปกติ", "ปกติ", "ปกติ", "", "");
-        await AddAsync(audiogram);
-        return audiogram.Id;
-    }
-
     public static async Task<int> CreateTestProvinceAsync(
         string? provinceId = null,
         string name = "นครราชสีมา")
@@ -242,27 +209,6 @@ public static class TestDataFactory
         var specialTest = new SpecialTest(checkupId, visitNumber, checkupItemId);
         await AddAsync(specialTest);
         return specialTest.Id;
-    }
-
-    public static async Task<int> CreateTestReportAsync(
-        int checkupId,
-        string visitNumber,
-        string hospitalNumber,
-        int checkupTypeId)
-    {
-        var report = new Report(
-            checkupId, visitNumber, hospitalNumber,
-            DateOnly.FromDateTime(DateTime.Now), "08:00",
-            checkupTypeId, "สิทธิ์ทดสอบ", 1, "โปรแกรมทดสอบ");
-        await AddAsync(report);
-        return report.Id;
-    }
-
-    public static async Task<int> CreateTestRecommendationTemplateAsync(string text = "คำแนะนำเทมเพลตทดสอบ")
-    {
-        var template = new RecommendationTemplate(text);
-        await AddAsync(template);
-        return template.Id;
     }
 
     public record CheckupPrerequisites(
