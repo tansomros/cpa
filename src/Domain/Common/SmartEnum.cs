@@ -34,14 +34,12 @@ public abstract class SmartEnum<T> where T : SmartEnum<T>
     });
 
     public string Value { get; }
-    public string Code { get; }
     public string Name { get; }
     public int Sort { get; }
 
-    protected SmartEnum(string value,string code, string name, int sort)
+    protected SmartEnum(string value, string name, int sort)
     {
         Value = value;
-        Code=code;
         Name = name;
         Sort = sort;
     }

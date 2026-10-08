@@ -27,10 +27,10 @@ namespace BigLion.CPA.Domain.Enums;
 /// </summary>
 public sealed class DrinkingValue : SmartEnum<DrinkingValue>
 {
-    public static readonly DrinkingValue Non = new("Non","N", "ไม่ดื่ม", 0);
-    public static readonly DrinkingValue Quit = new("Quit", "Y", "เคยดื่มแต่เลิกแล้ว", 1);
-    public static readonly DrinkingValue Occasionally = new("Quit", "Q", "ดื่มครั้งคราว", 2);
-    public static readonly DrinkingValue Regularly = new("Quit", "Q", "ดื่มประจำ", 2);
+    public static readonly DrinkingValue Non = new("Non", "ไม่ดื่ม", 0);
+    public static readonly DrinkingValue Quit = new("Quit",  "เคยดื่มแต่เลิกแล้ว", 1);
+    public static readonly DrinkingValue Occasional = new("Occasional",  "ดื่มครั้งคราว", 2);
+    public static readonly DrinkingValue Regular = new("Regular", "ดื่มประจำ", 2);
 
-    private DrinkingValue(string value, string abnormalFlag, string displayName, int sort) : base(value,   abnormalFlag, displayName, sort) { }
+    private DrinkingValue(string value,  string displayName, int sort) : base(value, displayName, sort) { }
 }
