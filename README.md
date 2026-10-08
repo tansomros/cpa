@@ -19,7 +19,7 @@ PostgreSQL
 * PostgreSQL
 * Swagger
 * Vue 3
-* PrimeVue
+* Vuetify 3 (template Vuexy)
 * Visual Studio (รุ่นที่รองรับ .NET 10)
 
 ## เอกสารประกอบ
