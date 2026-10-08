@@ -85,8 +85,6 @@ public class Program
         //---------------------------------------
 
         builder.Services.AddMemoryCache();
-        //builder.Services.AddScoped<ICheckupItemCacheService, CheckupItemCacheService>();
-        //builder.Services.AddScoped<ICheckupStatusService, CheckupStatusService>();
 
         // basic policy
         // this authorization should be config in the infrastructure?, revise later

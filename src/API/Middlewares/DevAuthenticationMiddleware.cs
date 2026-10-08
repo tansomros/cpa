@@ -8,7 +8,7 @@ namespace BigLion.CPA.Presentation.API.Middlewares;
 ///
 /// เปิดใช้งานโดยตั้งค่า "Identity:UseDevelopmentBypass": true ใน appsettings.Development.json
 /// ข้อมูลผู้ใช้จะอ่านจาก "Identity:DevelopmentUser" — ต้องใส่ค่าจริงจากฐานข้อมูล
-/// เช่น DoctorCode ต้องตรงกับ Careprovider.Code เพื่อให้ CurrentUserService ทำงานได้ถูกต้อง
+/// เช่น LoginName และ EmployeeId ต้องตรงกับผู้ใช้ที่มีอยู่จริงในฐานข้อมูล เพื่อให้ CurrentUserService ทำงานได้ถูกต้อง
 ///
 /// Middleware นี้จะสร้าง ClaimsPrincipal พร้อม claims ทั้งหมดที่ CurrentUserService ต้องการ
 /// และ scope ที่ authorization policies ต้องการ แล้ว set ลง HttpContext.User
