@@ -61,14 +61,12 @@ public partial class Testing
         _userId = _fakeCurrentUserService.Id;
     }
 
-    public static void RunAsDoctor(string doctorCode = "DOC001")
+    public static void RunAsPharmacy()
     {
         _fakeCurrentUserService.Reset();
-        _fakeCurrentUserService.Id = "test-doctor-id";
-        _fakeCurrentUserService.Name = "Dr. Test";
-        _fakeCurrentUserService.LoginName = "doctor@local";
-        _fakeCurrentUserService.DoctorCode = doctorCode;
-        _fakeCurrentUserService.HasDoctorRole = true;
+        _fakeCurrentUserService.Id = "test-pharmacy-id";
+        _fakeCurrentUserService.Name = "Pharmacy Test";
+        _fakeCurrentUserService.LoginName = "pharmacy@local";
         _fakeCurrentUserService.AddRoles(CpaRoles.Pharmacy);
         _fakeCurrentUserService.AddPolicies(
             CpaPolicies.RequireAuthenticatedUser,
@@ -76,12 +74,12 @@ public partial class Testing
         _userId = _fakeCurrentUserService.Id;
     }
 
-    public static void RunAsNurse()
+    public static void RunAsReporter()
     {
         _fakeCurrentUserService.Reset();
-        _fakeCurrentUserService.Id = "test-nurse-id";
-        _fakeCurrentUserService.Name = "Nurse Test";
-        _fakeCurrentUserService.LoginName = "nurse@local";
+        _fakeCurrentUserService.Id = "test-reporter-id";
+        _fakeCurrentUserService.Name = "Reporter Test";
+        _fakeCurrentUserService.LoginName = "reporter@local";
         _fakeCurrentUserService.AddRoles(CpaRoles.Reporter);
         _fakeCurrentUserService.AddPolicies(
             CpaPolicies.RequireAuthenticatedUser,

@@ -15,8 +15,6 @@ public class CurrentUserService : ICurrentUserService
 
     public string? EmployeeId { get; set; }
 
-    public string? DoctorCode { get; set; }
-
     public string? Position { get; set; }
 
     public string? LoginName { get; set; }
@@ -29,33 +27,17 @@ public class CurrentUserService : ICurrentUserService
 
     public bool? HasAdminRole { get; set; }
 
-    public bool? HasDoctorRole { get; set; }
-
     public CurrentUserService(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
 
-        var checkupDoctorRole = new string[]
-        {
-            "User : แพทย์ (Doctor)",
-            "User : แพทย์แผนไทย",
-            "User : เวชศาสตร์ฟื้นฟู",
-            "User : จิตเวช",
-            "แพทย์ Intern (Doctor) 1",
-            "แพทย์ Intern (Doctor) 2-3",
-            "User : แพทย์ Intern (Doctor) 3",
-            "User : ทันตกรรม (Dental)",
-        };
-
         Id = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         Name = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
         EmployeeId = _httpContextAccessor.HttpContext?.User.FindFirstValue("EmployeeId");
         LoginName = _httpContextAccessor.HttpContext?.User.FindFirstValue("LoginName");
-        DoctorCode = _httpContextAccessor.HttpContext?.User.FindFirstValue("DoctorCode");
         Position = _httpContextAccessor.HttpContext?.User.FindFirstValue("Position");
         HasAdminRole = _httpContextAccessor.HttpContext?.User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin") ?? false;
-        HasDoctorRole = _httpContextAccessor.HttpContext?.User.Claims.Any(c => c.Type == ClaimTypes.Role && checkupDoctorRole.Contains(c.Value)) ?? false;
         Claims = _httpContextAccessor.HttpContext?.User.Claims.ToList();
     }
 

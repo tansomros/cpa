@@ -11,14 +11,12 @@ public class FakeCurrentUserService : ICurrentUserService
     public string? Id { get; set; }
     public string? Name { get; set; }
     public string? EmployeeId { get; set; }
-    public string? DoctorCode { get; set; }
     public string? Position { get; set; }
     public string? LoginName { get; set; }
     public string? IdentityToken { get; set; }
     public string? AccessToken { get; set; }
     public List<Claim>? Claims { get; set; }
     public bool? HasAdminRole { get; set; }
-    public bool? HasDoctorRole { get; set; }
 
     public bool IsInRole(string role) => _roles.Contains(role);
 
@@ -42,14 +40,12 @@ public class FakeCurrentUserService : ICurrentUserService
         Id = null;
         Name = null;
         EmployeeId = null;
-        DoctorCode = null;
         Position = null;
         LoginName = null;
         IdentityToken = null;
         AccessToken = null;
         Claims = null;
         HasAdminRole = null;
-        HasDoctorRole = null;
         _roles.Clear();
         _policies.Clear();
     }

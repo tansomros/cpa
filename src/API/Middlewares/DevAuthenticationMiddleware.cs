@@ -33,12 +33,8 @@ public class DevAuthenticationMiddleware
         var name = devUserSection["Name"] ?? "Developer (Dev Bypass)";
         var employeeId = devUserSection["EmployeeId"] ?? "DEV001";
         var loginName = devUserSection["LoginName"] ?? "devuser";
-        var doctorCode = devUserSection["DoctorCode"] ?? "DEV-DOC";
         var position = devUserSection["Position"] ?? "Developer";
         var hasAdminRole = devUserSection.GetValue("HasAdminRole", true);
-        var hasDoctorRole = devUserSection.GetValue("HasDoctorRole", true);
-        var hasNurseRole = devUserSection.GetValue("HasNurseRole", false);
-        var isBeCheckupGroup = devUserSection.GetValue("IsBeCheckupGroup", true);
 
         var claims = new List<Claim>
         {
@@ -46,7 +42,6 @@ public class DevAuthenticationMiddleware
             new(ClaimTypes.Name, name),
             new("EmployeeId", employeeId),
             new("LoginName", loginName),
-            new("DoctorCode", doctorCode),
             new("Position", position),
             new("scope", "suth-checkup-api"),
             new("scope", "openid"),
@@ -58,12 +53,6 @@ public class DevAuthenticationMiddleware
 
         if (hasAdminRole)
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-        if (hasDoctorRole)
-            claims.Add(new Claim(ClaimTypes.Role, "User : แพทย์ (Doctor)"));
-        if (hasNurseRole)
-            claims.Add(new Claim(ClaimTypes.Role, "User : พยาบาล (Nurse)"));
-        if (isBeCheckupGroup)
-            claims.Add(new Claim(ClaimTypes.Role, "User : ตรวจสุขภาพ(CheckUp)"));
 
         // authenticationType ต้องไม่เป็น null เพื่อให้ IsAuthenticated = true
         var identity = new ClaimsIdentity(claims, "DevBypass");
