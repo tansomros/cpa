@@ -90,12 +90,14 @@ const vuetifyThemesName = Object.keys(vuetifyTheme.themes.value)
 const updateThemeClassInCalendar = () => {
 
   // ℹ️ Flatpickr don't render it's instance in mobile and device simulator
-  if (!refFlatPicker.value.fp.calendarContainer)
+  // The picker may not be mounted yet (or already unmounted) when the theme watcher fires.
+  const calendarContainer = refFlatPicker.value?.fp?.calendarContainer
+  if (!calendarContainer)
     return
   vuetifyThemesName.forEach(t => {
-    refFlatPicker.value.fp.calendarContainer.classList.remove(`v-theme--${ t }`)
+    calendarContainer.classList.remove(`v-theme--${ t }`)
   })
-  refFlatPicker.value.fp.calendarContainer.classList.add(`v-theme--${ vuetifyTheme.global.name.value }`)
+  calendarContainer.classList.add(`v-theme--${ vuetifyTheme.global.name.value }`)
 }
 
 watch(() => configStore.theme, updateThemeClassInCalendar)
@@ -115,11 +117,13 @@ watch(() => props, () => {
   immediate: true,
 })
 
+// useId() must run once during setup, not inside a computed getter.
+const fallbackElementId = useId()
+
 const elementId = computed(() => {
   const _elementIdToken = fieldProps.value.id || fieldProps.value.label || inputProps.value.id
-  const _id = useId()
-  
-  return _elementIdToken ? `app-picker-field-${ _elementIdToken }` : _id
+
+  return _elementIdToken ? `app-picker-field-${ _elementIdToken }` : fallbackElementId
 })
 </script>
 

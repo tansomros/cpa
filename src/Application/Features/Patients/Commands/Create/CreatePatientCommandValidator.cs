@@ -5,7 +5,7 @@ namespace BigLion.CPA.Application.Features.Patients.Commands.Create;
 
 public class CreatePatientCommandValidator : AbstractValidator<CreatePatientCommand>
 {
-    public CreatePatientCommandValidator(ICpaDatabaseContext context)
+    public CreatePatientCommandValidator(ICpaDatabaseContext context, TimeProvider timeProvider)
     {
         RuleFor(p => p.ForeName)
             .NotEmpty().WithMessage("ชื่อต้องไม่ว่าง")
@@ -15,6 +15,6 @@ public class CreatePatientCommandValidator : AbstractValidator<CreatePatientComm
             .NotEmpty().WithMessage("นามสกุลต้องไม่ว่าง")
             .MaximumLength(200).WithMessage("นามสกุลต้องไม่เกิน 200 ตัวอักษร");
 
-        RuleFor(p => p).SetValidator(new PatientWriteRules(context));
+        RuleFor(p => p).SetValidator(new PatientWriteRules(context, timeProvider));
     }
 }

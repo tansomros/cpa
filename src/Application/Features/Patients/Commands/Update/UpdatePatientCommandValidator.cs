@@ -5,7 +5,7 @@ namespace BigLion.CPA.Application.Features.Patients.Commands.Update;
 
 public class UpdatePatientCommandValidator : AbstractValidator<UpdatePatientCommand>
 {
-    public UpdatePatientCommandValidator(ICpaDatabaseContext context)
+    public UpdatePatientCommandValidator(ICpaDatabaseContext context, TimeProvider timeProvider)
     {
         RuleFor(x => x.Id)
             .GreaterThan(0).WithMessage("โปรดระบุ Id");
@@ -18,6 +18,6 @@ public class UpdatePatientCommandValidator : AbstractValidator<UpdatePatientComm
             .NotEmpty().WithMessage("นามสกุลต้องไม่ว่าง")
             .MaximumLength(200).WithMessage("นามสกุลต้องไม่เกิน 200 ตัวอักษร");
 
-        RuleFor(p => p).SetValidator(new PatientWriteRules(context));
+        RuleFor(p => p).SetValidator(new PatientWriteRules(context, timeProvider));
     }
 }
