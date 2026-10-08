@@ -380,6 +380,17 @@
     "emptyPharmacyForm": true,
     "extractValidationErrors": true,
     "formToPayload": true,
-    "pharmacyToForm": true
+    "pharmacyToForm": true,
+    "BE_OFFSET": true,
+    "THAI_DATE_MESSAGES": true,
+    "THAI_DATE_PLACEHOLDER": true,
+    "createThaiDatePickerConfig": true,
+    "formatThaiDate": true,
+    "parseIsoDate": true,
+    "parseThaiDate": true,
+    "startOfToday": true,
+    "toIsoDate": true,
+    "toThaiDate": true,
+    "yearsAgo": true
   }
 }
