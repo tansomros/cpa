@@ -21,7 +21,7 @@
 - CRUD ข้อมูลร้านขายยาพื้นฐาน (สร้าง/แก้ไข/ดู/ค้นหารายการ) ตามฟิลด์ใน `Pharmacy`
 - เลือกกลุ่มร้านยา (`PharmacyGroup`) และประเภทร้านยา (`PharmacyType`) จากข้อมูลตั้งต้นที่มีอยู่แล้ว
 - เลือกจังหวัด / อำเภอ / ตำบล จากข้อมูลที่อยู่ที่มีอยู่แล้ว
-- ผูกสิทธิ์การเข้าถึงแบบ permission (`pharmacies.*`) — ยังไม่มีในระบบ ต้องสร้างใหม่
+- ผูกสิทธิ์การเข้าถึงแบบ permission (`pharmacies.*`) — permission code มีในโค้ดแล้ว (ดูข้อ 8)
 - ปิดการใช้งานร้านยาผ่าน `IsActive` / `DeleteFlag` ของ `BaseEntity` (soft delete) ไม่ลบแถวทิ้ง
 
 ### สิ่งที่ไม่รวมในรอบนี้ (Out of scope)
@@ -102,11 +102,13 @@
 
 ## 8. สิทธิ์การเข้าถึง (Permissions)
 
-ยังไม่มี permission ของร้านยาในระบบ ต้องสร้างใหม่ตามรูปแบบ `module.action` (ดู [coding-rules.md](../../.ai/coding-rules.md)):
+permission ของร้านยามีในโค้ดแล้ว ตามรูปแบบ `module.action` (ดู [coding-rules.md](../../.ai/coding-rules.md)) — ประกาศเป็นค่าคงที่ใน `src/Application/Common/Security/Permissions.cs` (`Permissions.Pharmacies`) และใส่ไว้ที่ Command/Query ของร้านยาด้วย `[RequirePermission]` (การลบใช้ `pharmacies.update`):
 
 - `pharmacies.view` — ดูรายการ/รายละเอียดร้านขายยา
 - `pharmacies.create` — สร้างร้านขายยาใหม่
 - `pharmacies.update` — แก้ไขข้อมูลร้านขายยา
+
+ข้อควรรู้: ตอนนี้ยังไม่มีส่วนไหนออก claim `permission` ให้ผู้ใช้ (JWT มีแค่ role) และยังไม่มีตารางผูก role กับ permission — ผู้ใช้ที่ไม่ใช่ role `Admin` จึงยังถูกปฏิเสธทุก action ข้างบน การกำหนดว่า role ไหนได้ permission ไหน ไม่แน่ใจ — ต้องคุยกับทีมก่อน
 
 ## 9. หน้าจอที่เกี่ยวข้อง (UI / Frontend)
 
