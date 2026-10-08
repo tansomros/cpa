@@ -208,7 +208,6 @@ const emptyForm = () => ({
   occupation: '',
   isAllergy: false,
   drugAllergy: '',
-  isSmoke: false,
   smoke: null,
   smokeYear: '',
   smokeCigarette: '',
@@ -344,7 +343,6 @@ const toForm = item => ({
   occupation: item?.occupation ?? '',
   isAllergy: item?.isAllergy ?? false,
   drugAllergy: item?.drugAllergy ?? '',
-  isSmoke: item?.isSmoke ?? false,
   smoke: item?.smoke || null,
   smokeYear: item?.smokeYear ?? '',
   smokeCigarette: item?.smokeCigarette ?? '',
@@ -404,7 +402,6 @@ const buildBody = () => ({
   occupation: textOrNull(form.value.occupation),
   isAllergy: form.value.isAllergy,
   drugAllergy: textOrNull(form.value.drugAllergy),
-  isSmoke: form.value.isSmoke,
   smoke: form.value.smoke || null,
   smokeYear: intOrNull(form.value.smokeYear),
   smokeCigarette: intOrNull(form.value.smokeCigarette),
@@ -769,15 +766,6 @@ fetchItems()
                   <AppTextField
                     v-model="form.drugAllergy"
                     label="แพ้ยา"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="3"
-                >
-                  <VCheckbox
-                    v-model="form.isSmoke"
-                    label="สูบบุหรี่"
                   />
                 </VCol>
                 <VCol

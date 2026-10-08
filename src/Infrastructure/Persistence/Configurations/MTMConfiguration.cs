@@ -34,11 +34,6 @@ public class MTMConfiguration : IEntityTypeConfiguration<MTM>
         builder.Property(x => x.RecordLocation).HasMaxLength(200);
         builder.Property(x => x.TelepharmacyRemark).HasMaxLength(2000);
 
-        // SmartEnum codes (SmokingValue, CigaretteTypeValue, DrinkingValue)
-        builder.Property(x => x.Smoke).HasMaxLength(20);
-        builder.Property(x => x.CigaretteType).HasMaxLength(20);
-        builder.Property(x => x.Alcohol).HasMaxLength(20);
-
         for (var i = 1; i <= 15; i++)
         {
             builder.Property<string?>($"MedicationUsed{i}").HasMaxLength(200);

@@ -53,7 +53,6 @@ public class PatientViewModel : IMapFrom<Patient>
     public bool? IsAllergy { get; set; }
     public string? DrugAllergy { get; set; }
 
-    public bool? IsSmoke { get; set; }
     public string? Smoke { get; set; }
     public int? SmokeYear { get; set; }
     public int? SmokeCigarette { get; set; }

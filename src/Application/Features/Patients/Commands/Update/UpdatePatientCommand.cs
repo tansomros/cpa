@@ -32,7 +32,6 @@ public record UpdatePatientCommand : IRequest<Unit>, IPatientWrite
     public bool? IsAllergy { get; set; }
     public string? DrugAllergy { get; set; }
 
-    public bool? IsSmoke { get; set; }
     public string? Smoke { get; set; }
     public int? SmokeYear { get; set; }
     public int? SmokeCigarette { get; set; }
@@ -78,7 +77,6 @@ public class UpdateCommandHandler : IRequestHandler<UpdatePatientCommand, Unit>
         patient.UpdateGeneralInformation(request.MainClaim, request.IsActive, request.Education, request.Occupation);
         patient.UpdateAllergy(request.IsAllergy, request.DrugAllergy);
         patient.UpdateSmokingHistory(
-            request.IsSmoke,
             request.Smoke,
             request.SmokeYear,
             request.SmokeCigarette,

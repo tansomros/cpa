@@ -170,7 +170,6 @@ public class Patient : BaseEntity
     }
 
     public void UpdateSmokingHistory(
-        bool? isSmoke,
         string? smoke,
         int? smokeYear,
         int? smokeCigarette,

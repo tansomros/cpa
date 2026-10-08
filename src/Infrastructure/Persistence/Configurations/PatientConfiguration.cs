@@ -58,12 +58,6 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         value => value == true ? "Y" : "N",
         value => value == "Y");
 
-        builder.Property(x => x.IsSmoke)
-            .HasColumnName("isSmoke")
-            .HasConversion(
-                value => value == true ? "Y" : "N",
-                value => value == "Y");
-
         builder.Property(x => x.SmokingQuit)
             .HasColumnName("SmokingQuit")
             .HasConversion(

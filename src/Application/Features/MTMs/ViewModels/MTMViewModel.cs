@@ -16,12 +16,6 @@ public class MTMViewModel : IMapFrom<Entity>
     public int? ServiceDate { get; set; }
     public int? ServiceTime { get; set; }
     public int? PersonID { get; set; }
-    public string? Smoke { get; set; }
-    public int? SmokeYear { get; set; }
-    public int? SmokeCigarette { get; set; }
-    public string? CigaretteType { get; set; }
-    public string? Alcohol { get; set; }
-    public int? AlcoholFQ { get; set; }
     public int? HospitalType { get; set; }
     public string? HospitalName { get; set; }
     public int? Status { get; set; }
