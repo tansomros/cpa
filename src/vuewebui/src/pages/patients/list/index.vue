@@ -46,6 +46,40 @@ const genderOptions = [
   { value: 'F', title: 'หญิง' },
 ]
 
+// Smoking and drinking dropdowns come from the SmartEnum lookups at /options/{category}
+// (see LookupRegistry). Each option is { value: code, title: Thai display name }.
+const lifestyleOptions = ref({
+  'smoking': [],
+  'cigarette-type': [],
+  'drinking': [],
+})
+
+const isLifestyleOptionsLoading = ref(false)
+
+const loadLifestyleOptions = async () => {
+  const missing = Object.keys(lifestyleOptions.value).filter(category => !lifestyleOptions.value[category].length)
+  if (!missing.length)
+    return
+
+  isLifestyleOptionsLoading.value = true
+  try {
+    await Promise.all(missing.map(async category => {
+      try {
+        const result = await $api(`/options/${category}`, { method: 'GET' })
+
+        lifestyleOptions.value[category] = (result ?? []).map(o => ({
+          value: o.value,
+          title: o.displayName,
+        }))
+      } catch {
+        lifestyleOptions.value[category] = []
+      }
+    }))
+  } finally {
+    isLifestyleOptionsLoading.value = false
+  }
+}
+
 const provinces = ref([])
 const isProvincesLoading = ref(false)
 
@@ -175,13 +209,13 @@ const emptyForm = () => ({
   isAllergy: false,
   drugAllergy: '',
   isSmoke: false,
-  smoke: '',
+  smoke: null,
   smokeYear: '',
   smokeCigarette: '',
-  cigaretteType: '',
+  cigaretteType: null,
   smokingQuit: false,
   smokingRemark: '',
-  alcohol: '',
+  alcohol: null,
   alcoholFQ: '',
 })
 
@@ -311,18 +345,18 @@ const toForm = item => ({
   isAllergy: item?.isAllergy ?? false,
   drugAllergy: item?.drugAllergy ?? '',
   isSmoke: item?.isSmoke ?? false,
-  smoke: item?.smoke ?? '',
+  smoke: item?.smoke || null,
   smokeYear: item?.smokeYear ?? '',
   smokeCigarette: item?.smokeCigarette ?? '',
-  cigaretteType: item?.cigaretteType ?? '',
+  cigaretteType: item?.cigaretteType || null,
   smokingQuit: item?.smokingQuit ?? false,
   smokingRemark: item?.smokingRemark ?? '',
-  alcohol: item?.alcohol ?? '',
+  alcohol: item?.alcohol || null,
   alcoholFQ: item?.alcoholFQ ?? '',
 })
 
 const openAddDialog = async () => {
-  await loadProvinces()
+  await Promise.all([loadProvinces(), loadLifestyleOptions()])
   isEditMode.value = false
   selectedItem.value = null
   form.value = emptyForm()
@@ -334,7 +368,7 @@ const openAddDialog = async () => {
 }
 
 const openEditDialog = async item => {
-  await loadProvinces()
+  await Promise.all([loadProvinces(), loadLifestyleOptions()])
   isEditMode.value = true
   selectedItem.value = item
   form.value = toForm(item)
@@ -371,13 +405,13 @@ const buildBody = () => ({
   isAllergy: form.value.isAllergy,
   drugAllergy: textOrNull(form.value.drugAllergy),
   isSmoke: form.value.isSmoke,
-  smoke: intOrNull(form.value.smoke),
+  smoke: form.value.smoke || null,
   smokeYear: intOrNull(form.value.smokeYear),
   smokeCigarette: intOrNull(form.value.smokeCigarette),
-  cigaretteType: intOrNull(form.value.cigaretteType),
+  cigaretteType: form.value.cigaretteType || null,
   smokingQuit: form.value.smokingQuit,
   smokingRemark: textOrNull(form.value.smokingRemark),
-  alcohol: intOrNull(form.value.alcohol),
+  alcohol: form.value.alcohol || null,
   alcoholFQ: intOrNull(form.value.alcoholFQ),
 })
 
@@ -759,10 +793,12 @@ fetchItems()
                   cols="12"
                   md="3"
                 >
-                  <AppTextField
+                  <AppSelect
                     v-model="form.smoke"
+                    :items="lifestyleOptions['smoking']"
                     label="การสูบ"
-                    type="number"
+                    clearable
+                    :loading="isLifestyleOptionsLoading"
                   />
                 </VCol>
                 <VCol
@@ -789,10 +825,12 @@ fetchItems()
                   cols="12"
                   md="4"
                 >
-                  <AppTextField
+                  <AppSelect
                     v-model="form.cigaretteType"
+                    :items="lifestyleOptions['cigarette-type']"
                     label="ชนิดบุหรี่"
-                    type="number"
+                    clearable
+                    :loading="isLifestyleOptionsLoading"
                   />
                 </VCol>
                 <VCol
@@ -808,10 +846,12 @@ fetchItems()
                   cols="12"
                   md="6"
                 >
-                  <AppTextField
+                  <AppSelect
                     v-model="form.alcohol"
+                    :items="lifestyleOptions['drinking']"
                     label="แอลกอฮอล์"
-                    type="number"
+                    clearable
+                    :loading="isLifestyleOptionsLoading"
                   />
                 </VCol>
                 <VCol
@@ -822,6 +862,8 @@ fetchItems()
                     v-model="form.alcoholFQ"
                     label="ความถี่แอลกอฮอล์"
                     type="number"
+                    min="0"
+                    suffix="ครั้ง/สัปดาห์"
                   />
                 </VCol>
                 <VCol
