@@ -13,14 +13,14 @@
       "datatype": "string",
       "replaces": "Examples",
       "isRequired": true,
-      "description": "Feature folder name, plural, e.g. Vendors"
+      "description": "Feature folder name, plural, e.g. Patients, LabResults"
     },
     "boundedContext": {
       "type": "parameter",
       "datatype": "string",
       "replaces": "BoundedContext",
       "isRequired": true,
-      "description": "Bounded context folder: ReferenceData, Catalog, Contracts, Procurement, CPA, Security"
+      "description": "Replaces the BoundedContext namespace segment. This project has no context folders, so pass the feature name (e.g. Patients) and fix the namespace afterwards (see .ai/ai-agent-guide.md)"
     },
     "returnType": {
       "type": "parameter",
