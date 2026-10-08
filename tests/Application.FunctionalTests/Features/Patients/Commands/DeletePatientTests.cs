@@ -17,7 +17,7 @@ public class DeletePatientTests : BaseTestFixture
             ForeName = "จะลบ",
             Surname = "ทดสอบ",
             Gender = "M",
-            BirthDate = DateOnly.FromDateTime(DateTime.Parse("1990-01-01"))
+            BirthDate = new DateOnly(1990, 1, 1)
         });
 
         await SendAsync(new DeletePatientCommand { Id = id });

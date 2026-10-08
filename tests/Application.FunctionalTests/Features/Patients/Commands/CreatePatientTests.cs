@@ -17,7 +17,7 @@ public class CreatePatientTests : BaseTestFixture
             ForeName = "สมชาย",
             Surname = "ใจดี",
             Gender = "M",
-            BirthDate = DateOnly.FromDateTime(DateTime.Parse("1985-06-15")),
+            BirthDate = new DateOnly(1985, 6, 15),
             CardId = "1103700990001"
         };
 
@@ -35,8 +35,8 @@ public class CreatePatientTests : BaseTestFixture
             ForeName = "สมหญิง",
             Surname = "ใจดี",
             Gender = "F",
-            BirthDate = DateOnly.FromDateTime(DateTime.Parse("1990-03-20")),
-            Mobile = "0891234567",
+            BirthDate = new DateOnly(1990, 3, 20),
+            Telephone = "0891234567",
             DrugAllergy = "Penicillin",
             IsAllergy = true
         };
@@ -48,7 +48,7 @@ public class CreatePatientTests : BaseTestFixture
         entity!.Id.Should().Be(id);
         entity.ForeName.Should().Be("สมหญิง");
         entity.Gender.Should().Be("F");
-        entity.Mobile.Should().Be("0891234567");
+        entity.Telephone.Should().Be("0891234567");
         entity.IsAllergy.Should().BeTrue();
         entity.DrugAllergy.Should().Be("Penicillin");
     }

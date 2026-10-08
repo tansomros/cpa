@@ -17,7 +17,7 @@ public class UpdatePatientTests : BaseTestFixture
             ForeName = "เดิม",
             Surname = "ชื่อเก่า",
             Gender = "M",
-            BirthDate = DateOnly.FromDateTime(DateTime.Parse("1990-01-01"))
+            BirthDate = new DateOnly(1990, 1, 1)
         });
 
         await SendAsync(new UpdatePatientCommand
@@ -26,8 +26,8 @@ public class UpdatePatientTests : BaseTestFixture
             ForeName = "ใหม่",
             Surname = "ชื่อใหม่",
             Gender = "M",
-            BirthDate = DateOnly.FromDateTime(DateTime.Parse("1990-01-01")),
-            Mobile = "0899999999",
+            BirthDate = new DateOnly(1990, 1, 1),
+            Telephone = "0899999999",
             AddressNo = "88/8",
             IsSmoke = true,
             SmokingRemark = "เลิกแล้ว"
@@ -38,7 +38,7 @@ public class UpdatePatientTests : BaseTestFixture
         updated!.Id.Should().Be(id);
         updated.ForeName.Should().Be("ใหม่");
         updated.Surname.Should().Be("ชื่อใหม่");
-        updated.Mobile.Should().Be("0899999999");
+        updated.Telephone.Should().Be("0899999999");
         updated.AddressNo.Should().Be("88/8");
         updated.IsSmoke.Should().BeTrue();
         updated.SmokingRemark.Should().Be("เลิกแล้ว");

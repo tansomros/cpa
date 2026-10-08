@@ -26,7 +26,7 @@ public static class TestDataFactory
             "ระบบ",
             null,
             Gender.Male,
-            DateOnly.FromDateTime(DateTime.Parse("1990-01-01")));
+            new DateOnly(1990, 1, 1));
         await AddAsync(patient);
         return patient.Id;
     }
