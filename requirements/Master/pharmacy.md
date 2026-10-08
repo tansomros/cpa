@@ -102,7 +102,7 @@
 
 ## 8. สิทธิ์การเข้าถึง (Permissions)
 
-ยังไม่มี permission ของร้านยาในระบบ ต้องสร้างใหม่ตามแบบ `vendors.*`:
+ยังไม่มี permission ของร้านยาในระบบ ต้องสร้างใหม่ตามรูปแบบ `module.action` (ดู [coding-rules.md](../../.ai/coding-rules.md)):
 
 - `pharmacies.view` — ดูรายการ/รายละเอียดร้านขายยา
 - `pharmacies.create` — สร้างร้านขายยาใหม่
@@ -162,11 +162,10 @@
 - ข้อมูลที่เกี่ยวข้อง: `src/Domain/Entities/PharmacyGroup.cs`, `src/Domain/Entities/PharmacyType.cs`, `src/Domain/Entities/Pharmacist.cs`, `src/Domain/Entities/User.cs`
 - ข้อมูลตั้งต้น: `src/Application/Features/Systems/Commands/PharmacyGroupDataInitializerCommand.cs`, `PharmacyTypeDataInitializerCommand.cs`
 - คำศัพท์: [.ai/domain.md](../../.ai/domain.md)
-- แบบฟอร์มที่กรอกแล้ว: [requirements/Procurement/vendor.md](../Procurement/vendor.md)
 
 ## 14. บันทึกเพิ่มเติมสำหรับ AI (ไม่บังคับ)
 
-- ทำโครง CRUD, permission และหน้า `list` / `create` / `edit` / `view` ตามแบบ Vendor
+- ทำโครง CRUD, permission และหน้า `list` / `create` / `edit` / `view` ตามโครงสร้าง feature มาตรฐานใน [.ai/architecture.md](../../.ai/architecture.md)
 - ฟิลด์บัญชีธนาคารที่ถูกคอมเมนต์ใน `Pharmacy.cs` ห้ามนำกลับมาในรอบนี้
 - ใน entity ตอนนี้ `PharmacyGroupId` และ `PharmacyTypeId` เป็น `string?` แต่คีย์ของ `PharmacyGroup` / `PharmacyType` เป็น `int` ของ `BaseEntity` — migration จึงเกิด shadow FK `PharmacyGroupId1` และ `PharmacyTypeId1` ก่อน implement ให้จัดความสัมพันธ์นี้ให้ชี้ไปที่คีย์จริงของกลุ่มและประเภท อย่าเพิ่มคอลัมน์ FK ซ้ำอีกชุด
 - `Province` / `District` / `SubDistrict` ใช้ `string Id` อยู่แล้ว สัมพันธ์กับ `ProvinceId` / `DistrictId` / `SubDistrictId` ได้ตรง
