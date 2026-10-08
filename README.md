@@ -11,16 +11,24 @@ PostgreSQL
 
 ## Technology
 
-* .NET 9
+* .NET 10
+* C#
+* ASP.NET Core
+* EF Core + Npgsql
+* PostgreSQL
+* Swagger
 * Vue 3
 * PrimeVue
-* PostgreSQL
-* EF Core
-* Dapper
-* C#
-* Swagger
-* EntityFramework    
-* Visual Studio 2022
+* Visual Studio (รุ่นที่รองรับ .NET 10)
+
+## เอกสารประกอบ
+
+* [Coding Standard](docs/coding-standard.md)
+* [Database Convention](docs/database.md)
+* [กติกาการจัดการวันที่](docs/date-convention.md)
+* [Git Convention](docs/git.md)
+* [API](docs/api.md)
+* [Architecture Decision Records](docs/adr)
 
 ## ขั้นตอนการรันใน visual studio
 
@@ -38,15 +46,24 @@ PostgreSQL
 
     $ project> dotnet watch run
 
+## หน้าเว็บ (src/vuewebui)
+
+หน้าเว็บใช้ Node.js รุ่น LTS (ตาม `.nvmrc`) และติดตั้งแพ็กเกจด้วย pnpm 12.9.1
+
+    $ src\vuewebui> npx --yes pnpm@12.9.1 install
+    $ src\vuewebui> npx --yes pnpm@12.9.1 dev
+
+ข้อควรระวัง: pnpm 12 ไม่อ่านค่า `shamefully-hoist=true` ใน `.npmrc` แล้ว แพ็กเกจที่โค้ดเรา import ตรงๆ จึงต้องประกาศไว้ใน `package.json` เองเสมอ ห้ามพึ่งแพ็กเกจที่ติดมากับแพ็กเกจอื่น เช่น `flatpickr` ต้องเป็น dependency ตรง ถึงจะมี `vue-flatpickr-component` อยู่แล้วก็ตาม ไม่อย่างนั้น build จะพังเพราะหาไฟล์ของแพ็กเกจไม่เจอ
+
 ## เครื่องมือสร้างโค้ด Code Scaffolding
 
 ### โค้ดสำหรับสร้าง Command
     ```
-    $ src\Application\Features> dotnet new ca-usecase --name Create --feature-name Checkups --usecase-type command --return-type int
+    $ src\Application\Features> dotnet new ca-usecase --name Create --feature-name Patients --usecase-type command --return-type int
     ```
 ### โค้ดสำหรับสร้าง Query
     ```
-    $ src\Application> dotnet new ca-usecase -n GetTodos -fn TodoLists -ut query -rt TodosVm
+    $ src\Application> dotnet new ca-usecase -n GetPatients -fn Patients -ut query -rt PatientsVm
     ```
 ### หากเกิดปัญหาในการสร้าง code
     If you encounter the error *"No templates or subcommands found matching: 'ca-usecase'."*, install the template and try again:
@@ -95,14 +112,6 @@ PostgreSQL
     $ solution> dotnet test
     ```
 
-
-## deploy API ก่อนแล้วค่อย build ตัว worker
-
-    ```
-    $ solution> bash deploy-api.sh
-    $ solution> bash deploy-worker.sh
-    ```
-
 ## มาตรฐานการออกแบบ API (RESTful API Standards)
 
 เพื่อให้การทำงานของ API เป็นไปตามมาตรฐานสากลและรองรับการสร้างโค้ดอัตโนมัติ (เช่น NSwag) ได้อย่างสมบูรณ์แบบ โปรดปฏิบัติตามกฎดังนี้ในการสร้างหรือแก้ไข Controller:
@@ -131,8 +140,8 @@ PostgreSQL
 
 ## ขั้นตอนเข้าร่วมพัฒนา
 
-    1. Clone source code ได้ที่ https://git.suth.go.th/dev/checkup จาก gitlab ผ่าน SourceTree
-    2. สร้าง branch ใหม่ที่แตกออกจาก branch หลักเช่น main หรือ branch ที่กำหนด โดยใช้ชื่อ branch ที่สื่อความหมายเช่น FeatureNameDevelopement หรือ ภาษาไทยเช่น พัฒนาฟังก์ชันการทำงานของการเรียกคิว
+    1. source code อยู่ที่ https://github.com/tansomros/cpa (branch หลักคือ master) ให้วางโปรเจกต์ไว้ที่ D:\PROJECT\CPA
+    2. สร้าง branch ใหม่ที่แตกออกจาก master โดยตั้งชื่อตาม docs/git.md เช่น feat/patient-birthdate หรือ fix/flatpickr-dependency
     3. พัฒนาคุณสมบัติส่วนที่เกี่ยวข้อง
     4. commit การเปลี่ยนแปลง โดยที่หากเป็นการเปลี่ยนแปลงที่เกี่ยวข้องกับหลายไฟล์สามารถรวมกลุ่มเป็น commit เดียวกันได้ แต่ควรแยกส่วนให้ย่อยที่สุดหากทำได้
     5. การตั้งข้อความ commit พยายามให้สื่อความหมายถึงสิ่งที่เปลี่ยนแปลงและชัดเจนและเข้าใจง่ายเป็นภาษาไทย หรือภาษาอังกฤษ
@@ -148,11 +157,11 @@ PostgreSQL
 ## การรวม source code (Pull Request)
 
     1. commit สิ่งที่เปลี่ยนแปลง และที่ต้องการ stage ให้เรียบร้อย ทั้งที่ modified และ unstaged
-    2. หากต้องการรวม source code ที่อยู่ใน bracnh ของตนเองเข้ากับ branch หลักที่แตกออกมา ให้สลับ branch ไปยัง branch ที่ต้องการรวมแล้ว fetch->pull ลงมาหากมี update ก่อนเสมอ
+    2. หากต้องการรวม source code ที่อยู่ใน branch ของตนเองเข้ากับ branch หลักที่แตกออกมา ให้สลับ branch ไปยัง branch ที่ต้องการรวมแล้ว fetch->pull ลงมาหากมี update ก่อนเสมอ
     3. สลับ branch กลับไปยัง branch ตัวเอง แล้วให้คลิกขวาที่ branch ที่ต้องการรวมแล้วเลือก rebase
     4. หากมี conflict ให้ resolve conflict โดยใช้ DiffMerge และปรึกษาทีม
     5. เมื่อ resolve conflict เสร็จแล้วหรือไม่มี conflict ให้ Push ขึ้น branch ตัวเอง
-    6. ไปสร้าง Pull Request ใน https://git.suth.go.th/dev/checkup
+    6. ไปสร้าง Pull Request ใน https://github.com/tansomros/cpa
     7. เลือก branch ต้นทาง และ ปลายทางให้ถูกต้อง
     8. กำหนดผู้รับผิดชอบ (ไม่ต้องกำหนดหากเป็น branch ตัวเอง) และใส่ข้อความอธิบายเกี่ยวกับการขอรวมในครั้งนี้ให้สั้นกระชับเข้าใจง่าย
     9. บันทึกการขอ Merge หาเป็น branch ตัวเอง ก็ merge เองได้เลย
