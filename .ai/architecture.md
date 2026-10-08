@@ -2,9 +2,9 @@
 
 ## What this system is
 
-CPA Thai Project is the foundation of a small web application for Community pharmacy Association (Thailand) (สมาคมเภสัชกรรมชุมชน (ประเทศไทย)). Current scope: master data (ระบบตั้งค่าข้อมูลพื้นฐาน) and pharmacy management (ระบบบริหารข้อมูลร้านยา). Planned scope: the full — see [domain.md](domain.md) and [roadmap.md](roadmap.md).
+CPA Thai Project is the foundation of a small web application for Community pharmacy Association (Thailand) (สมาคมเภสัชกรรมชุมชน (ประเทศไทย)). Current scope: master data (ระบบตั้งค่าข้อมูลพื้นฐาน) and pharmacy management (ระบบบริหารข้อมูลร้านยา). Planned scope: pharmacy services — patients, MTM (medication therapy management) services, and lab results — see [domain.md](domain.md).
 
-This is infrastructure a pharmacy depends on operationally. Data accuracy, consistency, and traceability are the top design priority — see the "Non-negotiable" section of [roadmap.md](roadmap.md) before making any change that touches money, quantity, or approval state.
+This is infrastructure a pharmacy depends on operationally. Data accuracy, consistency, and traceability are the top design priority — read [coding-rules.md](coding-rules.md) (money ledger, concurrency, state-transition rules) before making any change that touches money or approval/status state.
 
 ## Stack
 
@@ -56,10 +56,9 @@ The feature folder is usually the plural name (`Banks`, `Patients`). A few names
 - **Dual key**: every entity has an internal `int Id` (joins/FKs, never exposed) and a `Guid ExternalId` (UUIDv7, the only identifier exposed via API routes/DTOs).
 - **Audit fields**: `CreatedBy`, `LastModifiedBy`, `CreatedOn`, `LastModified`, `IsActive`, `IsDelete` on every entity via `EntityBase`, set automatically by `AuditableEntitySaveChangesInterceptors` — handlers should never set these manually.
 - **Optimistic concurrency**: every entity carries the Postgres `xmin` system column as a shadow-property concurrency token (via `ConfigureEntityBase<T>()`, no extra column needed) — a stale write throws `DbUpdateConcurrencyException` rather than silently overwriting.
-- **Permissions**: `module.action` codes (`Permission`) granted to a role name (`RolePermission`) — role name matches the claim issued by the external IdP, so there's no local Role/User table. Checked via `[RequirePermission("module.action")]` on a Command/Query, enforced by `AuthorizationBehaviour`; `HasAdminRole` bypasses the check. Currently rolled out to the Vendors feature only — see roadmap Phase 2.
+- **Permissions**: `module.action` codes (`Permission`) granted to a role name (`RolePermission`) — role name matches the claim issued by the external IdP, so there's no local Role/User table. Checked via `[RequirePermission("module.action")]` on a Command/Query, enforced by `AuthorizationBehaviour`; `HasAdminRole` bypasses the check. Currently rolled out to the Pharmacy feature only (`pharmacies.view`, `pharmacies.create`, `pharmacies.update`).
 - **Audit trail**: every insert/update/delete on an `EntityBase`-derived entity is recorded to the append-only `AuditLog` table (entity name, `ExternalId`, action, property-level `{old,new}` diff, actor, timestamp) by `AuditableEntitySaveChangesInterceptors` — this is in addition to, not instead of, the `CreatedBy`/`LastModifiedBy` fields, which only ever show the *latest* change.
-- **Money/quantity fields are never mutated in place** — see the ledger pattern in [coding-rules.md](coding-rules.md) and the "Non-negotiable" section of [roadmap.md](roadmap.md).
-- **Item/Catalog**: a single `Item` entity with an `ItemCategory` discriminator and a JSONB `Attributes` column for category-specific fields (e.g. drug registration number), instead of one class per category — new item categories are a data change, not a schema migration.
+- **Money balances are never mutated in place** — see the ledger pattern in [coding-rules.md](coding-rules.md).
 
 ## Frontend architecture (target — see roadmap Phase 3)
 
@@ -85,4 +84,4 @@ The feature folder is usually the plural name (`Banks`, `Patients`). A few names
 | Frontend composables | `src/vuewebui/src/composables/` |
 | Frontend API client | `src/vuewebui/src/utils/api.js` (target: generated client, see roadmap Phase 3) |
 
-See also: [coding-rules.md](coding-rules.md), [ai-agent-guide.md](ai-agent-guide.md), [domain.md](domain.md), [known-issues.md](known-issues.md), [roadmap.md](roadmap.md).
+See also: [coding-rules.md](coding-rules.md), [ai-agent-guide.md](ai-agent-guide.md), [domain.md](domain.md), [known-issues.md](known-issues.md).

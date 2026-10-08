@@ -1,6 +1,6 @@
 # Domain Glossary & Workflow
 
-Shared vocabulary for this project — use these terms consistently in code (entity/property names), UI copy, and commit messages, so a Thai procurement term always maps to the same English identifier. Where a detail is marked "not final," it needs stakeholder confirmation before being relied on for implementation — see the Open Questions section of [roadmap.md](roadmap.md).
+Shared vocabulary for this project — use these terms consistently in code (entity/property names), UI copy, and commit messages, so a Thai business term always maps to the same English identifier. Where a detail is marked "not final," it needs stakeholder confirmation before being relied on for implementation.
 
 ## Core entities today
 

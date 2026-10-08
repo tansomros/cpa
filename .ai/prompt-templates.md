@@ -12,12 +12,11 @@ If a template's assumptions turn out to be wrong or stale (a file moved, a conve
 You are working on CPA Thai , a Database System for Health Promotion and Medication Management Services Provided by Community Pharmacists.
 
 Before making any change:
-1. Read CLAUDE.md, then .ai/known-issues.md (is what I'm about to touch already
-   a tracked problem?) and .ai/roadmap.md (which phase is this, what does it
-   depend on?).
+1. Read .ai/known-issues.md (is what I'm about to touch already a tracked
+   problem?).
 2. Read .ai/coding-rules.md and .ai/ai-agent-guide.md — these are binding
    conventions, not suggestions. Follow them exactly.
-3. If the task touches procurement/contract/item vocabulary, check
+3. If the task touches pharmacy/patient/MTM vocabulary, check
    .ai/domain.md for the established terms.
 4. If a requirements/{Context}/{feature}.md file is referenced below, read
    it in full before doing anything else — it's the primary spec (goal,
@@ -26,10 +25,10 @@ Before making any change:
    boundary, and its "Money & Quantity Impact" answer as authoritative on
    whether the ledger rule below applies.
 
-Non-negotiable (see .ai/roadmap.md "Non-negotiable" section) — this system
-underlies real hospital procurement/budget/stock decisions:
-- Never mutate a money or quantity field in place — derive it from an
-  append-only ledger if one exists for that concept.
+Non-negotiable (see .ai/coding-rules.md) — this system holds real pharmacy,
+patient, and health-service data:
+- Never overwrite a money balance in place — derive it from an append-only
+  ledger if one exists for that concept.
 - Every mutable entity needs a concurrency token; conflicting writes must
   fail loudly, never silently overwrite.
 - Validation is layered: FluentValidation + domain guard clauses
@@ -39,9 +38,9 @@ When done:
 - Run `dotnet build CPA.sln` and `dotnet test CPA.sln`
   (backend), `pnpm run lint` and `pnpm run build` (frontend, from
   src/vuewebui) — report the results, don't just claim success.
-- Update .ai/known-issues.md and .ai/roadmap.md only if something you did
-  actually changes their status — don't let them drift from reality, and
-  don't rewrite sections that are still accurate.
+- Update .ai/known-issues.md only if something you did actually changes
+  its status — don't let it drift from reality, and don't rewrite
+  sections that are still accurate.
 - Stay within the scope of the task below. If you notice something else
   that's broken, note it in .ai/known-issues.md rather than fixing it
   unasked, unless it's blocking the task itself.
@@ -56,7 +55,7 @@ Design a new domain entity: {EntityName}.
 
 Fields: {list fields, types, required/optional, and any business rules
   — e.g. "EndDate must be after StartDate", "Quantity must be positive"}
-Relationships: {e.g. "belongs to Vendor (required)", "has many {Entity}Items"}
+Relationships: {e.g. "belongs to Patient (required)", "has many {Entity}Items"}
 Feature folder: {Feature} under src/Application/Features
   (for example Banks, Pharmacy, Patients — see .ai/architecture.md)
 
@@ -72,8 +71,8 @@ Do:
   explicit IsRequired()/HasMaxLength() for every scalar — nothing left to
   convention. Register the DbSet in CpaDatabaseContext and
   ICpaDatabaseContext.
-- If this entity represents a running balance or on-hand quantity, it must
-  be derived from an append-only ledger, not a mutable column — ask me if
+- If this entity represents a running money balance, it must be derived
+  from an append-only ledger, not a mutable column — ask me if
   you're not sure whether that applies here before implementing.
 
 Don't generate a migration — I'll run `dotnet ef migrations add` myself
@@ -114,9 +113,8 @@ Do:
   transformer doesn't reach hand-written literals.
 - If this maps to/from a ViewModel, add explicit .ForMember(...) mappings
   for anything whose name doesn't match the entity exactly by convention
-  (this project has been bitten before by AutoMapper silently dropping
-  fields — see .ai/known-issues.md "13 ViewModels' AutoMapper configuration
-  silently dropped...").
+  (AutoMapper silently drops fields whose names don't match — check that
+  every field actually maps).
 
 Requirement: {fill in the specific feature}
 ```
@@ -148,7 +146,7 @@ reporting done.
 ```
 Write an Application.FunctionalTests coverage for {UseCase} ({EntityName}).
 
-This runs against the real local inventory-test PostgreSQL database (not
+This runs against the real local cpathai-test PostgreSQL database (not
 Testcontainers — see .ai/coding-rules.md) via WebApplicationFactory. Cover:
 - The successful path.
 - Validation failure (missing required field, or the specific business rule
@@ -161,11 +159,11 @@ or .../Queries/ (mirror the Application feature; the test class name keeps
 the use case, for example CreateBankTests). Follow the existing pattern in
 Testing.cs/BaseTestFixture.cs for sending commands/queries through the real
 pipeline. Run `dotnet test tests/Application.FunctionalTests/` and confirm
-they pass before reporting done — the inventory-test database must exist
+they pass before reporting done — the cpathai-test database must exist
 locally first (see .ai/dev-workflow.md if it doesn't).
 
 Requirement: {fill in anything beyond the standard happy/validation/notfound
-  cases — e.g. a specific budget/concurrency scenario}
+  cases — e.g. a specific concurrency scenario}
 ```
 
 ---
@@ -180,13 +178,12 @@ Do:
 - Dedicated routes under src/vuewebui/src/pages/{feature}/
   {create,edit,view,list}/ — no dialog-based CRUD, no dead stub routes that
   just redirect to list (this project's confirmed convention, see
-  .ai/roadmap.md "Decisions already made").
+  .ai/architecture.md "Frontend architecture").
 - API calls in lower-kebab-case matching the real backend route (e.g.
-  /contract-items, not /ContractItems) — verify the real route and response
+  /lab-results, not /LabResults) — verify the real route and response
   shape (PaginatedList<T> → { items: [...] }, not a feature-specific field
   name) against the actual controller before wiring up the call; don't
-  guess the endpoint shape (see .ai/known-issues.md for the long list of
-  pages that got this wrong previously).
+  guess the endpoint shape.
 - Reuse existing shared components (ConfirmProgressDialog, ProgressDialog,
   TablePagination, AppTextField/AppSelect/etc.) rather than inventing new
   ones.
@@ -229,4 +226,4 @@ done — flag clearly if it can't run yet because of the auth gap above.
 
 ## Keeping these templates current
 
-These templates encode this project's conventions as they exist right now. When a convention changes (a new scaffolding tool lands in Phase 2, the frontend moves to the schema-driven scaffold in Phase 3, the OIDC test-auth gap gets resolved, etc.), **update the template in the same change** — don't leave it describing a workflow that no longer matches the code. This file drifting from reality is exactly the failure mode `.ai/known-issues.md` and `.ai/roadmap.md` are meant to avoid elsewhere in this project.
+These templates encode this project's conventions as they exist right now. When a convention changes (a new scaffolding tool lands in Phase 2, the frontend moves to the schema-driven scaffold in Phase 3, the OIDC test-auth gap gets resolved, etc.), **update the template in the same change** — don't leave it describing a workflow that no longer matches the code. This file drifting from reality is exactly the failure mode `.ai/known-issues.md` is meant to avoid elsewhere in this project.
