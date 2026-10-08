@@ -39,3 +39,12 @@
 ## 5. จุดที่ยังไม่ตรงกติกานี้
 
 - entity `Services` เก็บ `BirthDate` และ `ChildBirthDate` เป็น `string` ยาว 20 ตัวอักษร ต้องแก้เป็น `DateOnly?` พร้อม migration ภายหลัง ก่อนแก้ต้องตรวจข้อมูลเดิมว่าเก็บปีเป็น พ.ศ. หรือ ค.ศ. และใช้รูปแบบอะไร เพราะถ้าปนกันจะแปลงคลาดไป 543 ปีโดยไม่มี error
+
+## 6. Culture ในโค้ด C#
+
+เครื่องที่ตั้ง culture เป็น `th-TH` จะใช้ปฏิทินพุทธเป็นค่าตั้งต้น ถ้าแปลงวันที่โดยไม่ระบุ culture ปีจะเพี้ยนไป 543 ปีโดยไม่มี error เช่น `DateTime.Parse("1990-01-01")` จะได้ปี ค.ศ. 1447 และ `ToString("yyyy-MM-dd")` ของวันที่ 15 มี.ค. 1987 จะได้ `2530-03-15`
+
+- แปลงวันที่เป็นข้อความหรือแปลงกลับ ต้องระบุ `CultureInfo.InvariantCulture` ทุกครั้ง เช่น `value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)` และ `DateOnly.ParseExact(text, "yyyy-MM-dd", CultureInfo.InvariantCulture)` ดูตัวอย่างได้ที่ `src/API/Converters/JsonDateOnlyConverter.cs`
+- ห้ามพึ่ง `Program.cs` ที่ตั้ง culture ทั้งระบบเป็น Invariant เพราะโค้ดที่ไม่ได้รันผ่าน API เช่น unit test จะไม่ได้ค่านั้น
+- ใน test ให้สร้างวันที่ด้วย `new DateOnly(1990, 1, 1)` ห้ามใช้ `DateTime.Parse` หรือ `DateOnly.Parse` กับข้อความ
+- โค้ดที่แปลงวันที่ควรมี test ที่บังคับ culture เป็น `th-TH` ด้วย เพื่อให้รู้ทันทีถ้ามีจุดไหนลืมระบุ culture
