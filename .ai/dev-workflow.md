@@ -246,7 +246,7 @@ npm install -g pnpm
 
 **ติดตั้ง:**
 
-- Windows/macOS: ดาวน์โหลด installer จาก [postgresql.org/download](https://www.postgresql.org/download/) (แนะนำเวอร์ชัน 16.x ให้ตรงกับที่ใช้ใน Docker image ของโปรเจกต์)
+- Windows/macOS: ดาวน์โหลด installer จาก [postgresql.org/download](https://www.postgresql.org/download/) (แนะนำเวอร์ชัน 16.x)
 - macOS ทางเลือก: `brew install postgresql@16 && brew services start postgresql@16`
 - ระหว่างติดตั้งจะถูกถามให้ตั้ง password ของ superuser (`postgres`) — จำไว้ให้ดี
 
@@ -254,11 +254,11 @@ npm install -g pnpm
 
 ตรวจสอบว่าติดตั้งสำเร็จและเชื่อมต่อได้: `psql -U postgres -h localhost`
 
-### 1.8 Docker Desktop (ไม่บังคับ แต่แนะนำให้มีติดไว้)
+### 1.8 Docker Desktop (ไม่บังคับ)
 
 **คืออะไร:** โปรแกรมรัน container บนเครื่อง — แพ็กแอปพร้อม dependency ทั้งหมดไว้ใน container เดียว รันที่ไหนก็ได้ผลเหมือนกัน
 
-**ทำไมโปรเจกต์นี้ถึงมีให้ใช้ (แม้จะไม่ใช้ตอนพัฒนาประจำวัน):** งานพัฒนา/เทสประจำวันไม่ต้องใช้ Docker (ดูข้อ 1.7) ส่วนสคริปต์และเอกสาร deploy (เช่น การรันทั้งระบบด้วย Docker เพื่อจำลองสภาพแวดล้อม production) ยังไม่มีในโปรเจกต์ — ยังไม่ได้เขียน
+**สถานะในโปรเจกต์นี้:** ยังไม่มี Docker image, `Dockerfile` หรือไฟล์ docker-compose ของโปรเจกต์ งานพัฒนา/เทสประจำวันไม่ต้องใช้ Docker (ดูข้อ 1.7) ส่วนสคริปต์และเอกสาร deploy ก็ยังไม่มีในโปรเจกต์ — ยังไม่ได้เขียน จะติดตั้ง Docker ไว้ใช้งานอื่นเองก็ได้ ไม่บังคับ
 
 **ติดตั้ง:** ดาวน์โหลดจาก [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
 
@@ -559,7 +559,7 @@ tests/
 | Address already in use / port ชนกัน (7114, 5046, 5173) | มีโปรเซสเดิมค้างอยู่ (เช่นรัน `dotnet run` ซ้อนสองรอบ, terminal เก่ายังไม่ได้ปิด) — ปิด process เดิมก่อน หรือหา process ที่จับ port นั้นอยู่แล้ว kill ทิ้ง |
 | `dotnet ef` ฟ้องว่าไม่รู้จักคำสั่ง | ยังไม่ได้ติดตั้ง dotnet-ef global tool — ดูข้อ 1.4 |
 | build/run ผ่านปกติตอนใช้ `dotnet run` แต่พอรัน DLL ที่ build ไว้ตรง ๆ (`dotnet path/to/API.dll`) กลับ error "Please config identity authority" | `dotnet run` ใช้ profile จาก `launchSettings.json` ซึ่งตั้ง `ASPNETCORE_ENVIRONMENT=Development` ให้อัตโนมัติ แต่รัน DLL ตรง ๆ จะ default เป็น `Production` แทน ซึ่งต้องการค่า `Identity:Authority` ที่ไม่ได้ตั้งไว้ในเครื่อง dev — ให้ตั้ง `ASPNETCORE_ENVIRONMENT=Development` เองก่อนรัน หรือใช้ `dotnet run`/VS Code debug config (ข้อ 3.1) แทน |
-| ไฟล์ที่แก้บน Windows แล้ว diff ใน Git ขึ้นทั้งไฟล์ทั้งที่แก้แค่บรรทัดเดียว | ปัญหา line ending (CRLF บน Windows vs LF ที่ repo ใช้) — เช็คว่า `git config core.autocrlf` ตั้งเป็น `true` (Windows) หรือ `input` (macOS/Linux) ไว้แล้วหรือยัง; ไฟล์ `.gitattributes` ของ repo กำหนดไว้ส่วนหนึ่งแล้วแต่บาง editor (โดยเฉพาะ shell script ที่รันบน macOS/Linux) ยังต้องระวังเรื่องนี้อยู่ |
+| ไฟล์ที่แก้บน Windows แล้ว diff ใน Git ขึ้นทั้งไฟล์ทั้งที่แก้แค่บรรทัดเดียว | ปัญหา line ending (CRLF บน Windows vs LF ที่ repo ใช้) — ไฟล์ใน repo เก็บเป็น UTF-8 ไม่มี BOM และขึ้นบรรทัดแบบ LF แต่ที่ root ของ repo ยังไม่มีไฟล์ `.gitattributes` (มีแค่ `src/vuewebui/.gitattributes` ที่มากับ template หน้าเว็บ ซึ่งมีผลเฉพาะไฟล์ในโฟลเดอร์นั้น) จึงต้องเช็คเองว่า `git config core.autocrlf` ตั้งเป็น `true` (Windows) หรือ `input` (macOS/Linux) ไว้แล้วหรือยัง และตั้ง editor ให้บันทึกเป็น UTF-8 ไม่มี BOM และ LF (`.editorconfig` ที่ root กำหนด `end_of_line = lf` ไว้เฉพาะไฟล์ `.cs`) |
 | ไม่แน่ใจว่าเปิด `cpa.sln` หรือ `.slnx` ใน Visual Studio | ทั้งสองไฟล์เปิดโปรเจกต์เดียวกัน — `.slnx` เป็นฟอร์แมตใหม่ (XML แทน text format เดิม) ของ Visual Studio ใช้ตัวไหนก็ได้ แต่คำสั่ง `dotnet build`/`dotnet test` ในคู่มือนี้อ้างอิง `.sln` เป็นหลัก |
 
 หาไม่เจอในตารางนี้ ให้เช็ค [known-issues.md](known-issues.md) ก่อนว่าเคยมีคนเจอปัญหาเดียวกันมาก่อนหรือเปล่า แล้วค่อยถามทีม
