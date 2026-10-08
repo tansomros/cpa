@@ -29,7 +29,7 @@ public class UpdatePatientTests : BaseTestFixture
             BirthDate = new DateOnly(1990, 1, 1),
             Telephone = "0899999999",
             AddressNo = "88/8",
-            IsSmoke = true,
+            Smoke = "Regular",
             SmokingRemark = "เลิกแล้ว"
         });
 
@@ -40,7 +40,7 @@ public class UpdatePatientTests : BaseTestFixture
         updated.Surname.Should().Be("ชื่อใหม่");
         updated.Telephone.Should().Be("0899999999");
         updated.AddressNo.Should().Be("88/8");
-        updated.IsSmoke.Should().BeTrue();
+        updated.Smoke.Should().Be("Regular");
         updated.SmokingRemark.Should().Be("เลิกแล้ว");
     }
 

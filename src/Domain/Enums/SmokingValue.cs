@@ -28,7 +28,7 @@ namespace BigLion.CPA.Domain.Enums;
 public sealed class SmokingValue : SmartEnum<SmokingValue>
 {
     public static readonly SmokingValue Non = new("Non", "ไม่สูบ", 0);
-    public static readonly SmokingValue Regular = new("Yes", "สูบประจำ", 1);
+    public static readonly SmokingValue Regular = new("Regular", "สูบประจำ", 1);
     public static readonly SmokingValue Quit = new("Quit", "เลิกสูบแล้ว", 2);
 
     private SmokingValue(string value, string displayName, int sort) : base(value,  displayName, sort) { }

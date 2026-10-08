@@ -1,4 +1,5 @@
 using BigLion.CPA.Application.Common.Interfaces;
+using BigLion.CPA.Domain.Enums;
 
 namespace BigLion.CPA.Application.Features.Patients;
 
@@ -20,13 +21,20 @@ public interface IPatientWrite
     string? Education { get; }
     string? Occupation { get; }
     string? DrugAllergy { get; }
+    string? Smoke { get; }
+    string? CigaretteType { get; }
     string? SmokingRemark { get; }
+    string? Alcohol { get; }
+    int? AlcoholFQ { get; }
 }
 
 internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
 {
     /// <summary>Oldest allowed birth date is today minus this many years.</summary>
     public const int MaxAgeYears = 120;
+
+    /// <summary>Drink frequency is the number of drinking days per week (0-7).</summary>
+    public const int MaxDrinkDaysPerWeek = 7;
 
     public PatientWriteRules(ICpaDatabaseContext context, TimeProvider timeProvider)
     {
@@ -80,6 +88,37 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
         RuleFor(p => p.SmokingRemark)
             .MaximumLength(2000).WithMessage("หมายเหตุการสูบบุหรี่ต้องไม่เกิน 2000 ตัวอักษร");
 
+        // Lookup codes must match a SmartEnum value exactly (case-sensitive), so the
+        // database only ever holds the canonical codes served by /Options.
+        RuleFor(p => p.Smoke)
+            .Must(code => SmokingValue.All.Any(x => string.Equals(x.Value, code, StringComparison.Ordinal)))
+            .WithMessage("รหัสการสูบบุหรี่ไม่ถูกต้อง")
+            .When(p => p.Smoke is not null);
+
+        RuleFor(p => p.CigaretteType)
+            .Must(code => CigaretteTypeValue.All.Any(x => string.Equals(x.Value, code, StringComparison.Ordinal)))
+            .WithMessage("รหัสชนิดบุหรี่ไม่ถูกต้อง")
+            .When(p => p.CigaretteType is not null);
+
+        RuleFor(p => p.Alcohol)
+            .Must(code => DrinkingValue.All.Any(x => string.Equals(x.Value, code, StringComparison.Ordinal)))
+            .WithMessage("รหัสการดื่มไม่ถูกต้อง")
+            .When(p => p.Alcohol is not null);
+
+        // Drink frequency (days per week) is only checked when it is kept, i.e. for
+        // Occasional or Regular drinkers. For other statuses the Domain clears it,
+        // so a leftover value is not an error (see Patient.UpdateAlcoholHistory).
+        RuleFor(p => p.AlcoholFQ)
+            .Cascade(CascadeMode.Stop)
+            .NotNull().WithMessage("ดื่มประจำต้องระบุจำนวนวันที่ดื่มต่อสัปดาห์ตั้งแต่ 1 วันขึ้นไป")
+            .GreaterThanOrEqualTo(1).WithMessage("ดื่มประจำต้องระบุจำนวนวันที่ดื่มต่อสัปดาห์ตั้งแต่ 1 วันขึ้นไป")
+            .When(p => IsDrinking(p.Alcohol, DrinkingValue.Regular));
+
+        RuleFor(p => p.AlcoholFQ)
+            .InclusiveBetween(0, MaxDrinkDaysPerWeek).WithMessage("ความถี่การดื่มต้องอยู่ระหว่าง 0 ถึง 7 วันต่อสัปดาห์")
+            .When(p => p.AlcoholFQ.HasValue
+                && (IsDrinking(p.Alcohol, DrinkingValue.Regular) || IsDrinking(p.Alcohol, DrinkingValue.Occasional)));
+
         RuleFor(p => p.ProvinceId)
             .MaximumLength(10).WithMessage("รหัสจังหวัดต้องไม่เกิน 10 ตัวอักษร")
             .MustAsync((id, cancellationToken) => context.Provinces.AsNoTracking().AnyAsync(x => x.Id == id, cancellationToken))
@@ -102,6 +141,9 @@ internal sealed class PatientWriteRules : AbstractValidator<IPatientWrite>
             .When(p => !string.IsNullOrWhiteSpace(p.DistrictId) && !string.IsNullOrWhiteSpace(p.ProvinceId))
             .WithMessage("อำเภอไม่อยู่ภายใต้จังหวัดที่เลือก");
     }
+
+    private static bool IsDrinking(string? code, DrinkingValue status)
+        => code is not null && DrinkingValue.TryFromValue(code, out var value) && value == status;
 
     private static DateOnly Today(TimeProvider timeProvider) =>
         DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime);

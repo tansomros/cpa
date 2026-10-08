@@ -30,7 +30,7 @@ public sealed class DrinkingValue : SmartEnum<DrinkingValue>
     public static readonly DrinkingValue Non = new("Non", "ไม่ดื่ม", 0);
     public static readonly DrinkingValue Quit = new("Quit",  "เคยดื่มแต่เลิกแล้ว", 1);
     public static readonly DrinkingValue Occasional = new("Occasional",  "ดื่มครั้งคราว", 2);
-    public static readonly DrinkingValue Regular = new("Regular", "ดื่มประจำ", 2);
+    public static readonly DrinkingValue Regular = new("Regular", "ดื่มประจำ", 3);
 
     private DrinkingValue(string value,  string displayName, int sort) : base(value, displayName, sort) { }
 }

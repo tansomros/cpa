@@ -17,12 +17,6 @@ public class UpdateMTMCommand : IRequest<Unit>
     public int? ServiceDate { get; set; }
     public int? ServiceTime { get; set; }
     public int? PersonID { get; set; }
-    public int? Smoke { get; set; }
-    public int? SmokeYear { get; set; }
-    public int? SmokeCigarette { get; set; }
-    public int? CigaretteType { get; set; }
-    public int? Alcohol { get; set; }
-    public int? AlcoholFQ { get; set; }
     public int? HospitalType { get; set; }
     public string? HospitalName { get; set; }
     public int? Status { get; set; }
@@ -113,12 +107,6 @@ public class UpdateMTMCommandHandler : IRequestHandler<UpdateMTMCommand, Unit>
         entity.ServiceDate = request.ServiceDate;
         entity.ServiceTime = request.ServiceTime;
         entity.PersonID = request.PersonID;
-        entity.Smoke = request.Smoke;
-        entity.SmokeYear = request.SmokeYear;
-        entity.SmokeCigarette = request.SmokeCigarette;
-        entity.CigaretteType = request.CigaretteType;
-        entity.Alcohol = request.Alcohol;
-        entity.AlcoholFQ = request.AlcoholFQ;
         entity.HospitalType = request.HospitalType;
         entity.HospitalName = request.HospitalName;
         entity.Status = request.Status;

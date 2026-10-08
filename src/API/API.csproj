@@ -43,8 +43,4 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Controllers\OptionsController.cs" />
-  </ItemGroup>
-
 </Project>
